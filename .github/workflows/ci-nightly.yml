@@ -19,7 +19,7 @@ jobs:
         os:
           - ubuntu-latest
           - macos-latest
-          #- windows-latest
+          - windows-latest
         arch:
           - x64
     steps:
@@ -29,7 +29,11 @@ jobs:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
       # TODO: Remove when the package SatelliteToolboxTime.jl is registered!
-      - run: julia -e "using Pkg; pkg\"registry add https://github.com/ronisbr/Registry\""
+      - name: Install my local registry
+        shell: julia --color=yes --project=. {0}
+        run: |
+          using Pkg
+          pkg"registry add https://github.com/ronisbr/Registry"
       - uses: actions/cache@v1
         env:
           cache-name: cache-artifacts
