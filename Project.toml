@@ -1,0 +1,30 @@
+name = "SatelliteToolboxTransformations"
+uuid = "6b019ec1-7a1e-4f04-96c7-a9db1ca5514d"
+license = "MIT"
+desc = "Transformations for the SatelliteToolbox.jl ecosystem"
+authors = ["Ronan Arraes Jardim Chagas <ronisbr@gmail.com>"]
+version = "0.0.1"
+
+[deps]
+Crayons = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
+Interpolations = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
+ReferenceFrameRotations = "74f56ac7-18b3-5285-802d-d4bd4f104033"
+SatelliteToolboxTime = "3e027328-ef5c-4916-91ce-34c73cb689a2"
+Scratch = "6c6a2e73-6563-6170-7368-637461726353"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+
+[compat]
+Crayons = "4.0"
+Interpolations = "0.14"
+ReferenceFrameRotations = "3"
+StaticArrays = "1"
+julia = "1.6"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
