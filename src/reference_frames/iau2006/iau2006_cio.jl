@@ -56,7 +56,7 @@ export r_cirs_to_gcrf_iau2006, r_gcrf_to_cirs_iau2006
 Compute the rotation that aligns the International Terrestrial Reference Frame
 (ITRF) with the Terrestrial Intermediate Reference System (TIRS) considering the
 polar motion represented by the angles `x_p` [rad] and `y_p` [rad] that are
-obtained from IERS EOP Data (see [`get_iers_eop`](@ref)).
+obtained from IERS EOP Data (see [`fetch_iers_eop`](@ref)).
 
 `x_p` is the polar motion displacement about X-axis, which is the IERS Reference
 Meridian direction (positive south along the 0˚ longitude meridian). `y_p` is
@@ -117,7 +117,7 @@ end
 Compute the rotation that aligns the Terrestrial Intermediate Reference System
 (TIRS) with the International Terrestrial Reference Frame (ITRF) considering the
 polar motion represented by the angles `x_p` [rad] and `y_p` [rad] that are
-obtained from IERS EOP Data (see [`get_iers_eop`](@ref)).
+obtained from IERS EOP Data (see [`fetch_iers_eop`](@ref)).
 
 `x_p` is the polar motion displacement about X-axis, which is the IERS Reference
 Meridian direction (positive south along the 0˚ longitude meridian). `y_p` is
@@ -274,7 +274,7 @@ end
 Compute the rotation that aligns the Celestial Intermediate Reference System
 (CIRS) with the Geocentric Celestial Reference Frame (GCRF) at the Julian Day
 `jd_tt` [TT] and considering the IERS EOP Data `δx` [rad] and `δy` [rad] \\(see
-[`get_iers_eop`](@ref)). This algorithm uses the IAU-2006 theory.
+[`fetch_iers_eop`](@ref)). This algorithm uses the IAU-2006 theory.
 
 The IERS EOP Data `δx` and `δy` accounts for the free-core nutation and time
 dependent effects of the Celestial Intermediate Pole (CIP) position with respect
@@ -342,7 +342,7 @@ end
 Compute the rotation that aligns the Geocentric Celestial Reference Frame (GCRF)
 with the Celestial Intermediate Reference System (CIRS) at the Julian Day
 `jd_tt` [TT] and considering the IERS EOP Data `δx` [rad] and `δy` [rad] \\(see
-[`get_iers_eop`](@ref)). This algorithm uses the IAU-2006 theory.
+[`fetch_iers_eop`](@ref)). This algorithm uses the IAU-2006 theory.
 
 The IERS EOP Data `δx` and `δy` accounts for the free-core nutation and time
 dependent effects of the Celestial Intermediate Pole (CIP) position with respect

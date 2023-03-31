@@ -12,7 +12,7 @@ makedocs(
     pages = [
         "Home" => "index.md",
         "Transformations" => [
-            "ECI and ECEF"            => "man/ecec_eci.md",
+            "ECI and ECEF"            => "man/ecef_eci.md",
             "ECEF and Local frames"   => "man/ecef_local_frames.md",
             "Geodetic and Geocentric" => "man/geodetic_geocentric.md"
         ],

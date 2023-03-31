@@ -64,7 +64,7 @@ export r_pef_to_mod_fk5,   r_mod_to_pef_fk5
 Compute the rotation that aligns the International Terrestrial Reference Frame
 (ITRF) with the Pseudo-Earth Fixed (PEF) frame considering the polar motion
 represented by the angles `x_p` [rad] and `y_p` [rad] that are obtained from
-IERS EOP Data (see [`get_iers_eop`](@ref)).
+IERS EOP Data (see [`fetch_iers_eop`](@ref)).
 
 `x_p` is the polar motion displacement about X-axis, which is the IERS Reference
 Meridian direction (positive south along the 0˚ longitude meridian). `y_p` is
@@ -113,7 +113,7 @@ end
 Compute the rotation that aligns the Pseudo-Earth Fixed (PEF) with the
 International Terrestrial Reference Frame (ITRF) considering the polar motion
 represented by the angles `x_p` [rad] and `y_p` [rad] that are obtained from
-IERS EOP Data (see [`get_iers_eop`](@ref)).
+IERS EOP Data (see [`fetch_iers_eop`](@ref)).
 
 `x_p` is the polar motion displacement about X-axis, which is the IERS Reference
 Meridian direction (positive south along the 0˚ longitude meridian). `y_p` is
@@ -162,13 +162,13 @@ Compute the rotation that aligns the Pseudo-Earth Fixed (PEF) frame with the
 True of Date (TOD) frame at the Julian Day `jd_ut1` [UT1] and `jd_tt`
 [Terrestrial Time]. This algorithm uses the IAU-76/FK5 theory. Notice that one
 can provide correction for the nutation in longitude (`δΔψ_1980`) [rad] that
-is usually obtained from IERS EOP Data (see [`get_iers_eop`](@ref)).
+is usually obtained from IERS EOP Data (see [`fetch_iers_eop`](@ref)).
 
 The Julian Day in UT1 is used to compute the Greenwich Mean Sidereal Time (GMST)
-(see [`jd_to_gmst`](@ref)), whereas the Julian Day in Terrestrial Time is used
-to compute the nutation in the longitude. Notice that the Julian Day in UT1 and
-in Terrestrial Time must be equivalent, i.e. must be related to the same
-instant. This function **does not** check this.
+(see `jd_to_gmst`), whereas the Julian Day in Terrestrial Time is used to
+compute the nutation in the longitude. Notice that the Julian Day in UT1 and in
+Terrestrial Time must be equivalent, i.e. must be related to the same instant.
+This function **does not** check this.
 
 The rotation type is described by the optional variable `T`. If it is `DCM`,
 then a DCM will be returned. Otherwise, if it is `Quaternion`, then a Quaternion
@@ -247,13 +247,13 @@ Compute the rotation that aligns the True of Date (TOD) frame with the
 Pseudo-Earth Fixed (PEF) frame at the Julian Day `jd_ut1` [UT1] and `jd_tt`
 [Terrestrial Time]. This algorithm uses the IAU-76/FK5 theory. Notice that one
 can provide correction for the nutation in longitude (`δΔψ_1980`) [rad] that
-is usually obtained from IERS EOP Data (see [`get_iers_eop`](@ref)).
+is usually obtained from IERS EOP Data (see [`fetch_iers_eop`](@ref)).
 
 The Julian Day in UT1 is used to compute the Greenwich Mean Sidereal Time (GMST)
-(see [`jd_to_gmst`](@ref)), whereas the Julian Day in Terrestrial Time is used
-to compute the nutation in the longitude. Notice that the Julian Day in UT1 and
-in Terrestrial Time must be equivalent, i.e. must be related to the same
-instant. This function **does not** check this.
+(see `jd_to_gmst`), whereas the Julian Day in Terrestrial Time is used to
+compute the nutation in the longitude. Notice that the Julian Day in UT1 and in
+Terrestrial Time must be equivalent, i.e. must be related to the same instant.
+This function **does not** check this.
 
 The rotation type is described by the optional variable `T`. If it is `DCM`,
 then a DCM will be returned. Otherwise, if it is `Quaternion`, then a Quaternion
@@ -299,7 +299,7 @@ Compute the rotation that aligns the True of Date (TOD) frame with the Mean of
 Date (MOD) frame at the Julian Day `jd_tt` [Terrestrial Time]. This algorithm
 uses the IAU-76/FK5 theory. Notice that one can provide corrections for the
 nutation in obliquity (`δΔϵ_1980`) [rad] and in longitude (`δΔψ_1980`) [rad]
-that are usually obtained from IERS EOP Data (see [`get_iers_eop`](@ref)).
+that are usually obtained from IERS EOP Data (see [`fetch_iers_eop`](@ref)).
 
 The rotation type is described by the optional variable `T`. If it is `DCM`,
 then a DCM will be returned. Otherwise, if it is `Quaternion`, then a Quaternion
@@ -353,7 +353,7 @@ Compute the rotation that aligns the Mean of Date (MOD) frame with the True of
 Date (TOD) frame at the Julian Day `jd_tt` [Terrestrial Time]. This algorithm
 uses the IAU-76/FK5 theory. Notice that one can provide corrections for the
 nutation in obliquity (`δΔϵ_1980`) [rad] and in longitude (`δΔψ_1980`) [rad]
-that are usually obtained from IERS EOP Data (see [`get_iers_eop`](@ref)).
+that are usually obtained from IERS EOP Data (see [`fetch_iers_eop`](@ref)).
 
 The rotation type is described by the optional variable `T`. If it is `DCM`,
 then a DCM will be returned. Otherwise, if it is `Quaternion`, then a Quaternion
@@ -476,7 +476,7 @@ Compute the rotation that aligns the International Terrestrial Reference Frame
 (ITRF) with the Geocentric Celestial Reference Frame (GCRF) at the Julian Day
 `jd_ut1` [UT1] and `jd_tt` [Terrestrial Time], and considering the IERS EOP Data
 `x_p` [rad], `y_p` [rad], `δΔϵ_1980` [rad], and `δΔψ_1980` [rad] \\(see
-[`get_iers_eop`](@ref)). This algorithm uses the IAU-76/FK5 theory.
+[`fetch_iers_eop`](@ref)). This algorithm uses the IAU-76/FK5 theory.
 
 `x_p` is the polar motion displacement about X-axis, which is the IERS Reference
 Meridian direction (positive south along the 0˚ longitude meridian). `y_p` is
@@ -484,10 +484,10 @@ the polar motion displacement about Y-axis (90˚W or 270˚E meridian). `δΔϵ_1
 is the nutation in obliquity. `δΔψ_1980` is the nutation in longitude.
 
 The Julian Day in UT1 is used to compute the Greenwich Mean Sidereal Time (GMST)
-(see [`jd_to_gmst`](@ref)), whereas the Julian Day in Terrestrial Time is used
-to compute the nutation in the longitude. Notice that the Julian Day in UT1 and
-in Terrestrial Time must be equivalent, i.e. must be related to the same
-instant. This function **does not** check this.
+(see `jd_to_gmst`), whereas the Julian Day in Terrestrial Time is used to
+compute the nutation in the longitude. Notice that the Julian Day in UT1 and in
+Terrestrial Time must be equivalent, i.e. must be related to the same instant.
+This function **does not** check this.
 
 The rotation type is described by the optional variable `T`. If it is `DCM`,
 then a DCM will be returned. Otherwise, if it is `Quaternion`, then a Quaternion
@@ -553,7 +553,7 @@ Compute the rotation that aligns the Geocentric Celestial Reference Frame (GCRF)
 with the International Terrestrial Reference Frame (ITRF) at the Julian Day
 `jd_ut1` [UT1] and `jd_tt` [Terrestrial Time], and considering the IERS EOP Data
 `x_p` [rad], `y_p` [rad], `δΔϵ_1980` [rad], and `δΔψ_1980` [rad] \\(see
-[`get_iers_eop`](@ref)). This algorithm uses the IAU-76/FK5 theory.
+[`fetch_iers_eop`](@ref)). This algorithm uses the IAU-76/FK5 theory.
 
 `x_p` is the polar motion displacement about X-axis, which is the IERS Reference
 Meridian direction (positive south along the 0˚ longitude meridian). `y_p` is
@@ -561,10 +561,10 @@ the polar motion displacement about Y-axis (90˚W or 270˚E meridian). `δΔϵ_1
 is the nutation in obliquity. `δΔψ_1980` is the nutation in longitude.
 
 The Julian Day in UT1 is used to compute the Greenwich Mean Sidereal Time (GMST)
-(see [`jd_to_gmst`](@ref)), whereas the Julian Day in Terrestrial Time is used
-to compute the nutation in the longitude. Notice that the Julian Day in UT1 and
-in Terrestrial Time must be equivalent, i.e. must be related to the same
-instant. This function **does not** check this.
+(see `jd_to_gmst`), whereas the Julian Day in Terrestrial Time is used to
+compute the nutation in the longitude. Notice that the Julian Day in UT1 and in
+Terrestrial Time must be equivalent, i.e. must be related to the same instant.
+This function **does not** check this.
 
 The rotation type is described by the optional variable `T`. If it is `DCM`,
 then a DCM will be returned. Otherwise, if it is `Quaternion`, then a Quaternion
@@ -624,13 +624,13 @@ Mean of Date (MOD) at the Julian Day `jd_ut1` [UT1] and `jd_tt` [Terrestrial
 Time]. This algorithm uses the IAU-76/FK5 theory. Notice that one can provide
 corrections for the nutation in obliquity (`δΔϵ_1980`) [rad] and in longitude
 (`δΔψ_1980`) [rad] that are usually obtained from IERS EOP Data (see
-[`get_iers_eop`](@ref)).
+[`fetch_iers_eop`](@ref)).
 
 The Julian Day in UT1 is used to compute the Greenwich Mean Sidereal Time (GMST)
-(see [`jd_to_gmst`](@ref)), whereas the Julian Day in Terrestrial Time is used
-to compute the nutation in the longitude. Notice that the Julian Day in UT1 and
-in Terrestrial Time must be equivalent, i.e. must be related to the same
-instant. This function **does not** check this.
+(see `jd_to_gmst`), whereas the Julian Day in Terrestrial Time is used to
+compute the nutation in the longitude. Notice that the Julian Day in UT1 and in
+Terrestrial Time must be equivalent, i.e. must be related to the same instant.
+This function **does not** check this.
 
 The rotation type is described by the optional variable `T`. If it is `DCM`,
 then a DCM will be returned. Otherwise, if it is `Quaternion`, then a Quaternion
@@ -719,13 +719,13 @@ Pseudo-Earth Fixed (PEF) frame at the Julian Day `jd_ut1` [UT1] and `jd_tt`
 [Terrestrial Time]. This algorithm uses the IAU-76/FK5 theory. Notice that one
 can provide corrections for the nutation in obliquity (`δΔϵ_1980`) [rad] and in
 longitude (`δΔψ_1980`) [rad] that are usually obtained from IERS EOP Data (see
-[`get_iers_eop`](@ref)).
+[`fetch_iers_eop`](@ref)).
 
 The Julian Day in UT1 is used to compute the Greenwich Mean Sidereal Time (GMST)
-(see [`jd_to_gmst`](@ref)), whereas the Julian Day in Terrestrial Time is used
-to compute the nutation in the longitude. Notice that the Julian Day in UT1 and
-in Terrestrial Time must be equivalent, i.e. must be related to the same
-instant. This function **does not** check this.
+(see `jd_to_gmst`), whereas the Julian Day in Terrestrial Time is used to
+compute the nutation in the longitude. Notice that the Julian Day in UT1 and in
+Terrestrial Time must be equivalent, i.e. must be related to the same instant.
+This function **does not** check this.
 
 The rotation type is described by the optional variable `T`. If it is `DCM`,
 then a DCM will be returned. Otherwise, if it is `Quaternion`, then a Quaternion

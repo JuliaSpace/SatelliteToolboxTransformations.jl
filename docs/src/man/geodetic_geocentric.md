@@ -29,13 +29,13 @@ which returns a tuple with:
 - The altitude above the reference ellipsoid [m].
 
 ```jldoctest
-julia> ecef_to_geodetic([R0;0;0])
+julia> ecef_to_geodetic([6378137.0, 0, 0])
 (0.0, 0.0, 0.0)
 
-julia> ecef_to_geodetic([0;R0;0])
+julia> ecef_to_geodetic([0, 6378137.0, 0])
 (0.0, 1.5707963267948966, 0.0)
 
-julia> ecef_to_geodetic([0;0;R0])
+julia> ecef_to_geodetic([0, 0, 6378137.0])
 (1.5707963267948966, 0.0, 21384.685754820704)
 ```
 
@@ -52,13 +52,13 @@ function geodetic_to_ecef(lat::Number, lon::Number, h::Number)
 in which a 3x1 vector will be returned.
 
 ```jldoctest
-julia> geodetic_to_ecef(0,0,0)
+julia> geodetic_to_ecef(0, 0, 0)
 3-element StaticArraysCore.SVector{3, Float64} with indices SOneTo(3):
  6.378137e6
  0.0
  0.0
 
-julia> geodetic_to_ecef(deg2rad(-22),deg2rad(-45),0)
+julia> geodetic_to_ecef(deg2rad(-22), deg2rad(-45), 0)
 3-element StaticArraysCore.SVector{3, Float64} with indices SOneTo(3):
   4.1835869067109847e6
  -4.1835869067109837e6
@@ -84,10 +84,10 @@ in which a tuple with two values will be returned:
     The longitude is the same in both Geodetic and Geocentric representations.
 
 ```jldoctest
-julia> geocentric_to_geodetic(deg2rad(-22), R0)
+julia> geocentric_to_geodetic(deg2rad(-22), 6378137.0)
 (-0.3863099329112617, 3013.9291869809385)
 
-julia> geocentric_to_geodetic(0, R0)
+julia> geocentric_to_geodetic(0, 6378137.0)
 (0.0, 0.0)
 ```
 
@@ -113,6 +113,6 @@ in which a tuple with two values will be returned:
 julia> geodetic_to_geocentric(deg2rad(-22), 0)
 (-0.38164509973650357, 6.375157677217675e6)
 
-julia> geodetic_to_geocentric(0,0)
+julia> geodetic_to_geocentric(0, 0)
 (0.0, 6.378137e6)
 ```
