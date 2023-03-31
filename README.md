@@ -1,6 +1,9 @@
 SatelliteToolboxTransformations.jl
 ==================================
 
+[![CI](https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/JuliaSpace/SatelliteToolboxTransformations.jl/branch/main/graph/badge.svg?token=SH31IN1JXM)](https://codecov.io/gh/JuliaSpace/SatelliteToolboxTransformations.jl)
+
 This package contains transformations that are useful for the
 **SatelliteToolbox.jl** ecosystem. Currently, the following algorithms are
 available:
