@@ -29,6 +29,8 @@ jobs:
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
+      # TODO: Remove when the package SatelliteToolboxTime.jl is registered!
+      - run: julia -e "using Pkg; pkg\"registry add https://github.com/ronisbr/Registry\""
       - uses: actions/cache@v1
         env:
           cache-name: cache-artifacts
