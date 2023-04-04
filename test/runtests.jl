@@ -2,7 +2,7 @@ using Test
 
 using LinearAlgebra
 using ReferenceFrameRotations
-using SatelliteToolboxTime
+using SatelliteToolboxBase
 using SatelliteToolboxTransformations
 using StaticArrays
 
