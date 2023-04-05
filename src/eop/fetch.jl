@@ -1,34 +1,34 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Functions to fetch the EOP data from the IERS website.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export fetch_iers_eop
 
 """
-    fetch_iers_eop([data_type]; kwargs...)
+    fetch_iers_eop([data_type]; kwargs...) -> EopIau1980 | EopIau2000A
 
-Download and parse the IERS EOP C04 data. The data type is specified by
-`data_type`. Supported values are:
+Download and parse the IERS EOP C04 data. The data type is specified by `data_type`.
+Supported values are:
 
 - `Val(:IAU1980)`: Get IERS EOP C04 IAU1980 data.
 - `Val(:IAU2000A)`: Get IERS EOP C04 IAU2000A data.
 
 If `data_type` is omitted, then it defaults to `Val(:IAU1980)`.
 
-This function returns a structure ([`EopIau1980`](@ref) or
-[`EopIau2000A`](@ref), depending on `data_type`) with the interpolations of the
-EOP parameters. Notice that the interpolation indexing is set to the Julian Day.
+This function returns a structure ([`EopIau1980`](@ref) or [`EopIau2000A`](@ref), depending
+on `data_type`) with the interpolations of the EOP parameters. Notice that the interpolation
+indexing is set to the Julian Day.
 
 # Keywords
 
-- `force_download::Bool`: If the EOP file exists and is less than 7 days old, it
-    will not be downloaded again. A new download can be forced by setting this
-    keyword to `true`. (**Default** = `false`)
+- `force_download::Bool`: If the EOP file exists and is less than 7 days old, it will not be
+    downloaded again. A new download can be forced by setting this keyword to `true`.
+    (**Default** = `false`)
 - `url::String`: URL of the EOP file.
 
 ```julia-repl

@@ -1,40 +1,39 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
-#   Rotations from an Earth-Fixed Inertial (ECI) reference frame to an
-#   Earth-Fixed, Earth-Centered (ECEF) reference frame.
+#   Rotations from an Earth-Fixed Inertial (ECI) reference frame to an Earth-Fixed,
+#   Earth-Centered (ECEF) reference frame.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # References
-# ==============================================================================
+# ==========================================================================================
 #
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.
-#       Microcosm Press, Hawthorn, CA, USA.
+#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+#       Press, Hawthorn, CA, USA.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export r_eci_to_ecef
 
 """
-    r_eci_to_ecef([T,] ECI, ECEF, jd_utc::Number [, eop])
+    r_eci_to_ecef([T, ]ECI, ECEF, jd_utc::Number[, eop]) -> T
 
-Compute the rotation from an Earth-Centered Inertial (`ECI`) reference frame to
-an Earth-Centered, Earth-Fixed (`ECEF`) reference frame at the Julian Day [UTC]
-`jd_utc`. The rotation description that will be used is given by `T`, which can
-be `DCM` or `Quaternion`. The ECI frame is selected by the input `ECI` and the
-`ECEF` frame is selected by the input `ECEF`. The possible values are listed
-below. The model used to compute the rotation is specified by the selection of
-the origin and destination frames. Currently, there are two supported models:
-IAU-76/FK5 and IAU-2006 with 2010 conventions (CIO and equinox approaches).
+Compute the rotation from an Earth-Centered Inertial (`ECI`) reference frame to an
+Earth-Centered, Earth-Fixed (`ECEF`) reference frame at the Julian Day [UTC] `jd_utc`. The
+rotation description that will be used is given by `T`, which can be `DCM` or `Quaternion`.
+The ECI frame is selected by the input `ECI` and the `ECEF` frame is selected by the input
+`ECEF`. The possible values are listed below. The model used to compute the rotation is
+specified by the selection of the origin and destination frames. Currently, there are two
+supported models: IAU-76/FK5 and IAU-2006 with 2010 conventions (CIO and equinox
+approaches).
 
 # Rotation description
 
-The rotations that aligns the ECI with ECEF can be described by Direction Cosine
-Matrices or Quaternions. This is selected by the parameter `T`. The possible
-values are:
+The rotations that aligns the ECI with ECEF can be described by Direction Cosine Matrices or
+Quaternions. This is selected by the parameter `T`. The possible values are:
 
 - `DCM`: The rotation will be described by a Direction Cosine Matrix.
 - `Quaternion`: The rotation will be described by a Quaternion.
@@ -43,52 +42,45 @@ If no value is specified, then it falls back to `DCM`.
 
 # Conversion model
 
-The model that will be used to compute the rotation is automatically inferred
-given the selection of the origin and destination frames. **Notice that mixing
-IAU-76/FK5 and IAU-2006/2010 frames is not supported.**
+The model that will be used to compute the rotation is automatically inferred given the
+selection of the origin and destination frames. **Notice that mixing IAU-76/FK5 and
+IAU-2006/2010 frames is not supported.**
 
 # ECI Frame
 
 The ECI frame is selected by the parameter `ECI`. The possible values are:
 
-- `TEME()`: ECI will be selected as the True Equator Mean Equinox (TEME)
-    reference frame.
+- `TEME()`: ECI will be selected as the True Equator Mean Equinox (TEME) reference frame.
 - `TOD()`: ECI will be selected as the True of Date (TOD).
 - `MOD()`: ECI will be selected as the Mean of Date (MOD).
 - `J2000()`: ECI will be selected as the J2000 reference frame.
-- `GCRF()`: ECI will be selected as the Geocentric Celestial Reference Frame
-    (GCRF).
-- `CIRS()`: ECEF will be selected as the Celestial Intermediate Reference System
-    (CIRS).
+- `GCRF()`: ECI will be selected as the Geocentric Celestial Reference Frame (GCRF).
+- `CIRS()`: ECEF will be selected as the Celestial Intermediate Reference System (CIRS).
 - `ERS()`: ECI will be selected as the Earth Reference System (ERS).
-- `MOD06()`: ECI will be selected as the Mean of Date (MOD) according to the
-    definition in IAU-2006/2010 theory.
+- `MOD06()`: ECI will be selected as the Mean of Date (MOD) according to the definition in
+    IAU-2006/2010 theory.
 - `MJ2000()`: ECI will be selected as the J2000 mean equatorial frame (MJ2000).
 
 !!! note
-    The frames `MOD()` and `MOD06()` are virtually the same. However, we
-    selected different names to make clear which theory are being used since
-    mixing transformation between frames from IAU-76/FK5 and IAU-2006/2010 must
-    be performed with caution.
+    The frames `MOD()` and `MOD06()` are virtually the same. However, we selected different
+    names to make clear which theory are being used since mixing transformation between
+    frames from IAU-76/FK5 and IAU-2006/2010 must be performed with caution.
 
 # ECEF Frame
 
 The ECEF frame is selected by the parameter `ECEF`. The possible values are:
 
-- `ITRF()`: ECEF will be selected as the International Terrestrial Reference
-    Frame (ITRF).
-- `PEF()`: ECEF will be selected as the Pseudo-Earth Fixed (PEF) reference
-    frame.
-- `TIRS()`: ECEF will be selected as the Terrestrial Intermediate Reference
-    System (TIRS).
+- `ITRF()`: ECEF will be selected as the International Terrestrial Reference Frame (ITRF).
+- `PEF()`: ECEF will be selected as the Pseudo-Earth Fixed (PEF) reference frame.
+- `TIRS()`: ECEF will be selected as the Terrestrial Intermediate Reference System (TIRS).
 
 # Earth orientation parameters (EOP)
 
-The conversion between the frames depends on EOP (see [`fetch_iers_eop`](@ref)
-and [`read_iers_eop`](@ref)). If IAU-76/FK5 model is used, then the type of
-`eop` must be [`EopIau1980`](@ref). Otherwise, if IAU-2006/2010 model is used,
-then the type of `eop` must be [`EopIau2000A`](@ref). The following table shows
-the requirements for EOP data given the selected frames.
+The conversion between the frames depends on EOP (see [`fetch_iers_eop`](@ref) and
+[`read_iers_eop`](@ref)). If IAU-76/FK5 model is used, then the type of `eop` must be
+[`EopIau1980`](@ref). Otherwise, if IAU-2006/2010 model is used, then the type of `eop` must
+be [`EopIau2000A`](@ref). The following table shows the requirements for EOP data given the
+selected frames.
 
 |   Model                     |   ECI    |  ECEF  |    EOP Data     |
 |:----------------------------|:---------|:-------|:----------------|
@@ -113,25 +105,23 @@ the requirements for EOP data given the selected frames.
 | IAU-2006/2010 Equinox-based | `MOD06`  | `TIRS` | Not required¹ ³ |
 | IAU-2006/2010 Equinox-based | `MJ2000` | `TIRS` | Not required¹ ³ |
 
-`¹`: In this case, UTC will be assumed equal to UT1 to compute the Greenwich
-Mean Sidereal Time. This is an approximation, but should be sufficiently
-accurate for some applications. Notice that, if EOP Data is provided, UT1 will
-be accurately computed.
+`¹`: In this case, UTC will be assumed equal to UT1 to compute the Greenwich Mean Sidereal
+Time. This is an approximation, but should be sufficiently accurate for some applications.
+Notice that, if EOP Data is provided, UT1 will be accurately computed.
 
-`²`: In this case, the terms that account for the free-core nutation and time
-dependent effects of the Celestial Intermediate Pole (CIP) position with respect
-to the GCRF will not be available, reducing the precision.
+`²`: In this case, the terms that account for the free-core nutation and time dependent
+effects of the Celestial Intermediate Pole (CIP) position with respect to the GCRF will not
+be available, reducing the precision.
 
 ## MOD and TOD
 
-In this function, if EOP corrections are not provided, then MOD and TOD frames
-will be computed considering the original IAU-76/FK5 theory. Otherwise, the
-corrected frame will be used.
+In this function, if EOP corrections are not provided, then MOD and TOD frames will be
+computed considering the original IAU-76/FK5 theory. Otherwise, the corrected frame will be
+used.
 
 # Returns
 
-The rotation description represented by `T` that rotates the ECI reference frame
-into alignment with the ECEF reference frame.
+- `T`: The rotation that aligns the ECI reference with the ECEF reference frame.
 
 # Examples
 
@@ -185,11 +175,7 @@ Quaternion{Float64}:
   + 0.43631 + 0.000590997⋅i - 0.000305106⋅j - 0.000305106⋅k
 ```
 """
-function r_eci_to_ecef(T_ECI::T_ECIs,
-    T_ECEF::T_ECEFs,
-    jd_utc::Number,
-    eop::EopIau1980
-)
+function r_eci_to_ecef(T_ECI::T_ECIs, T_ECEF::T_ECEFs, jd_utc::Number, eop::EopIau1980)
     return r_eci_to_ecef(DCM, T_ECI, T_ECEF, jd_utc, eop)
 end
 

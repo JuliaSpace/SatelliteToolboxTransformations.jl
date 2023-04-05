@@ -1,40 +1,39 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
-#   Rotations from an Earth-Centered, Earth-Fixed (ECEF) reference frame to
-#   another ECEF reference frame.
+#   Rotations from an Earth-Centered, Earth-Fixed (ECEF) reference frame to another ECEF
+#   reference frame.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # References
-# ==============================================================================
+# ==========================================================================================
 #
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.
-#       Microcosm Press, Hawthorn, CA, USA.
+#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+#       Press, Hawthorn, CA, USA.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export r_ecef_to_ecef
 
 """
-    r_ecef_to_ecef([T,] ECEFo, ECEFf, jd_utc::Number, eop)
+    r_ecef_to_ecef([T, ]ECEFo, ECEFf, jd_utc::Number, eop) -> T
 
-Compute the rotation from an Earth-Centered, Earth-Fixed (`ECEF`) reference
-frame to another ECEF reference frame at the Julian Day [UTC] `jd_utc`. The
-rotation description that will be used is given by `T`, which can be `DCM` or
-`Quaternion`. The origin ECEF frame is selected by the input `ECEFo` and the
-destination ECEF frame is selected by the input `ECEFf`. The model used to
-compute the rotation is specified by the selection of the origin and destination
-frames. Currently, there are two supported models: IAU-76/FK5 and IAU-2006 with
+Compute the rotation from an Earth-Centered, Earth-Fixed (`ECEF`) reference frame to another
+ECEF reference frame at the Julian Day [UTC] `jd_utc`. The rotation description that will be
+used is given by `T`, which can be `DCM` or `Quaternion`. The origin ECEF frame is selected
+by the input `ECEFo` and the destination ECEF frame is selected by the input `ECEFf`. The
+model used to compute the rotation is specified by the selection of the origin and
+destination frames. Currently, there are two supported models: IAU-76/FK5 and IAU-2006 with
 2010 conventions.
 
 # Rotation description
 
-The rotations that aligns the origin ECEF frame with the destination ECEF frame
-can be described by Direction Cosine Matrices or Quaternions. This is selected
-by the parameter `T`.
+The rotations that aligns the origin ECEF frame with the destination ECEF frame can be
+described by Direction Cosine Matrices or Quaternions. This is selected by the parameter
+`T`.
 
 The possible values are:
 
@@ -45,33 +44,28 @@ If no value is specified, then it falls back to `DCM`.
 
 # Conversion model
 
-The model that will be used to compute the rotation is automatically inferred
-given the selection of the origin and destination frames. **Notice that mixing
-IAU-76/FK5 and IAU-2006/2010 frames is not supported.**
+The model that will be used to compute the rotation is automatically inferred given the
+selection of the origin and destination frames. **Notice that mixing IAU-76/FK5 and
+IAU-2006/2010 frames is not supported.**
 
 # ECEF Frame
 
 The supported ECEF frames for both origin `ECEFo` and destination `ECEFf` are:
 
-- `ITRF()`: ECEF will be selected as the International Terrestrial Reference
-    Frame (ITRF).
-- `PEF()`: ECEF will be selected as the Pseudo-Earth Fixed (PEF) reference
-    frame.
-- `TIRS()`: ECEF will be selected as the Terrestrial Intermediate Reference
-    System (TIRS).
+- `ITRF()`: ECEF will be selected as the International Terrestrial Reference Frame (ITRF).
+- `PEF()`: ECEF will be selected as the Pseudo-Earth Fixed (PEF) reference frame.
+- `TIRS()`: ECEF will be selected as the Terrestrial Intermediate Reference System (TIRS).
 
 # Earth orientation parameters (EOP)
 
-The conversion between the supported ECEF frames **always** depends on EOP
-(see [`fetch_iers_eop`](@ref) and [`read_iers_eop`](@ref)). If IAU-76/FK5 model
-is used, then the type of `eop` must be [`EopIau1980`](@ref). Otherwise, if
-IAU-2006/2010 model is used, then the type of `eop` must be
-[`EopIau2000A`](@ref).
+The conversion between the supported ECEF frames **always** depends on EOP (see
+[`fetch_iers_eop`](@ref) and [`read_iers_eop`](@ref)). If IAU-76/FK5 model is used, then the
+type of `eop` must be [`EopIau1980`](@ref). Otherwise, if IAU-2006/2010 model is used, then
+the type of `eop` must be [`EopIau2000A`](@ref).
 
 # Returns
 
-The rotation description represented by `T` that rotates the ECEF reference
-frame into alignment with the ECI reference frame.
+- `T`: The rotation that aligns the ECEF reference frame with the ECI reference frame.
 
 # Examples
 
@@ -101,16 +95,11 @@ Quaternion{Float64}:
   + 1.0 - 7.24073e-7⋅i + 2.17339e-7⋅j + 2.17339e-7⋅k
 ```
 """
-@inline function r_ecef_to_ecef(
-    T_ECEFo::T_ECEFs,
-    T_ECEFf::T_ECEFs,
-    jd_utc::Number,
-    eop::EopIau1980
-)
+function r_ecef_to_ecef(T_ECEFo::T_ECEFs, T_ECEFf::T_ECEFs, jd_utc::Number, eop::EopIau1980)
     return r_ecef_to_ecef(DCM, T_ECEFo, T_ECEFf, jd_utc, eop)
 end
 
-@inline function r_ecef_to_ecef(
+function r_ecef_to_ecef(
     T_ECEFo::T_ECEFs_IAU_2006,
     T_ECEFf::T_ECEFs_IAU_2006,
     jd_utc::Number,
@@ -119,20 +108,14 @@ end
     return r_ecef_to_ecef(DCM, T_ECEFo, T_ECEFf, jd_utc, eop)
 end
 
-################################################################################
-#                                  IAU-76/FK5
-################################################################################
+############################################################################################
+#                                        IAU-76/FK5
+############################################################################################
 
-#                                 ITRF <=> PEF
-# ==============================================================================
+#                                       ITRF <=> PEF
+# ==========================================================================================
 
-function r_ecef_to_ecef(
-    T::T_ROT,
-    ::Val{:ITRF},
-    ::Val{:PEF},
-    jd_utc::Number,
-    eop::EopIau1980
-)
+function r_ecef_to_ecef(T::T_ROT, ::Val{:ITRF}, ::Val{:PEF}, jd_utc::Number, eop::EopIau1980)
     arcsec_to_rad = π / 648000
 
     # Get the EOP data related to the desired epoch.
@@ -145,7 +128,7 @@ function r_ecef_to_ecef(
     return r_itrf_to_pef_fk5(T, x_p, y_p)
 end
 
-@inline function r_ecef_to_ecef(
+function r_ecef_to_ecef(
     T::T_ROT,
     T_ECEFo::Val{:PEF},
     T_ECEFf::Val{:ITRF},
@@ -155,12 +138,12 @@ end
     return inv_rotation(r_ecef_to_ecef(T, T_ECEFf, T_ECEFo, jd_utc, eop))
 end
 
-################################################################################
-#                                IAU-2006/2010
-################################################################################
+############################################################################################
+#                                      IAU-2006/2010
+############################################################################################
 
-#                                ITRF <=> TIRS
-# ==============================================================================
+#                                      ITRF <=> TIRS
+# ==========================================================================================
 
 function r_ecef_to_ecef(
     T::T_ROT,
@@ -179,7 +162,7 @@ function r_ecef_to_ecef(
     return r_itrf_to_tirs_iau2006(T, jd_utc, x_p, y_p)
 end
 
-@inline function r_ecef_to_ecef(
+function r_ecef_to_ecef(
     T::T_ROT,
     T_ECEFo::Val{:TIRS},
     T_ECEFf::Val{:ITRF},

@@ -1,50 +1,50 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Compute the fundamental arguments related to the IAU-2006 theory.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # References
-# ==============================================================================
+# ==========================================================================================
 #
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.
-#       Microcosm Press, Hawthorn, CA, USA.
+#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
+#       Press, Hawthorn, CA, USA.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export luni_solar_args_iau2006, planetary_args_iau2006
 
 """
-    luni_solar_args_iau2006(jd_tt::Number)
+    luni_solar_args_iau2006(jd_tt::Number) -> NTuple{5, Float64}
 
-Compute the fundamental arguments related to the luni-solar effect for the
-IAU-2006 theory **[1]**(p. 211).
+Compute the fundamental arguments related to the luni-solar effect for the IAU-2006 theory
+**[1]**(p. 211).
 
 The returned values are in [rad].
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.
-    Microcosm Press, Hawthorn, CA, USA.
+- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
+    Press, Hawthorn, CA, USA.
 """
 function luni_solar_args_iau2006(jd_tt::Number)
     # Compute the Julian Centuries from `jd_tt`.
     t_tt = (jd_tt - JD_J2000) / 36525
 
     # Auxiliary variables
-    # ===================
+    # ======================================================================================
 
     a2d = 1 / 3600
     d2r = π / 180
 
     # Delaunay arguments of the Sun and Moon
-    # ======================================
+    # ======================================================================================
     #
-    # Evaluate the Delaunay arguments associated with the Moon and the Sun in
-    # [arcsec] [1, p. 210].
+    # Evaluate the Delaunay arguments associated with the Moon and the Sun in [arcsec]
+    # [1, p. 210].
 
     M_m  = @evalpoly(
         t_tt,
@@ -102,17 +102,17 @@ function luni_solar_args_iau2006(jd_tt::Number)
 end
 
 """
-    planetary_args_iau2006(jd_tt::Number)
+    planetary_args_iau2006(jd_tt::Number) -> NTuple{9, Float64}
 
-Compute the fundamental arguments related to the planetary effects for the
-IAU-2006 theory **[1]**(p. 211).
+Compute the fundamental arguments related to the planetary effects for the IAU-2006 theory
+**[1]**(p. 211).
 
 The returned values are in [rad].
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.
-    Microcosm Press, Hawthorn, CA, USA.
+- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
+    Press, Hawthorn, CA, USA.
 """
 function planetary_args_iau2006(jd_tt::Number)
     # Compute the Julian Centuries from `jd_tt`.

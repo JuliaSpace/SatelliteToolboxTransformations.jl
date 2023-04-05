@@ -1,61 +1,61 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Functions to compute the Celestial Intermediate Origin (CIO).
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # References
-# ==============================================================================
+# ==========================================================================================
 #
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.
-#       Microcosm Press, Hawthorn, CA, USA.
+#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
+#       Press, Hawthorn, CA, USA.
 #
-#   [2] Vallado, D. A (06-Feb-2018). Consolidated Errata of Fundamentals of
-#       Astrodynamics and Applications 4th Ed.
+#   [2] Vallado, D. A (06-Feb-2018). Consolidated Errata of Fundamentals of Astrodynamics
+#       and Applications 4th Ed.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export cio_iau2006
 
 """
-    cio_iau2006(jd_tt::Number)
+    cio_iau2006(jd_tt::Number) -> Float64, Float64, Float64
 
-Compute the coordinates `X` and `Y` of the Celestial Intermediate Pole (CIP)
-with respect to the Geocentric Celestial Reference Frame (GCRF), and the CIO
-locator `s`. The algorithm is based on the IAU-2006 theory.
+Compute the coordinates `X` and `Y` of the Celestial Intermediate Pole (CIP) with respect to
+the Geocentric Celestial Reference Frame (GCRF), and the CIO locator `s`. The algorithm is
+based on the IAU-2006 theory.
 
-The CIO locator `s` provides the position of the CIO on the Equator of the CIP
-corresponding to the kinematical definition of the non-rotation origin in the
-GCRS when the CIP is moving with respect to the GCRS between the reference epoch
-and the epoch due to precession and nutation **[1]**(p. 214).
+The CIO locator `s` provides the position of the CIO on the Equator of the CIP corresponding
+to the kinematical definition of the non-rotation origin in the GCRS when the CIP is moving
+with respect to the GCRS between the reference epoch and the epoch due to precession and
+nutation **[1]**(p. 214).
 
 # Returns
 
-- The coordinate `X` of the CIP w.r.t. the GCRF.
-- The coordinate `Y` of the CIP w.r.t. the GCRF.
-- The CIO locator `s`.
+- `Float64`: The coordinate `X` of the CIP w.r.t. the GCRF.
+- `Float64`: The coordinate `Y` of the CIP w.r.t. the GCRF.
+- `Float64`: The CIO locator `s`.
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.
-    Microcosm Press, Hawthorn, CA, USA.
+- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
+    Press, Hawthorn, CA, USA.
 """
 function cio_iau2006(jd_tt::Number)
     # Compute the Julian Centuries from `jd_tt`.
     t_tt = (jd_tt - JD_J2000) / 36525
 
     # Auxiliary variables
-    # ===================
+    # ======================================================================================
 
     a2d = 1 / 3600
     d2r = π / 180
     a2r = a2d * d2r
 
     # Fundamental arguments
-    # =====================
+    # ======================================================================================
 
     # Luni-solar part.
     M_s, M_m, u_Mm, D_s, Ω_m = luni_solar_args_iau2006(jd_tt)
@@ -64,7 +64,7 @@ function cio_iau2006(jd_tt::Number)
     λ_M☿, λ_M♀, λ_Me, λ_M♂, λ_M♃, λ_M♄, λ_M⛢, λ_M♆, p_λ = planetary_args_iau2006(jd_tt)
 
     # X position of the CIP
-    # ==========================================================================
+    # ======================================================================================
 
     ΔX = _iau2006_sum(
         (
@@ -105,7 +105,7 @@ function cio_iau2006(jd_tt::Number)
     X *= a2r
 
     # Y position of the CIP
-    # ==========================================================================
+    # ======================================================================================
 
     ΔY = _iau2006_sum(
         (
@@ -146,12 +146,12 @@ function cio_iau2006(jd_tt::Number)
     Y *= a2r
 
     # Parameter `s` (CIO locator)
-    # ==========================================================================
+    # ======================================================================================
     #
-    # The value `s` provides the position of the CIO on the Equator of the CIP
-    # corresponding to the kinematical definition of the non-rotation origin in
-    # the GCRS when the CIP is moving with respect to the GCRS between the
-    # reference epoch and the epoch due to precession and nutation [1, p. 214].
+    # The value `s` provides the position of the CIO on the Equator of the CIP corresponding
+    # to the kinematical definition of the non-rotation origin in the GCRS when the CIP is
+    # moving with respect to the GCRS between the reference epoch and the epoch due to
+    # precession and nutation [1, p. 214].
 
     Δs = _iau2006_sum(
         (

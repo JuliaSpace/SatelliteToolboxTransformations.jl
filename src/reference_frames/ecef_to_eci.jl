@@ -1,41 +1,39 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
-#   Rotations from an Earth-Fixed, Earth-Centered (ECEF) reference frame to an
-#   Earth-Fixed Inertial (ECI) reference frame.
+#   Rotations from an Earth-Fixed, Earth-Centered (ECEF) reference frame to an Earth-Fixed
+#   Inertial (ECI) reference frame.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # References
-# ==============================================================================
+# ==========================================================================================
 #
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.
-#       Microcosm Press, Hawthorn, CA, USA.
+#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+#       Press, Hawthorn, CA, USA.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export r_ecef_to_eci
 
 """
-    r_ecef_to_eci([T,] ECEF, ECI, jd_utc::Number [, eop])
+    r_ecef_to_eci([T, ]ECEF, ECI, jd_utc::Number[, eop]) -> T
 
-Compute the rotation from an Earth-Centered, Earth-Fixed (`ECEF`) reference
-frame to an Earth-Centered Inertial (`ECI`) reference frame at the Julian Day
-[UTC] `jd_utc`. The rotation description that will be used is given by `T`,
-which can be `DCM` or `Quaternion`. The ECEF frame is selected by the input
-`ECEF` and the `ECI` frame is selected by the input `ECI`. The possible values
-are listed below. The model used to compute the rotation is specified by the
-selection of the origin and destination frames. Currently, there are two
+Compute the rotation from an Earth-Centered, Earth-Fixed (`ECEF`) reference frame to an
+Earth-Centered Inertial (`ECI`) reference frame at the Julian Day [UTC] `jd_utc`. The
+rotation description that will be used is given by `T`, which can be `DCM` or `Quaternion`.
+The ECEF frame is selected by the input `ECEF` and the `ECI` frame is selected by the input
+`ECI`. The possible values are listed below. The model used to compute the rotation is
+specified by the selection of the origin and destination frames. Currently, there are two
 supported models: IAU-76/FK5 and IAU-2006 with 2010 conventions (CIO and equinox
 approaches).
 
 # Rotation description
 
-The rotations that aligns the ECEF with ECI can be described by Direction Cosine
-Matrices or Quaternions. This is selected by the parameter `T`. The possible
-values are:
+The rotations that aligns the ECEF with ECI can be described by Direction Cosine Matrices or
+Quaternions. This is selected by the parameter `T`. The possible values are:
 
 - `DCM`: The rotation will be described by a Direction Cosine Matrix.
 - `Quaternion`: The rotation will be described by a Quaternion.
@@ -44,52 +42,45 @@ If no value is specified, then it falls back to `DCM`.
 
 # Conversion model
 
-The model that will be used to compute the rotation is automatically inferred
-given the selection of the origin and destination frames. **Notice that mixing
-IAU-76/FK5 and IAU-2006/2010 frames is not supported.**
+The model that will be used to compute the rotation is automatically inferred given the
+selection of the origin and destination frames. **Notice that mixing IAU-76/FK5 and
+IAU-2006/2010 frames is not supported.**
 
 # ECEF Frame
 
 The ECEF frame is selected by the parameter `ECEF`. The possible values are:
 
-- `ITRF()`: ECEF will be selected as the International Terrestrial Reference
-    Frame (ITRF).
-- `PEF()`: ECEF will be selected as the Pseudo-Earth Fixed (PEF) reference
-    frame.
-- `TIRS()`: ECEF will be selected as the Terrestrial Intermediate Reference
-    System (TIRS).
+- `ITRF()`: ECEF will be selected as the International Terrestrial Reference Frame (ITRF).
+- `PEF()`: ECEF will be selected as the Pseudo-Earth Fixed (PEF) reference frame.
+- `TIRS()`: ECEF will be selected as the Terrestrial Intermediate Reference System (TIRS).
 
 # ECI Frame
 
 The ECI frame is selected by the parameter `ECI`. The possible values are:
 
-- `TEME()`: ECI will be selected as the True Equator Mean Equinox (TEME)
-    reference frame.
+- `TEME()`: ECI will be selected as the True Equator Mean Equinox (TEME) reference frame.
 - `TOD()`: ECI will be selected as the True of Date (TOD).
 - `MOD()`: ECI will be selected as the Mean of Date (MOD).
 - `J2000()`: ECI will be selected as the J2000 reference frame.
-- `GCRF()`: ECI will be selected as the Geocentric Celestial Reference Frame
-    (GCRF).
-- `CIRS()`: ECI will be selected as the Celestial Intermediate Reference System
-    (CIRS).
+- `GCRF()`: ECI will be selected as the Geocentric Celestial Reference Frame (GCRF).
+- `CIRS()`: ECI will be selected as the Celestial Intermediate Reference System (CIRS).
 - `ERS()`: ECI will be selected as the Earth Reference System (ERS).
-- `MOD06()`: ECI will be selected as the Mean of Date (MOD) according to the
-    definition in IAU-2006/2010 theory.
+- `MOD06()`: ECI will be selected as the Mean of Date (MOD) according to the definition in
+    IAU-2006/2010 theory.
 - `MJ2000()`: ECI will be selected as the J2000 mean equatorial frame (MJ2000).
 
 !!! note
-    The frames `MOD()` and `MOD06()` are virtually the same. However, we
-    selected different names to make clear which theory are being used since
-    mixing transformation between frames from IAU-76/FK5 and IAU-2006/2010 must
-    be performed with caution.
+    The frames `MOD()` and `MOD06()` are virtually the same. However, we selected different
+    names to make clear which theory are being used since mixing transformation between
+    frames from IAU-76/FK5 and IAU-2006/2010 must be performed with caution.
 
 # Earth orientation parameters (EOP)
 
-The conversion between the frames depends on EOP (see [`fetch_iers_eop`](@ref)
-and [`read_iers_eop`](@ref)). If IAU-76/FK5 model is used, then the type of
-`eop` must be [`EopIau1980`](@ref). Otherwise, if IAU-2006/2010 model is used,
-then the type of `eop` must be [`EopIau2000A`](@ref). The following table shows
-the requirements for EOP data given the selected frames.
+The conversion between the frames depends on EOP (see [`fetch_iers_eop`](@ref) and
+[`read_iers_eop`](@ref)). If IAU-76/FK5 model is used, then the type of `eop` must be
+[`EopIau1980`](@ref). Otherwise, if IAU-2006/2010 model is used, then the type of `eop` must
+be [`EopIau2000A`](@ref). The following table shows the requirements for EOP data given the
+selected frames.
 
 |   Model                     |  ECEF  |   ECI    |    EOP Data     |
 |:----------------------------|:-------|:---------|:----------------|
@@ -114,29 +105,26 @@ the requirements for EOP data given the selected frames.
 | IAU-2006/2010 Equinox-based | `TIRS` | `MOD06`  | Not required¹ ³ |
 | IAU-2006/2010 Equinox-based | `TIRS` | `MJ2000` | Not required¹ ³ |
 
-`¹`: In this case, UTC will be assumed equal to UT1 to compute the Greenwich
-Mean Sidereal Time. This is an approximation, but should be sufficiently
-accurate for some applications. Notice that, if EOP Data is provided, UT1 will
-be accurately computed.
+`¹`: In this case, UTC will be assumed equal to UT1 to compute the Greenwich Mean Sidereal
+Time. This is an approximation, but should be sufficiently accurate for some applications.
+Notice that, if EOP Data is provided, UT1 will be accurately computed.
 
-`²`: In this case, the terms that account for the free core nutation and time
-dependent effects of the Celestial Intermediate Pole (CIP) position with respect
-to the GCRF will not be available, reducing the precision.
+`²`: In this case, the terms that account for the free core nutation and time dependent
+effects of the Celestial Intermediate Pole (CIP) position with respect to the GCRF will not
+be available, reducing the precision.
 
-`³`: In this case, the terms that corrects the nutation in obliquity and in
-longitude due to the free core nutation will not be available, reducing the
-precision.
+`³`: In this case, the terms that corrects the nutation in obliquity and in longitude due to
+the free core nutation will not be available, reducing the precision.
 
 ## MOD and TOD
 
-In this function, if EOP corrections are not provided, then MOD and TOD frames
-will be computed considering the original IAU-76/FK5 theory. Otherwise, the
-corrected frame will be used.
+In this function, if EOP corrections are not provided, then MOD and TOD frames will be
+computed considering the original IAU-76/FK5 theory. Otherwise, the corrected frame will be
+used.
 
 # Returns
 
-The rotation description represented by `T` that rotates the ECEF reference
-frame into alignment with the ECI reference frame.
+- `T`: The rotation that aligns the ECEF reference frame with the ECI reference frame.
 
 # Examples
 
@@ -190,12 +178,7 @@ Quaternion{Float64}:
   + 0.43631 - 0.000590997⋅i + 0.000305106⋅j + 0.000305106⋅k
 ```
 """
-function r_ecef_to_eci(
-    T_ECEF::T_ECEFs,
-    T_ECI::T_ECIs,
-    jd_utc::Number,
-    eop::EopIau1980
-)
+function r_ecef_to_eci(T_ECEF::T_ECEFs, T_ECI::T_ECIs, jd_utc::Number, eop::EopIau1980)
     r_ecef_to_eci(DCM, T_ECEF, T_ECI, jd_utc, eop)
 end
 
@@ -225,20 +208,14 @@ function r_ecef_to_eci(
     r_ecef_to_eci(DCM, T_ECEF, T_ECI, jd_utc)
 end
 
-################################################################################
-#                                  IAU-76/FK5
-################################################################################
+############################################################################################
+#                                        IAU-76/FK5
+############################################################################################
 
-#                                 ITRF => GCRF
-# ==============================================================================
+#                                       ITRF => GCRF
+# ==========================================================================================
 
-function r_ecef_to_eci(
-    T::T_ROT,
-    ::Val{:ITRF},
-    ::Val{:GCRF},
-    jd_utc::Number,
-    eop::EopIau1980
-)
+function r_ecef_to_eci(T::T_ROT, ::Val{:ITRF}, ::Val{:GCRF}, jd_utc::Number, eop::EopIau1980)
     arcsec_to_rad = π / 648000
     milliarcsec_to_rad = arcsec_to_rad / 1000
 
@@ -256,16 +233,10 @@ function r_ecef_to_eci(
     return r_itrf_to_gcrf_fk5(T, jd_ut1, jd_tt, x_p, y_p, δΔϵ_1980, δΔψ_1980)
 end
 
-#                                ITRF => J2000
-# ==============================================================================
+#                                      ITRF => J2000
+# ==========================================================================================
 
-function r_ecef_to_eci(
-    T::T_ROT,
-    ::Val{:ITRF},
-    ::Val{:J2000},
-    jd_utc::Number,
-    eop::EopIau1980
-)
+function r_ecef_to_eci(T::T_ROT, ::Val{:ITRF}, ::Val{:J2000}, jd_utc::Number, eop::EopIau1980)
     arcsec_to_rad = π / 648000
 
     # Get the time in UT1 and TT.
@@ -280,16 +251,10 @@ function r_ecef_to_eci(
     return r_itrf_to_gcrf_fk5(T, jd_ut1, jd_tt, x_p, y_p, 0, 0)
 end
 
-#                                 ITRF => MOD
-# ==============================================================================
+#                                       ITRF => MOD
+# ==========================================================================================
 
-function r_ecef_to_eci(
-    T::T_ROT,
-    ::Val{:ITRF},
-    ::Val{:MOD},
-    jd_utc::Number,
-    eop::EopIau1980
-)
+function r_ecef_to_eci(T::T_ROT, ::Val{:ITRF}, ::Val{:MOD}, jd_utc::Number, eop::EopIau1980)
     arcsec_to_rad = π / 648000
     milliarcsec_to_rad = arcsec_to_rad / 1000
 
@@ -310,16 +275,10 @@ function r_ecef_to_eci(
     return compose_rotation(r_pef_itrf, r_mod_pef)
 end
 
-#                                 ITRF => TOD
-# ==============================================================================
+#                                       ITRF => TOD
+# ==========================================================================================
 
-function r_ecef_to_eci(
-    T::T_ROT,
-    ::Val{:ITRF},
-    ::Val{:TOD},
-    jd_utc::Number,
-    eop::EopIau1980
-)
+function r_ecef_to_eci(T::T_ROT, ::Val{:ITRF}, ::Val{:TOD}, jd_utc::Number, eop::EopIau1980)
     arcsec_to_rad = π / 648000
     milliarcsec_to_rad = arcsec_to_rad / 1000
 
@@ -339,16 +298,10 @@ function r_ecef_to_eci(
     return compose_rotation(r_pef_itrf, r_tod_pef)
 end
 
-#                                 ITRF => TEME
-# ==============================================================================
+#                                       ITRF => TEME
+# ==========================================================================================
 
-function r_ecef_to_eci(
-    T::T_ROT,
-    ::Val{:ITRF},
-    ::Val{:TEME},
-    jd_utc::Number,
-    eop::EopIau1980
-)
+function r_ecef_to_eci(T::T_ROT, ::Val{:ITRF}, ::Val{:TEME}, jd_utc::Number, eop::EopIau1980)
     arcsec_to_rad = π / 648000
 
     # Get the time in UT1 and TT.
@@ -366,16 +319,10 @@ function r_ecef_to_eci(
     return compose_rotation(r_pef_itrf, r_teme_pef)
 end
 
-#                                 PEF => GCRF
-# ==============================================================================
+#                                       PEF => GCRF
+# ==========================================================================================
 
-function r_ecef_to_eci(
-    T::T_ROT,
-    ::Val{:PEF},
-    ::Val{:GCRF},
-    jd_utc::Number,
-    eop::EopIau1980
-)
+function r_ecef_to_eci(T::T_ROT, ::Val{:PEF}, ::Val{:GCRF}, jd_utc::Number, eop::EopIau1980)
     arcsec_to_rad = π / 648000
     milliarcsec_to_rad = arcsec_to_rad / 1000
 
@@ -396,16 +343,10 @@ function r_ecef_to_eci(
     return compose_rotation(r_mod_pef, r_gcrf_mod)
 end
 
-#                                PEF => J2000
-# ==============================================================================
+#                                       PEF => J2000
+# ==========================================================================================
 
-function r_ecef_to_eci(
-    T::T_ROT,
-    ::Val{:PEF},
-    ::Val{:J2000},
-    jd_utc::Number,
-    eop::EopIau1980
-)
+function r_ecef_to_eci(T::T_ROT, ::Val{:PEF}, ::Val{:J2000}, jd_utc::Number, eop::EopIau1980)
     # Get the time in UT1 and TT.
     jd_ut1 = jd_utc_to_ut1(jd_utc, eop)
     jd_tt  = jd_utc_to_tt(jd_utc)
@@ -429,16 +370,10 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:PEF}, ::Val{:J2000}, jd_utc::Number)
     return compose_rotation(r_mod_pef, r_gcrf_mod)
 end
 
-#                                 PEF => MOD
-# ==============================================================================
+#                                        PEF => MOD
+# ==========================================================================================
 
-function r_ecef_to_eci(
-    T::T_ROT,
-    ::Val{:PEF},
-    ::Val{:MOD},
-    jd_utc::Number,
-    eop::EopIau1980
-)
+function r_ecef_to_eci(T::T_ROT, ::Val{:PEF}, ::Val{:MOD}, jd_utc::Number, eop::EopIau1980)
     arcsec_to_rad = π / 648000
     milliarcsec_to_rad = arcsec_to_rad / 1000
 
@@ -465,16 +400,10 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:PEF}, ::Val{:MOD}, jd_utc::Number)
     return r_pef_to_mod_fk5(T, jd_ut1, jd_tt, 0, 0)
 end
 
-#                                 PEF => TOD
-# ==============================================================================
+#                                        PEF => TOD
+# ==========================================================================================
 
-function r_ecef_to_eci(
-    T::T_ROT,
-    ::Val{:PEF},
-    ::Val{:TOD},
-    jd_utc::Number,
-    eop::EopIau1980
-)
+function r_ecef_to_eci(T::T_ROT, ::Val{:PEF}, ::Val{:TOD}, jd_utc::Number, eop::EopIau1980)
     arcsec_to_rad = π / 648000
     milliarcsec_to_rad = arcsec_to_rad / 1000
 
@@ -500,16 +429,10 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:PEF}, ::Val{:TOD}, jd_utc::Number)
     return r_pef_to_tod_fk5(T, jd_ut1, jd_tt, 0)
 end
 
-#                                 PEF => TEME
-# ==============================================================================
+#                                       PEF => TEME
+# ==========================================================================================
 
-function r_ecef_to_eci(
-    T::T_ROT,
-    ::Val{:PEF},
-    ::Val{:TEME},
-    jd_utc::Number,
-    eop::EopIau1980
-)
+function r_ecef_to_eci(T::T_ROT, ::Val{:PEF}, ::Val{:TEME}, jd_utc::Number, eop::EopIau1980)
     # Get the time in UT1.
     jd_ut1 = jd_utc_to_ut1(jd_utc, eop)
 
@@ -525,12 +448,12 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:PEF}, ::Val{:TEME}, jd_utc::Number)
     return r_pef_to_teme(T, jd_ut1)
 end
 
-################################################################################
-#                           IAU-2006/2010 CIO-based
-################################################################################
+############################################################################################
+#                                 IAU-2006/2010 CIO-based
+############################################################################################
 
-#                                 ITRF => CIRS
-# ==============================================================================
+#                                       ITRF => CIRS
+# ==========================================================================================
 
 function r_ecef_to_eci(
     T::T_ROT,
@@ -557,7 +480,7 @@ function r_ecef_to_eci(
 end
 
 #                                 ITRF => GCRF
-# ==============================================================================
+# ==========================================================================================
 
 function r_ecef_to_eci(
     T::T_ROT,
@@ -588,15 +511,9 @@ function r_ecef_to_eci(
 end
 
 #                                 TIRS => CIRS
-# ==============================================================================
+# ==========================================================================================
 
-function r_ecef_to_eci(
-    T::T_ROT,
-    ::Val{:TIRS},
-    ::Val{:CIRS},
-    jd_utc::Number,
-    eop::EopIau2000A
-)
+function r_ecef_to_eci(T::T_ROT, ::Val{:TIRS}, ::Val{:CIRS}, jd_utc::Number, eop::EopIau2000A)
     # Get the time in UT1 and TT.
     jd_ut1 = jd_utc_to_ut1(jd_utc, eop)
 
@@ -612,16 +529,10 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:TIRS}, ::Val{:CIRS}, jd_utc::Number)
     return r_tirs_to_cirs_iau2006(T, jd_ut1)
 end
 
-#                                 TIRS => GCRF
-# ==============================================================================
+#                                       TIRS => GCRF
+# ==========================================================================================
 
-function r_ecef_to_eci(
-    T::T_ROT,
-    ::Val{:TIRS},
-    ::Val{:GCRF},
-    jd_utc::Number,
-    eop::EopIau2000A
-)
+function r_ecef_to_eci(T::T_ROT, ::Val{:TIRS}, ::Val{:GCRF}, jd_utc::Number, eop::EopIau2000A)
     milliarcsec_to_rad = π / 648000000
 
     # Get the time in UT1 and TT.
@@ -653,20 +564,14 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:TIRS}, ::Val{:GCRF}, jd_utc::Number)
     return compose_rotation(r_cirs_tirs, r_gcrf_cirs)
 end
 
-################################################################################
-#                         IAU-2006/2010 equinox-based
-################################################################################
+############################################################################################
+#                               IAU-2006/2010 equinox-based
+############################################################################################
 
-#                                 ITRF => ERS
-# ==============================================================================
+#                                       ITRF => ERS
+# ==========================================================================================
 
-function r_ecef_to_eci(
-    T::T_ROT,
-    ::Val{:ITRF},
-    ::Val{:ERS},
-    jd_utc::Number,
-    eop::EopIau2000A
-)
+function r_ecef_to_eci(T::T_ROT, ::Val{:ITRF}, ::Val{:ERS}, jd_utc::Number, eop::EopIau2000A)
     arcsec_to_rad = π / 648000
     milliarcsec_to_rad = arcsec_to_rad / 1000
 
@@ -689,16 +594,10 @@ function r_ecef_to_eci(
     return compose_rotation(r_tirs_itrf, r_ERS_TIRS)
 end
 
-#                                 ITRF => MOD
-# ==============================================================================
+#                                       ITRF => MOD
+# ==========================================================================================
 
-function r_ecef_to_eci(
-    T::T_ROT,
-    ::Val{:ITRF},
-    ::Val{:MOD06},
-    jd_utc::Number,
-    eop::EopIau2000A
-)
+function r_ecef_to_eci(T::T_ROT, ::Val{:ITRF}, ::Val{:MOD06}, jd_utc::Number, eop::EopIau2000A)
     arcsec_to_rad = π / 648000
     milliarcsec_to_rad = arcsec_to_rad / 1000
 
@@ -722,16 +621,10 @@ function r_ecef_to_eci(
     return compose_rotation(r_tirs_itrf, r_mod_tirs)
 end
 
-#                                ITRF => MJ2000
-# ==============================================================================
+#                                      ITRF => MJ2000
+# ==========================================================================================
 
-function r_ecef_to_eci(
-    T::T_ROT,
-    ::Val{:ITRF},
-    ::Val{:MJ2000},
-    jd_utc::Number,
-    eop::EopIau2000A
-)
+function r_ecef_to_eci(T::T_ROT, ::Val{:ITRF}, ::Val{:MJ2000}, jd_utc::Number, eop::EopIau2000A)
     arcsec_to_rad = π / 648000
     milliarcsec_to_rad = arcsec_to_rad / 1000
 
@@ -756,20 +649,13 @@ function r_ecef_to_eci(
     return compose_rotation(r_tirs_itrf, r_mod_tirs, r_mj2000_mod)
 end
 
-# NOTE: We do not implement the conversion ITRF => GCRF using equinox-based
-# IAU-2006/2010 theory because the CIO-based approach is faster and more
-# precise.
+# NOTE: We do not implement the conversion ITRF => GCRF using equinox-based IAU-2006/2010
+# theory because the CIO-based approach is faster and more precise.
 
-#                                  TIRS => ERS
-# ==============================================================================
+#                                       TIRS => ERS
+# ==========================================================================================
 
-function r_ecef_to_eci(
-    T::T_ROT,
-    ::Val{:TIRS},
-    ::Val{:ERS},
-    jd_utc::Number,
-    eop::EopIau2000A
-)
+function r_ecef_to_eci(T::T_ROT, ::Val{:TIRS}, ::Val{:ERS}, jd_utc::Number, eop::EopIau2000A)
     milliarcsec_to_rad = π / 648000000
 
     # Get the time in UT1 and TT.
@@ -793,16 +679,10 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:TIRS}, ::Val{:ERS}, jd_utc::Number)
     return r_tirs_to_ers_iau2006(T, jd_ut1, jd_tt)
 end
 
-#                                 TIRS => MOD
-# ==============================================================================
+#                                       TIRS => MOD
+# ==========================================================================================
 
-function r_ecef_to_eci(
-    T::T_ROT,
-    ::Val{:TIRS},
-    ::Val{:MOD06},
-    jd_utc::Number,
-    eop::EopIau2000A
-)
+function r_ecef_to_eci(T::T_ROT, ::Val{:TIRS}, ::Val{:MOD06}, jd_utc::Number, eop::EopIau2000A)
     milliarcsec_to_rad = π / 648000000
 
     # Get the time in UT1 and TT.
@@ -827,16 +707,10 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:TIRS}, ::Val{:MOD06}, jd_utc::Number)
     return r_tirs_to_mod_iau2006(T, jd_ut1, jd_tt)
 end
 
-#                                TIRS => MJ2000
-# ==============================================================================
+#                                      TIRS => MJ2000
+# ==========================================================================================
 
-function r_ecef_to_eci(
-    T::T_ROT,
-    ::Val{:TIRS},
-    ::Val{:MJ2000},
-    jd_utc::Number,
-    eop::EopIau2000A
-)
+function r_ecef_to_eci(T::T_ROT, ::Val{:TIRS}, ::Val{:MJ2000}, jd_utc::Number, eop::EopIau2000A)
     milliarcsec_to_rad = π / 648000000
 
     # Get the time in UT1 and TT.
@@ -867,6 +741,5 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:TIRS}, ::Val{:MJ2000}, jd_utc::Number)
     return compose_rotation(r_mod_tirs, r_mj2000_mod)
 end
 
-# NOTE: We do not implement the conversion TIRS => GCRF using equinox-based
-# IAU-2006/2010 theory because the CIO-based approach is faster and more
-# precise.
+# NOTE: We do not implement the conversion TIRS => GCRF using equinox-based IAU-2006/2010
+# theory because the CIO-based approach is faster and more precise.

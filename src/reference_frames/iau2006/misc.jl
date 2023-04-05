@@ -1,15 +1,15 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Miscellaneous functions for the functions of IAU-2006 theory.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-# Compute the sum as used in many computations of IAU-2006 theory. The first
-# parameter is a tuple with the coefficient matrices, the second is the Julian
-# century [TT], and the rest are the fundamental arguments.
+# Compute the sum as used in many computations of IAU-2006 theory. The first parameter is a
+# tuple with the coefficient matrices, the second is the Julian century [TT], and the rest
+# are the fundamental arguments.
 function _iau2006_sum(
     coefs::Tuple,
     t_tt::Number,

@@ -1,42 +1,42 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Compute the precession as in equinox-based IAU-2006 theory.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # References
-# ==============================================================================
+# ==========================================================================================
 #
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.
-#       Microcosm Press, Hawthorn, CA, USA.
+#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+#       Press, Hawthorn, CA, USA.
 #
-#   [2] Wallace, P. T., Capitaine, N (2006). Precession-nutation procedures
-#       consistent with IAU 2006 resolutions. Astronomy & Astrophysics.
+#   [2] Wallace, P. T., Capitaine, N (2006). Precession-nutation procedures consistent with
+#       IAU 2006 resolutions. Astronomy & Astrophysics.
 #
-#   [3] IERS (2010). Transformation between the International Terrestrial
-#       Reference System and the Geocentric Celestial Reference System. IERS
-#       Technical Note No. 36, Chapter 5.
+#   [3] IERS (2010). Transformation between the International Terrestrial Reference System
+#       and the Geocentric Celestial Reference System. IERS Technical Note No. 36, Chapter
+#       5.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export precession_iau2006
 
 """
-    precession_iau2006(jd_tt::Number)
+    precession_iau2006(jd_tt::Number) -> NTuple{3, Float64}
 
-Compute the precession angles [rad] according to equinox-based IAU-2006 theory
-in the Julia day `jd_tt` [Terrestrial Time].
+Compute the precession angles [rad] according to equinox-based IAU-2006 theory in the Julia
+day `jd_tt` [Terrestrial Time].
 
 This algorithm was obtained from **[1]**(p. 49).
 
 # References
 
-- **[1]**: IERS (2010). Transformation between the International Terrestrial
-    Reference System and the Geocentric Celestial Reference System. IERS
-    Technical Note No. 36, Chapter 5.
+- **[1]**: IERS (2010). Transformation between the International Terrestrial Reference
+    System and the Geocentric Celestial Reference System. IERS Technical Note No. 36,
+    Chapter 5.
 """
 function precession_iau2006(jd_tt::Number)
     # Compute the Julian Centuries from `jd_tt`.

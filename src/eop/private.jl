@@ -1,17 +1,14 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Private functions related to the EOP data.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Create the interpolation object for the `knots` and `field` from IERS.
-function _create_iers_eop_interpolation(
-    knots::AbstractVector,
-    field::AbstractVector
-)
+function _create_iers_eop_interpolation(knots::AbstractVector, field::AbstractVector)
     # Obtain the last available index of the field.
     last_id = findlast(!isempty, field)
     last_id === nothing && (last_id = length(field))
@@ -30,8 +27,8 @@ function _create_iers_eop_interpolation(
     return interp
 end
 
-# Function to download the EOP from `url` into `filename`, if necessary. It uses
-# a scratch space `key` to store the files.
+# Function to download the EOP from `url` into `filename`, if necessary. It uses a scratch
+# space `key` to store the files.
 function _download_eop(
     url::String,
     key::String,
@@ -100,13 +97,13 @@ function _itp_timespan(itp::AbstractInterpolation)
     return str
 end
 
-# Parse the IERS EOP IAU 1980 data in the matrix `eop`, which must have been
-# obtained from the file `finals.all.csv`.
+# Parse the IERS EOP IAU 1980 data in the matrix `eop`, which must have been obtained from
+# the file `finals.all.csv`.
 function _parse_iers_eop_iau_1980(eop::Matrix)
     # Create the EOP Data structure by creating the interpolations.
     #
-    # The interpolation will be linear between two points in the grid. The
-    # extrapolation will be flat, considering the nearest point.
+    # The interpolation will be linear between two points in the grid. The extrapolation
+    # will be flat, considering the nearest point.
     knots::Vector{Float64} = Vector{Float64}(eop[:, 1] .+ 2400000.5)
 
     return EopIau1980(
@@ -125,13 +122,13 @@ function _parse_iers_eop_iau_1980(eop::Matrix)
     )
 end
 
-# Parse the IERS EOP IAU 2000A data in the matrix `eop`, which must have been
-# obtained from the file `finals2000A.all.csv`.
+# Parse the IERS EOP IAU 2000A data in the matrix `eop`, which must have been obtained from
+# the file `finals2000A.all.csv`.
 function _parse_iers_eop_iau_2000A(eop::Matrix)
     # Create the EOP Data structure by creating the interpolations.
     #
-    # The interpolation will be linear between two points in the grid. The
-    # extrapolation will be flat, considering the nearest point.
+    # The interpolation will be linear between two points in the grid. The extrapolation
+    # will be flat, considering the nearest point.
     knots::Vector{Float64} = Vector{Float64}(eop[:, 1] .+ 2400000.5)
 
     EopIau2000A(
