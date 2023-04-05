@@ -106,9 +106,9 @@ eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
     # Quaternion
     # --------------------------------------------------------------------------------------
 
-    q_GCRF_J2000 = r_eci_to_eci(Quaternion, J2000(), GCRF(), JD_UTC, eop_iau1980)
+    q_gcrf_j2000 = r_eci_to_eci(Quaternion, J2000(), GCRF(), JD_UTC, eop_iau1980)
 
-    r_gcrf = vect(q_GCRF_J2000 \ r_j2000 * q_GCRF_J2000)
+    r_gcrf = vect(q_gcrf_j2000 \ r_j2000 * q_gcrf_j2000)
 
     @test r_gcrf[1] ≈ +5102.50895790 atol = 1e-4
     @test r_gcrf[2] ≈ +6123.01140070 atol = 1e-4
@@ -408,9 +408,9 @@ end
     # Quaternion
     # --------------------------------------------------------------------------------------
 
-    q_MOD_J2000 = r_eci_to_eci(Quaternion, J2000(), MOD(), JD_UTC, eop_iau1980)
+    q_mod_j2000 = r_eci_to_eci(Quaternion, J2000(), MOD(), JD_UTC, eop_iau1980)
 
-    r_mod = vect(q_MOD_J2000 \ r_j2000 * q_MOD_J2000)
+    r_mod = vect(q_mod_j2000 \ r_j2000 * q_mod_j2000)
 
     @test r_mod[1] ≈ +5094.02837450 atol = 1e-4
     @test r_mod[2] ≈ +6127.87081640 atol = 1e-4
@@ -465,9 +465,9 @@ end
     # Quaternion
     # --------------------------------------------------------------------------------------
 
-    q_MOD_J2000 = r_eci_to_eci(Quaternion, J2000(), MOD(), JD_UTC)
+    q_mod_j2000 = r_eci_to_eci(Quaternion, J2000(), MOD(), JD_UTC)
 
-    r_mod = vect(q_MOD_J2000 \ r_j2000 * q_MOD_J2000)
+    r_mod = vect(q_mod_j2000 \ r_j2000 * q_mod_j2000)
 
     @test r_mod[1] ≈ +5094.02901670 atol = 1e-7
     @test r_mod[2] ≈ +6127.87093630 atol = 1e-7
@@ -550,9 +550,9 @@ end
     # Quaternion
     # --------------------------------------------------------------------------------------
 
-    q_TOD_J2000 = r_eci_to_eci(Quaternion, J2000(), TOD(), JD_UTC, eop_iau1980)
+    q_tod_j2000 = r_eci_to_eci(Quaternion, J2000(), TOD(), JD_UTC, eop_iau1980)
 
-    r_tod = vect(q_TOD_J2000 \ r_j2000 * q_TOD_J2000)
+    r_tod = vect(q_tod_j2000 \ r_j2000 * q_tod_j2000)
 
     @test r_tod[1] ≈ +5094.51620300 atol = 1e-4
     @test r_tod[2] ≈ +6127.36527840 atol = 1e-4
@@ -607,9 +607,9 @@ end
     # Quaternion
     # --------------------------------------------------------------------------------------
 
-    q_TOD_J2000 = r_eci_to_eci(Quaternion, J2000(), TOD(), JD_UTC)
+    q_tod_j2000 = r_eci_to_eci(Quaternion, J2000(), TOD(), JD_UTC)
 
-    r_tod = vect(q_TOD_J2000 \ r_j2000 * q_TOD_J2000)
+    r_tod = vect(q_tod_j2000 \ r_j2000 * q_tod_j2000)
 
     @test r_tod[1] ≈ +5094.51478040 atol = 1e-7
     @test r_tod[2] ≈ +6127.36646120 atol = 1e-7
@@ -688,9 +688,9 @@ end
     # Quaternion
     # --------------------------------------------------------------------------------------
 
-    q_TEME_J2000 = r_eci_to_eci(Quaternion, J2000(), TEME(), JD_UTC)
+    q_teme_j2000 = r_eci_to_eci(Quaternion, J2000(), TEME(), JD_UTC)
 
-    r_teme = vect(q_TEME_J2000 \ r_j2000 * q_TEME_J2000)
+    r_teme = vect(q_teme_j2000 \ r_j2000 * q_teme_j2000)
 
     @test r_teme[1] ≈ +5094.18016210 atol = 1e-4
     @test r_teme[2] ≈ +6127.64465950 atol = 1e-4
@@ -1170,7 +1170,7 @@ end
 # `dY` corrections, whereas in the Table 3-6 they are computed **with** the corrections.
 #
 #   UTC    = April 6, 2004, 07:51:28.386009
-#   r_cirs = -5100.01840470   i + 6122.78636480   j + 6380.34453270   k [km]
+#   r_cirs = 5100.01840470  i + 6122.78636480 j + 6380.34453270 k [km]
 #
 # one gets the following (this is the result in Table 3-6):
 #
@@ -1197,10 +1197,30 @@ end
     @test r_cirs[2] ≈ +6122.78636480 atol = 1e-4
     @test r_cirs[3] ≈ +6380.34453270 atol = 1e-4
 
+    # NOTE: We do not have the values without the EOP corrections. However, the difference
+    # is very small for this case and we will test using the same values.
+    D_cirs_gcrf = r_eci_to_eci(GCRF(), CIRS(), JD_UTC)
+
+    r_cirs = D_cirs_gcrf * r_gcrf
+
+    @test r_cirs[1] ≈ +5100.01840470 atol = 1e-4
+    @test r_cirs[2] ≈ +6122.78636480 atol = 1e-4
+    @test r_cirs[3] ≈ +6380.34453270 atol = 1e-4
+
     # Quaternion
     # --------------------------------------------------------------------------------------
 
     q_cirs_gcrf = r_eci_to_eci(Quaternion, GCRF(), CIRS(), JD_UTC, eop_iau2000a)
+
+    r_cirs = vect(q_cirs_gcrf \ r_gcrf * q_cirs_gcrf)
+
+    @test r_cirs[1] ≈ +5100.01840470 atol = 1e-4
+    @test r_cirs[2] ≈ +6122.78636480 atol = 1e-4
+    @test r_cirs[3] ≈ +6380.34453270 atol = 1e-4
+
+    # NOTE: We do not have the values without the EOP corrections. However, the difference
+    # is very small for this case and we will test using the same values.
+    q_cirs_gcrf = r_eci_to_eci(Quaternion, GCRF(), CIRS(), JD_UTC)
 
     r_cirs = vect(q_cirs_gcrf \ r_gcrf * q_cirs_gcrf)
 
@@ -1224,6 +1244,16 @@ end
     @test r_gcrf[2] ≈ +6123.01139910 atol = 1e-4
     @test r_gcrf[3] ≈ +6378.13693380 atol = 1e-4
 
+    # NOTE: We do not have the values without the EOP corrections. However, the difference
+    # is very small for this case and we will test using the same values.
+    D_gcrf_cirs = r_eci_to_eci(CIRS(), GCRF(), JD_UTC)
+
+    r_gcrf = D_gcrf_cirs * r_cirs
+
+    @test r_gcrf[1] ≈ +5102.50895290 atol = 1e-4
+    @test r_gcrf[2] ≈ +6123.01139910 atol = 1e-4
+    @test r_gcrf[3] ≈ +6378.13693380 atol = 1e-4
+
     # Quaternion
     # --------------------------------------------------------------------------------------
 
@@ -1234,6 +1264,79 @@ end
     @test r_gcrf[1] ≈ +5102.50895290 atol = 1e-4
     @test r_gcrf[2] ≈ +6123.01139910 atol = 1e-4
     @test r_gcrf[3] ≈ +6378.13693380 atol = 1e-4
+
+    # NOTE: We do not have the values without the EOP corrections. However, the difference
+    # is very small for this case and we will test using the same values.
+    q_gcrf_cirs = r_eci_to_eci(Quaternion, CIRS(), GCRF(), JD_UTC)
+
+    r_gcrf = vect(q_gcrf_cirs \ r_cirs * q_gcrf_cirs)
+
+    @test r_gcrf[1] ≈ +5102.50895290 atol = 1e-4
+    @test r_gcrf[2] ≈ +6123.01139910 atol = 1e-4
+    @test r_gcrf[3] ≈ +6378.13693380 atol = 1e-4
+end
+
+# CIRS <=> CIRS
+# ==========================================================================================
+
+############################################################################################
+#                                       Test Results
+############################################################################################
+#
+# A conversion between CIRS at the same epoch must return the identity rotation.
+#
+############################################################################################
+
+@testset "Function r_eci_to_eci CIRS <=> CIRS" begin
+    JD_UTC = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
+
+    # DCM
+    # ======================================================================================
+
+    D_cirs_cirs = r_eci_to_eci(CIRS(), JD_UTC, CIRS(), JD_UTC)
+
+    @test D_cirs_cirs[1, 1] ≈ 1 atol = 1e-14
+    @test D_cirs_cirs[1, 2] ≈ 0 atol = 1e-14
+    @test D_cirs_cirs[1, 3] ≈ 0 atol = 1e-14
+
+    @test D_cirs_cirs[2, 1] ≈ 0 atol = 1e-14
+    @test D_cirs_cirs[2, 2] ≈ 1 atol = 1e-14
+    @test D_cirs_cirs[2, 3] ≈ 0 atol = 1e-14
+
+    @test D_cirs_cirs[3, 1] ≈ 0 atol = 1e-14
+    @test D_cirs_cirs[3, 2] ≈ 0 atol = 1e-14
+    @test D_cirs_cirs[3, 3] ≈ 1 atol = 1e-14
+
+    D_cirs_cirs = r_eci_to_eci(CIRS(), JD_UTC, CIRS(), JD_UTC, eop_iau2000a)
+
+    @test D_cirs_cirs[1, 1] ≈ 1 atol = 1e-14
+    @test D_cirs_cirs[1, 2] ≈ 0 atol = 1e-14
+    @test D_cirs_cirs[1, 3] ≈ 0 atol = 1e-14
+
+    @test D_cirs_cirs[2, 1] ≈ 0 atol = 1e-14
+    @test D_cirs_cirs[2, 2] ≈ 1 atol = 1e-14
+    @test D_cirs_cirs[2, 3] ≈ 0 atol = 1e-14
+
+    @test D_cirs_cirs[3, 1] ≈ 0 atol = 1e-14
+    @test D_cirs_cirs[3, 2] ≈ 0 atol = 1e-14
+    @test D_cirs_cirs[3, 3] ≈ 1 atol = 1e-14
+
+    # Quaternion
+    # ======================================================================================
+
+    q_cirs_cirs = r_eci_to_eci(Quaternion, CIRS(), JD_UTC, CIRS(), JD_UTC)
+
+    @test q_cirs_cirs[1] ≈ 1 atol = 1e-14
+    @test q_cirs_cirs[2] ≈ 0 atol = 1e-14
+    @test q_cirs_cirs[3] ≈ 0 atol = 1e-14
+    @test q_cirs_cirs[4] ≈ 0 atol = 1e-14
+
+    q_cirs_cirs = r_eci_to_eci(Quaternion, CIRS(), JD_UTC, CIRS(), JD_UTC, eop_iau2000a)
+
+    @test q_cirs_cirs[1] ≈ 1 atol = 1e-14
+    @test q_cirs_cirs[2] ≈ 0 atol = 1e-14
+    @test q_cirs_cirs[3] ≈ 0 atol = 1e-14
+    @test q_cirs_cirs[4] ≈ 0 atol = 1e-14
 end
 
 ############################################################################################
@@ -1285,12 +1388,32 @@ end
     @test r_gcrf[2] ≈ +6123.01140380 atol = 8e-4
     @test r_gcrf[3] ≈ +6378.13692530 atol = 8e-4
 
+    # NOTE: We do not have the values without the EOP corrections. However, the difference
+    # is very small for this case and we will test using the same values.
+    D_GCRF_MJ2000 = r_eci_to_eci(MJ2000(), GCRF(), JD_UTC)
+
+    r_gcrf = D_GCRF_MJ2000 * r_mj2000
+
+    @test r_gcrf[1] ≈ +5102.50895780 atol = 8e-4
+    @test r_gcrf[2] ≈ +6123.01140380 atol = 8e-4
+    @test r_gcrf[3] ≈ +6378.13692530 atol = 8e-4
+
     # Quaternion
     # --------------------------------------------------------------------------------------
 
-    q_GCRF_MJ2000 = r_eci_to_eci(Quaternion, MJ2000(), GCRF(), JD_UTC, eop_iau2000a)
+    q_gcrf_mj2000 = r_eci_to_eci(Quaternion, MJ2000(), GCRF(), JD_UTC, eop_iau2000a)
 
-    r_gcrf = vect(q_GCRF_MJ2000 \ r_mj2000 * q_GCRF_MJ2000)
+    r_gcrf = vect(q_gcrf_mj2000 \ r_mj2000 * q_gcrf_mj2000)
+
+    @test r_gcrf[1] ≈ +5102.50895780 atol = 8e-4
+    @test r_gcrf[2] ≈ +6123.01140380 atol = 8e-4
+    @test r_gcrf[3] ≈ +6378.13692530 atol = 8e-4
+
+    # NOTE: We do not have the values without the EOP corrections. However, the difference
+    # is very small for this case and we will test using the same values.
+    q_gcrf_mj2000 = r_eci_to_eci(Quaternion, MJ2000(), GCRF(), JD_UTC)
+
+    r_gcrf = vect(q_gcrf_mj2000 \ r_mj2000 * q_gcrf_mj2000)
 
     @test r_gcrf[1] ≈ +5102.50895780 atol = 8e-4
     @test r_gcrf[2] ≈ +6123.01140380 atol = 8e-4
@@ -1312,10 +1435,30 @@ end
     @test r_mj2000[2] ≈ +6123.01152000 atol = 8e-4
     @test r_mj2000[3] ≈ +6378.13630000 atol = 8e-4
 
+    # NOTE: We do not have the values without the EOP corrections. However, the difference
+    # is very small for this case and we will test using the same values.
+    D_mj2000_gcrf = r_eci_to_eci(GCRF(), MJ2000(), JD_UTC)
+
+    r_mj2000 = D_mj2000_gcrf * r_gcrf
+
+    @test r_mj2000[1] ≈ +5102.50960000 atol = 8e-4
+    @test r_mj2000[2] ≈ +6123.01152000 atol = 8e-4
+    @test r_mj2000[3] ≈ +6378.13630000 atol = 8e-4
+
     # Quaternion
     # --------------------------------------------------------------------------------------
 
     q_mj2000_gcrf = r_eci_to_eci(Quaternion, GCRF(), MJ2000(), JD_UTC, eop_iau2000a)
+
+    r_mj2000 = vect(q_mj2000_gcrf \ r_gcrf * q_mj2000_gcrf)
+
+    @test r_mj2000[1] ≈ +5102.50960000 atol = 8e-4
+    @test r_mj2000[2] ≈ +6123.01152000 atol = 8e-4
+    @test r_mj2000[3] ≈ +6378.13630000 atol = 8e-4
+
+    # NOTE: We do not have the values without the EOP corrections. However, the difference
+    # is very small for this case and we will test using the same values.
+    q_mj2000_gcrf = r_eci_to_eci(Quaternion, GCRF(), MJ2000(), JD_UTC)
 
     r_mj2000 = vect(q_mj2000_gcrf \ r_gcrf * q_mj2000_gcrf)
 
@@ -1447,10 +1590,30 @@ end
     @test r_gcrf[2] ≈ +6123.01140380 atol = 5e-5
     @test r_gcrf[3] ≈ +6378.13692530 atol = 5e-5
 
+    # NOTE: We do not have the values without the EOP corrections. However, the difference
+    # is very small for this case and we will test using the same values.
+    D_gcrf_ers = r_eci_to_eci(ERS(), GCRF(), JD_UTC)
+
+    r_gcrf = D_gcrf_ers * r_ers
+
+    @test r_gcrf[1] ≈ +5102.50895780 atol = 5e-5
+    @test r_gcrf[2] ≈ +6123.01140380 atol = 5e-5
+    @test r_gcrf[3] ≈ +6378.13692530 atol = 5e-5
+
     # Quaternion
     # --------------------------------------------------------------------------------------
 
     q_gcrf_ers = r_eci_to_eci(Quaternion, ERS(), GCRF(), JD_UTC, eop_iau2000a)
+
+    r_gcrf = vect(q_gcrf_ers \ r_ers * q_gcrf_ers)
+
+    @test r_gcrf[1] ≈ +5102.50895780 atol = 5e-5
+    @test r_gcrf[2] ≈ +6123.01140380 atol = 5e-5
+    @test r_gcrf[3] ≈ +6378.13692530 atol = 5e-5
+
+    # NOTE: We do not have the values without the EOP corrections. However, the difference
+    # is very small for this case and we will test using the same values.
+    q_gcrf_ers = r_eci_to_eci(Quaternion, ERS(), GCRF(), JD_UTC)
 
     r_gcrf = vect(q_gcrf_ers \ r_ers * q_gcrf_ers)
 
@@ -1474,10 +1637,30 @@ end
     @test r_ers[2] ≈ +6127.36658790 atol = 5e-5
     @test r_ers[3] ≈ +6380.34453270 atol = 5e-5
 
+    # NOTE: We do not have the values without the EOP corrections. However, the difference
+    # is very small for this case and we will test using the same values.
+    D_ers_gcrf = r_eci_to_eci(GCRF(), ERS(), JD_UTC)
+
+    r_ers = D_ers_gcrf * r_gcrf
+
+    @test r_ers[1] ≈ +5094.51462800 atol = 5e-5
+    @test r_ers[2] ≈ +6127.36658790 atol = 5e-5
+    @test r_ers[3] ≈ +6380.34453270 atol = 5e-5
+
     # Quaternion
     # --------------------------------------------------------------------------------------
 
     q_ers_gcrf = r_eci_to_eci(Quaternion, GCRF(), ERS(), JD_UTC, eop_iau2000a)
+
+    r_ers = vect(q_ers_gcrf \ r_gcrf * q_ers_gcrf)
+
+    @test r_ers[1] ≈ +5094.51462800 atol = 5e-5
+    @test r_ers[2] ≈ +6127.36658790 atol = 5e-5
+    @test r_ers[3] ≈ +6380.34453270 atol = 5e-5
+
+    # NOTE: We do not have the values without the EOP corrections. However, the difference
+    # is very small for this case and we will test using the same values.
+    q_ers_gcrf = r_eci_to_eci(Quaternion, GCRF(), ERS(), JD_UTC)
 
     r_ers = vect(q_ers_gcrf \ r_gcrf * q_ers_gcrf)
 
@@ -1561,9 +1744,9 @@ end
     # Quaternion
     # --------------------------------------------------------------------------------------
 
-    q_MOD_MJ2000 = r_eci_to_eci(Quaternion, MJ2000(), MOD06(), JD_UTC, eop_iau2000a)
+    q_mod_mj2000 = r_eci_to_eci(Quaternion, MJ2000(), MOD06(), JD_UTC, eop_iau2000a)
 
-    r_mod = vect(q_MOD_MJ2000 \ r_mj2000 * q_MOD_MJ2000)
+    r_mod = vect(q_mod_mj2000 \ r_mj2000 * q_mod_mj2000)
 
     @test r_mod[1] ≈ +5094.02896110 atol = 8e-4
     @test r_mod[2] ≈ +6127.87113500 atol = 8e-4
@@ -1615,10 +1798,30 @@ end
     @test r_mj2000[2] ≈ +6123.01152000 atol = 8e-4
     @test r_mj2000[3] ≈ +6378.13630000 atol = 8e-4
 
+    # NOTE: We do not have the values without the EOP corrections. However, the difference
+    # is very small for this case and we will test using the same values.
+    D_mj2000_ers = r_eci_to_eci(ERS(), MJ2000(), JD_UTC)
+
+    r_mj2000 = D_mj2000_ers * r_ers
+
+    @test r_mj2000[1] ≈ +5102.50960000 atol = 8e-4
+    @test r_mj2000[2] ≈ +6123.01152000 atol = 8e-4
+    @test r_mj2000[3] ≈ +6378.13630000 atol = 8e-4
+
     # Quaternion
     # --------------------------------------------------------------------------------------
 
     q_mj2000_ers = r_eci_to_eci(Quaternion, ERS(), MJ2000(), JD_UTC, eop_iau2000a)
+
+    r_mj2000 = vect(q_mj2000_ers \ r_ers * q_mj2000_ers)
+
+    @test r_mj2000[1] ≈ +5102.50960000 atol = 8e-4
+    @test r_mj2000[2] ≈ +6123.01152000 atol = 8e-4
+    @test r_mj2000[3] ≈ +6378.13630000 atol = 8e-4
+
+    # NOTE: We do not have the values without the EOP corrections. However, the difference
+    # is very small for this case and we will test using the same values.
+    q_mj2000_ers = r_eci_to_eci(Quaternion, ERS(), MJ2000(), JD_UTC)
 
     r_mj2000 = vect(q_mj2000_ers \ r_ers * q_mj2000_ers)
 
@@ -1642,12 +1845,32 @@ end
     @test r_ers[2] ≈ +6127.36658790 atol = 8e-4
     @test r_ers[3] ≈ +6380.34453270 atol = 8e-4
 
+    # NOTE: We do not have the values without the EOP corrections. However, the difference
+    # is very small for this case and we will test using the same values.
+    D_ERS_MJ2000 = r_eci_to_eci(MJ2000(), ERS(), JD_UTC)
+
+    r_ers = D_ERS_MJ2000 * r_mj2000
+
+    @test r_ers[1] ≈ +5094.51462800 atol = 8e-4
+    @test r_ers[2] ≈ +6127.36658790 atol = 8e-4
+    @test r_ers[3] ≈ +6380.34453270 atol = 8e-4
+
     # Quaternion
     # --------------------------------------------------------------------------------------
 
-    q_ERS_MJ2000 = r_eci_to_eci(Quaternion, MJ2000(), ERS(), JD_UTC, eop_iau2000a)
+    q_ers_mj2000 = r_eci_to_eci(Quaternion, MJ2000(), ERS(), JD_UTC, eop_iau2000a)
 
-    r_ers = vect(q_ERS_MJ2000 \ r_mj2000 * q_ERS_MJ2000)
+    r_ers = vect(q_ers_mj2000 \ r_mj2000 * q_ers_mj2000)
+
+    @test r_ers[1] ≈ +5094.51462800 atol = 8e-4
+    @test r_ers[2] ≈ +6127.36658790 atol = 8e-4
+    @test r_ers[3] ≈ +6380.34453270 atol = 8e-4
+
+    # NOTE: We do not have the values without the EOP corrections. However, the difference
+    # is very small for this case and we will test using the same values.
+    q_ers_mj2000 = r_eci_to_eci(Quaternion, MJ2000(), ERS(), JD_UTC)
+
+    r_ers = vect(q_ers_mj2000 \ r_mj2000 * q_ers_mj2000)
 
     @test r_ers[1] ≈ +5094.51462800 atol = 8e-4
     @test r_ers[2] ≈ +6127.36658790 atol = 8e-4
@@ -1699,10 +1922,30 @@ end
     @test r_mod[2] ≈ +6127.87113500 atol = 8e-4
     @test r_mod[3] ≈ +6380.24774200 atol = 8e-4
 
+    # NOTE: We do not have the values without the EOP corrections. However, the difference
+    # is very small for this case and we will test using the same values.
+    D_mod_ers = r_eci_to_eci(ERS(), JD_UTC, MOD06(), JD_UTC)
+
+    r_mod = D_mod_ers * r_ers
+
+    @test r_mod[1] ≈ +5094.02896110 atol = 8e-4
+    @test r_mod[2] ≈ +6127.87113500 atol = 8e-4
+    @test r_mod[3] ≈ +6380.24774200 atol = 8e-4
+
     # Quaternion
     # --------------------------------------------------------------------------------------
 
     q_mod_ers = r_eci_to_eci(Quaternion, ERS(), JD_UTC, MOD06(), JD_UTC, eop_iau2000a)
+
+    r_mod = vect(q_mod_ers \ r_ers * q_mod_ers)
+
+    @test r_mod[1] ≈ +5094.02896110 atol = 8e-4
+    @test r_mod[2] ≈ +6127.87113500 atol = 8e-4
+    @test r_mod[3] ≈ +6380.24774200 atol = 8e-4
+
+    # NOTE: We do not have the values without the EOP corrections. However, the difference
+    # is very small for this case and we will test using the same values.
+    q_mod_ers = r_eci_to_eci(Quaternion, ERS(), JD_UTC, MOD06(), JD_UTC)
 
     r_mod = vect(q_mod_ers \ r_ers * q_mod_ers)
 
@@ -1726,10 +1969,30 @@ end
     @test r_ers[2] ≈ +6127.36658790 atol = 8e-4
     @test r_ers[3] ≈ +6380.34453270 atol = 8e-4
 
+    # NOTE: We do not have the values without the EOP corrections. However, the difference
+    # is very small for this case and we will test using the same values.
+    D_ers_mod = r_eci_to_eci(MOD06(), JD_UTC, ERS(), JD_UTC)
+
+    r_ers = D_ers_mod * r_mod
+
+    @test r_ers[1] ≈ +5094.51462800 atol = 8e-4
+    @test r_ers[2] ≈ +6127.36658790 atol = 8e-4
+    @test r_ers[3] ≈ +6380.34453270 atol = 8e-4
+
     # Quaternion
     # --------------------------------------------------------------------------------------
 
     q_ers_mod = r_eci_to_eci(Quaternion, MOD06(), JD_UTC, ERS(), JD_UTC, eop_iau2000a)
+
+    r_ers = vect(q_ers_mod \ r_mod * q_ers_mod)
+
+    @test r_ers[1] ≈ +5094.51462800 atol = 8e-4
+    @test r_ers[2] ≈ +6127.36658790 atol = 8e-4
+    @test r_ers[3] ≈ +6380.34453270 atol = 8e-4
+
+    # NOTE: We do not have the values without the EOP corrections. However, the difference
+    # is very small for this case and we will test using the same values.
+    q_ers_mod = r_eci_to_eci(Quaternion, MOD06(), JD_UTC, ERS(), JD_UTC)
 
     r_ers = vect(q_ers_mod \ r_mod * q_ers_mod)
 

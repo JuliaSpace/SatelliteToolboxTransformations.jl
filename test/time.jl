@@ -185,6 +185,70 @@ end
     @test hour   == 7
     @test minute == 51
     @test second  ≈ 28.386009 atol = 1e-4
+
+    # Using EOP
+    # ======================================================================================
+
+    # NOTE: The function `jd_ut1_to_utc` is not tested inside the reference frame
+    # transformation tests.
+
+    eop_iau1980  = read_iers_eop("eop_IAU1980.txt")
+    eop_iau2000a = read_iers_eop("eop_IAU1980.txt")
+
+    # jd_utc_to_ut1
+    # --------------------------------------------------------------------------------------
+
+    # At the mentioned date, Mountain Standard Time is 6h behind UTC.
+    JD_UTC = date_to_jd(2004, 5, 14, 10+6, 43, 0)
+
+    JD_UT1 = jd_utc_to_ut1(JD_UTC, eop_iau1980)
+
+    (year, month, day, hour, minute, second) = jd_to_date(JD_UT1)
+
+    @test year   == 2004
+    @test month  == 5
+    @test day    == 14
+    @test hour   == 16
+    @test minute == 42
+    @test second  ≈ 59.5474 atol = 1e-4
+
+    JD_UT1 = jd_utc_to_ut1(JD_UTC, eop_iau2000a)
+
+    (year, month, day, hour, minute, second) = jd_to_date(JD_UT1)
+
+    @test year   == 2004
+    @test month  == 5
+    @test day    == 14
+    @test hour   == 16
+    @test minute == 42
+    @test second  ≈ 59.5474 atol = 1e-4
+
+    # jd_ut1_to_utc
+    # --------------------------------------------------------------------------------------
+
+    JD_UT1 = date_to_jd(2004, 5, 14, 16, 42, 59.5474)
+
+    JD_UTC = jd_ut1_to_utc(JD_UT1, eop_iau1980)
+
+    (year, month, day, hour, minute, second) = jd_to_date(JD_UTC)
+
+    @test year   == 2004
+    @test month  == 5
+    @test day    == 14
+    @test hour   == 10+6
+    @test minute == 43
+    @test second  ≈ 0.0000 atol = 1e-4
+
+    JD_UTC = jd_ut1_to_utc(JD_UT1, eop_iau2000a)
+
+    (year, month, day, hour, minute, second) = jd_to_date(JD_UTC)
+
+    @test year   == 2004
+    @test month  == 5
+    @test day    == 14
+    @test hour   == 10+6
+    @test minute == 43
+    @test second  ≈ 0.0000 atol = 1e-4
 end
 
 # Functions jd_tt_to_utc and jd_utc_to_tt
