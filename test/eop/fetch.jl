@@ -26,8 +26,8 @@
     )
 
     # Test the some data.
-    eop.x(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ -0.08982701041673635
-    eop.y(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ +0.29843172569433274
+    @test eop_iau1980.x(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ -0.08982701041673635
+    @test eop_iau1980.y(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ +0.29843172569433274
 
     # Obtain the timestamp for the following tests.
     eop_cache_dir      = @get_scratch!("eop_iau1980")
@@ -43,8 +43,8 @@
     )
 
     # Test the some data.
-    eop.x(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ -0.08982701041673635
-    eop.y(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ +0.29843172569433274
+    @test eop_iau1980.x(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ -0.08982701041673635
+    @test eop_iau1980.y(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ +0.29843172569433274
 
     # Let's change the timestamp do verify if we download the file again after 7 days.
     open(eop_file_timestamp, "w") do f
@@ -59,8 +59,8 @@
     )
 
     # Test the some data.
-    eop.x(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ -0.08982701041673635
-    eop.y(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ +0.29843172569433274
+    @test eop_iau1980.x(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ -0.08982701041673635
+    @test eop_iau1980.y(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ +0.29843172569433274
 end
 
 @testset "Fetching EOP for IAU-2006 / 2010A theory" begin
@@ -76,8 +76,8 @@ end
     )
 
     # Test the some data.
-    eop.x(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ -0.08982701041673635
-    eop.y(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ +0.29843172569433274
+    @test eop_iau2000a.x(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ -0.08982701041673635
+    @test eop_iau2000a.y(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ +0.29843172569433274
 
     # Obtain the timestamp for the following tests.
     eop_cache_dir      = @get_scratch!("eop_iau2000A")
@@ -93,8 +93,8 @@ end
     )
 
     # Test the some data.
-    eop.x(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ -0.08982701041673635
-    eop.y(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ +0.29843172569433274
+    @test eop_iau2000a.x(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ -0.08982701041673635
+    @test eop_iau2000a.y(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ +0.29843172569433274
 
     # Let's change the timestamp do verify if we download the file again after 7 days.
     open(eop_file_timestamp, "w") do f
@@ -109,6 +109,6 @@ end
     )
 
     # Test the some data.
-    eop.x(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ -0.08982701041673635
-    eop.y(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ +0.29843172569433274
+    @test eop_iau2000a.x(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ -0.08982701041673635
+    @test eop_iau2000a.y(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ +0.29843172569433274
 end
