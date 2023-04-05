@@ -42,6 +42,13 @@ end
     include("./geodetic_geocentric.jl")
 end
 
+@testset "Orbit transformations" verbose = true begin
+    include("./orbit/sv_ecef_to_ecef.jl")
+    include("./orbit/sv_ecef_to_eci.jl")
+    include("./orbit/sv_eci_to_ecef.jl")
+    include("./orbit/sv_eci_to_eci.jl")
+end
+
 @testset "Time" verbose = true begin
     include("./time.jl")
 end

@@ -2,9 +2,10 @@ module SatelliteToolboxTransformations
 
 using Crayons
 using Dates
+using DelimitedFiles
 using Downloads: download
 using Interpolations
-using DelimitedFiles
+using LinearAlgebra
 using ReferenceFrameRotations
 using SatelliteToolboxBase
 using Scratch
@@ -28,6 +29,10 @@ include("./types.jl")
 const _B = Crayon(bold = true)
 const _G = crayon"dark_gray"
 const _R = Crayon(reset = true)
+
+# Earth's angular rotation [rad / s] without LOD correction.
+# TODO: Move to SatelliteToolboxBase.jl.
+const _EARTH_ROTATION_RATE = 7.292_115_146_706_979e-5
 
 ############################################################################################
 #                                         Includes
@@ -65,6 +70,11 @@ include("./reference_frames/iau2006/constants/equation_of_origins.jl")
 include("./reference_frames/iau2006/constants/nutation.jl")
 
 include("./reference_frames/teme/teme.jl")
+
+include("./orbit/sv_ecef_to_ecef.jl")
+include("./orbit/sv_ecef_to_eci.jl")
+include("./orbit/sv_eci_to_ecef.jl")
+include("./orbit/sv_eci_to_eci.jl")
 
 include("./time.jl")
 
