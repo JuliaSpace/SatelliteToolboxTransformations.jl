@@ -78,13 +78,13 @@ eop_iau2000a = read_iers_eop("./eop_IAU2000A.txt", Val(:IAU2000A))
 
     @test sv_gcrf.t === JD_UTC
 
-    @test sv_gcrf.r[1] ≈ +5102.50895790 atol=3e-4
-    @test sv_gcrf.r[2] ≈ +6123.01140070 atol=3e-4
-    @test sv_gcrf.r[3] ≈ +6378.13692820 atol=3e-4
+    @test sv_gcrf.r[1] ≈ +5102.50895790 atol = 3e-4
+    @test sv_gcrf.r[2] ≈ +6123.01140070 atol = 3e-4
+    @test sv_gcrf.r[3] ≈ +6378.13692820 atol = 3e-4
 
-    @test sv_gcrf.v[1] ≈ -4.7432201570  atol=8e-7
-    @test sv_gcrf.v[2] ≈ +0.7905364970  atol=8e-7
-    @test sv_gcrf.v[3] ≈ +5.5337552700  atol=8e-7
+    @test sv_gcrf.v[1] ≈ -4.7432201570  atol = 8e-7
+    @test sv_gcrf.v[2] ≈ +0.7905364970  atol = 8e-7
+    @test sv_gcrf.v[3] ≈ +5.5337552700  atol = 8e-7
 end
 
 # PEF to J2000
@@ -123,13 +123,13 @@ end
 
     @test sv_j2000.t === JD_UT1
 
-    @test sv_j2000.r[1] ≈ +5102.50960000 atol=1e-7
-    @test sv_j2000.r[2] ≈ +6123.01152000 atol=1e-7
-    @test sv_j2000.r[3] ≈ +6378.13630000 atol=1e-7
+    @test sv_j2000.r[1] ≈ +5102.50960000 atol = 1e-7
+    @test sv_j2000.r[2] ≈ +6123.01152000 atol = 1e-7
+    @test sv_j2000.r[3] ≈ +6378.13630000 atol = 1e-7
 
-    @test sv_j2000.v[1] ≈ -4.7432196000  atol=1e-7
-    @test sv_j2000.v[2] ≈ +0.7905366000  atol=1e-7
-    @test sv_j2000.v[3] ≈ +5.5337561900  atol=1e-7
+    @test sv_j2000.v[1] ≈ -4.7432196000  atol = 1e-7
+    @test sv_j2000.v[2] ≈ +0.7905366000  atol = 1e-7
+    @test sv_j2000.v[3] ≈ +5.5337561900  atol = 1e-7
 end
 
 ############################################################################################
@@ -171,13 +171,13 @@ end
 
     @test sv_gcrf.t === JD_UTC
 
-    @test sv_gcrf.r[1] ≈ +5102.50895290 atol=3e-4
-    @test sv_gcrf.r[2] ≈ +6123.01139910 atol=3e-4
-    @test sv_gcrf.r[3] ≈ +6378.13693380 atol=3e-4
+    @test sv_gcrf.r[1] ≈ +5102.50895290 atol = 3e-4
+    @test sv_gcrf.r[2] ≈ +6123.01139910 atol = 3e-4
+    @test sv_gcrf.r[3] ≈ +6378.13693380 atol = 3e-4
 
-    @test sv_gcrf.v[1] ≈ -4.7432201610  atol=8e-7
-    @test sv_gcrf.v[2] ≈ +0.7905364950  atol=8e-7
-    @test sv_gcrf.v[3] ≈ +5.5337557240  atol=8e-7
+    @test sv_gcrf.v[1] ≈ -4.7432201610  atol = 8e-7
+    @test sv_gcrf.v[2] ≈ +0.7905364950  atol = 8e-7
+    @test sv_gcrf.v[3] ≈ +5.5337557240  atol = 8e-7
 end
 
 # TIRS to GCRF
@@ -216,11 +216,11 @@ end
 
     @test sv_gcrf.t === JD_UT1
 
-    @test sv_gcrf.r[1] ≈ +5102.50895290 atol=3e-4
-    @test sv_gcrf.r[2] ≈ +6123.01139910 atol=3e-4
-    @test sv_gcrf.r[3] ≈ +6378.13693380 atol=3e-4
+    @test sv_gcrf.r[1] ≈ +5102.50895290 atol = 3e-4
+    @test sv_gcrf.r[2] ≈ +6123.01139910 atol = 3e-4
+    @test sv_gcrf.r[3] ≈ +6378.13693380 atol = 3e-4
 
-    @test sv_gcrf.v[1] ≈ -4.7432201610  atol=8e-7
-    @test sv_gcrf.v[2] ≈ +0.7905364950  atol=8e-7
-    @test sv_gcrf.v[3] ≈ +5.5337557240  atol=8e-7
+    @test sv_gcrf.v[1] ≈ -4.7432201610  atol = 8e-7
+    @test sv_gcrf.v[2] ≈ +0.7905364950  atol = 8e-7
+    @test sv_gcrf.v[3] ≈ +5.5337557240  atol = 8e-7
 end
