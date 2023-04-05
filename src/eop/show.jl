@@ -16,15 +16,9 @@ function show(io::IO, mime::MIME"text/plain", eop::EopIau1980)
     # Check if IO has support for colors.
     color = get(io, :color, false)::Bool
 
-    if color
-        b = string(_B)
-        g = string(_G)
-        r = string(_R)
-    else
-        b = ""
-        g = ""
-        r = ""
-    end
+    b = color ? string(_B) : ""
+    g = color ? string(_G) : ""
+    r = color ? string(_R) : ""
 
     println(io, "EopIau1980:")
     println(io, b, "     Data ", g, "│ ", r, b, "Timespan", r)
@@ -48,15 +42,9 @@ function show(io::IO, mime::MIME"text/plain", eop::EopIau2000A)
     # Check if IO has support for colors.
     color = get(io, :color, false)::Bool
 
-    if color
-        _b = string(Crayon(bold = true))
-        _g = string(crayon"dark_gray")
-        _r = string(Crayon(reset = true))
-    else
-        _b = ""
-        _g = ""
-        _r = ""
-    end
+    b = color ? string(_B) : ""
+    g = color ? string(_G) : ""
+    r = color ? string(_R) : ""
 
     println(io, "EopIau2000A:")
     println(io, _b, "     Data ", _g, "│ ", _r, _b, "Timespan", _r)
