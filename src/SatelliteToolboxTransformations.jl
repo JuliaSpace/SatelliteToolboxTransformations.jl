@@ -26,9 +26,9 @@ include("./types.jl")
 #                                        Constants
 ############################################################################################
 
-const _B = Crayon(bold = true)
-const _G = crayon"dark_gray"
-const _R = Crayon(reset = true)
+const _CRAYON_BOLD      = Crayon(bold = true)
+const _CRAYON_DARK_GRAY = crayon"dark_gray"
+const _CRAYON_RESET     = Crayon(reset = true)
 
 # Earth's angular rotation [rad / s] without LOD correction.
 # TODO: Move to SatelliteToolboxBase.jl.
