@@ -25,15 +25,15 @@ include("./types.jl")
 #                                  Constants
 ################################################################################
 
+export WGS84_ELLIPSOID, WGS84_ELLIPSOID_F32
+
 const _B = Crayon(bold = true)
 const _G = crayon"dark_gray"
 const _R = Crayon(reset = true)
 
-# Julian Day of J2000.0 epoch.
-const JD_J2000 = 2451545.0
-
 # Define the default ellipsoid based on WGS-84 [2]
-const wgs84_ellipsoid = Ellipsoid(6378137.0, 1 / 298.257223563)
+const WGS84_ELLIPSOID     = Ellipsoid(6378137.0,   1 / 298.257223563)
+const WGS84_ELLIPSOID_F32 = Ellipsoid(6378137.0f0, 1 / 298.257223563f0)
 
 ################################################################################
 #                                   Includes
