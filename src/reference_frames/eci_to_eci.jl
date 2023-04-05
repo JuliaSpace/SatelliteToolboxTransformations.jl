@@ -276,10 +276,11 @@ end
 
 function r_eci_to_eci(
     T_ECIo::T_ECIs_IAU_2006_Equinox_of_date,
+    jd_utco::Number,
     T_ECIf::T_ECIs_IAU_2006_Equinox_of_date,
-    jd_utc::Number
+    jd_utcf::Number,
 )
-    return r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc)
+    return r_eci_to_eci(DCM, T_ECIo, jd_utco, T_ECIf, jd_utcf)
 end
 
 ############################################################################################
