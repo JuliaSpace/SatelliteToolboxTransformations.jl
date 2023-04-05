@@ -30,7 +30,7 @@
     @test eop_iau1980.y(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ +0.29843172569433274
 
     # Obtain the timestamp for the following tests.
-    eop_cache_dir      = @get_scratch!("eop_iau1980")
+    eop_cache_dir      = get_scratch!(SatelliteToolboxTransformations, "eop_iau1980")
     eop_file_timestamp = joinpath(eop_cache_dir, "finals.all.csv_timestamp")
     timestamp          = split(read(eop_file_timestamp, String), '\n') |> first |> DateTime
 
@@ -80,7 +80,7 @@ end
     @test eop_iau2000a.y(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ +0.29843172569433274
 
     # Obtain the timestamp for the following tests.
-    eop_cache_dir      = @get_scratch!("eop_iau2000A")
+    eop_cache_dir      = get_scratch!(SatelliteToolboxTransformations, "eop_iau2000A")
     eop_file_timestamp = joinpath(eop_cache_dir, "finals2000A.all.csv_timestamp")
     timestamp          = split(read(eop_file_timestamp, String), '\n') |> first |> DateTime
 
