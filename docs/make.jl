@@ -14,7 +14,8 @@ makedocs(
         "Transformations" => [
             "ECI and ECEF"            => "man/ecef_eci.md",
             "ECEF and Local frames"   => "man/ecef_local_frames.md",
-            "Geodetic and Geocentric" => "man/geodetic_geocentric.md"
+            "Geodetic and Geocentric" => "man/geodetic_geocentric.md",
+            "Orbit representations"   => "man/orbit.md"
         ],
         "Library" => "lib/library.md",
     ],

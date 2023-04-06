@@ -4,7 +4,7 @@ Transformations between ECEF and ECI reference frames
 ```@meta
 CurrentModule = SatelliteToolboxTransformations
 DocTestSetup = quote
-    using SatelliteToolboxTime
+    using SatelliteToolboxBase
     using SatelliteToolboxTransformations
 end
 ```
