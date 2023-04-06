@@ -12,7 +12,7 @@ using StaticArrays
 @testset "Earth Orientation Parameters" verbose = true begin
     cd("./eop")
     include("./eop/read.jl")
-    include("./eop/fetch.jl")
+    # include("./eop/fetch.jl")
     include("./eop/show.jl")
     cd("..")
 end

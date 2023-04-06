@@ -25,7 +25,7 @@ Convert the orbit representation `orb` from an ECI frame to another ECI frame. T
 `args...` must match those of the function [`r_eci_to_eci`](@ref) **without** the rotation
 representation.
 """
-function orb_eci_to_eci(orb::Orbit, args...)
+function orb_eci_to_eci(orb::T, args...) where T<:Orbit
     # First, we need to convert to state vector.
     sv_o = convert(OrbitStateVector, orb)
     r_o  = sv_o.r
