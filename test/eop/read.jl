@@ -10,7 +10,7 @@
 # File: ./src/eop/read.jl
 # ==========================================================================================
 
-# Functions read_iers_eop
+# Function: read_iers_eop
 # ------------------------------------------------------------------------------------------
 
 @testset "Read and Parse EOP for IAU-76 / FK5 Theory" begin

@@ -10,7 +10,7 @@
 # File: ./src/eop/fetch.jl
 # ==========================================================================================
 
-# Functions fetch_iers_eop
+# Function: fetch_iers_eop
 # ------------------------------------------------------------------------------------------
 
 @testset "Fetching EOP for IAU-76 / FK5 theory" begin
