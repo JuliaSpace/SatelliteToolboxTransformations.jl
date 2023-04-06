@@ -54,21 +54,14 @@ function _download_eop(
         # In this case, we should read the time stamp and verify if the file
         # must be re-downloaded.
         try
-            str = read(eop_file_timestamp, String)
-            tokens = split(str, '\n')
+            str       = read(eop_file_timestamp, String)
+            tokens    = split(str, '\n')
+            timestamp = tokens |> first |> DateTime
 
-            if length(tokens) == 0
+            if now() >= timestamp + Day(7)
                 download_eop = true
-
             else
-                timestamp = tokens |> first |> DateTime
-                if now() >= timestamp + Day(7)
-                    download_eop = true
-
-                else
-                    @debug "We found an EOP file that is less than 7 days old (timestamp = $timestamp). Hence, we will use it."
-
-                end
+                @debug "We found an EOP file that is less than 7 days old (timestamp = $timestamp). Hence, we will use it."
             end
         catch
             # If any error occurred, we will download the data again.

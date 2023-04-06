@@ -62,22 +62,6 @@
     @test eop_iau1980.x(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ -0.08982701041673635
     @test eop_iau1980.y(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ +0.29843172569433274
 
-    # If the timestamp file is empty, we should download the EOP.
-    open(eop_file_timestamp, "w") do f
-        write(f, "")
-    end
-
-    eop_iau1980 = (
-        @test_logs (
-            :info,
-            "Downloading the file 'finals.all.csv' from 'https://datacenter.iers.org/data/csv/finals.all.csv'..."
-        ) fetch_iers_eop()
-    )
-
-    # Test the some data.
-    @test eop_iau1980.x(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ -0.08982701041673635
-    @test eop_iau1980.y(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ +0.29843172569433274
-
     # If the timestamp file is invalid, we should download the EOP.
     open(eop_file_timestamp, "w") do f
         write(f, "THIS CANNOT BE CONVERTED TO DATATIME")
@@ -131,22 +115,6 @@ end
     # Let's change the timestamp do verify if we download the file again after 7 days.
     open(eop_file_timestamp, "w") do f
         write(f, string(timestamp - Day(7)))
-    end
-
-    eop_iau2000a = (
-        @test_logs (
-            :info,
-            "Downloading the file 'finals2000A.all.csv' from 'https://datacenter.iers.org/data/csv/finals2000A.all.csv'..."
-        ) fetch_iers_eop(Val(:IAU2000A))
-    )
-
-    # Test the some data.
-    @test eop_iau2000a.x(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ -0.08982701041673635
-    @test eop_iau2000a.y(date_to_jd(1986, 6, 19, 18, 35, 00)) ≈ +0.29843172569433274
-
-    # If the timestamp file is empty, we should download the EOP.
-    open(eop_file_timestamp, "w") do f
-        write(f, "")
     end
 
     eop_iau2000a = (
