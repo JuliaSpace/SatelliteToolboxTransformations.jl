@@ -193,7 +193,7 @@ end
 #
 ############################################################################################
 
-# Function: geocentric_to_geodetic
+# Function: geocentric_to_geodetic and geodetic_to_geocentric
 # ------------------------------------------------------------------------------------------
 
 @testset "Function geocentric_to_geodetic" begin
@@ -244,4 +244,54 @@ end
     ϕ_gd, h = geocentric_to_geodetic(-deg2rad(15), 10e3)
     @test ϕ_gd ≈ -1.3567978765139961
     @test h    ≈ -6353137.8454352869
+end
+
+@testset "Function geodetic_to_geocentric" begin
+    R0 = 6378137.0
+
+    # North hemisphere
+    # ======================================================================================
+
+    ϕ_gc, r = geodetic_to_geocentric(1.0134554245512695, 17352.756962650223)
+    @test ϕ_gc ≈ mod(19.86, 2π)
+    @test r    ≈ R0 + 1987
+
+    ϕ_gc, r = geodetic_to_geocentric(1.5707963267948966, 212070.68575482070)
+    @test ϕ_gc ≈ π/2
+    @test r    ≈ R0 + 190686
+
+    ϕ_gc, r = geodetic_to_geocentric(0.54808101129276687, 757773.37237201189)
+    @test ϕ_gc ≈ deg2rad(31.25)
+    @test r    ≈ R0 + 752000
+
+    # South hemisphere
+    # ======================================================================================
+
+    ϕ_gc, r = geodetic_to_geocentric(-1.0134554245512695, 17352.756962650223)
+    @test ϕ_gc ≈ -mod(19.86, 2π)
+    @test r    ≈ R0 + 1987
+
+    ϕ_gc, r = geodetic_to_geocentric(-1.5707963267948966, 212070.68575482070)
+    @test ϕ_gc ≈ -π/2
+    @test r    ≈ R0 + 190686
+
+    ϕ_gc, r = geodetic_to_geocentric(-0.54808101129276687, 757773.37237201189)
+    @test ϕ_gc ≈ -deg2rad(31.25)
+    @test r    ≈ R0 + 752000
+
+    # Special cases
+    # ======================================================================================
+
+    ϕ_gc, r = geodetic_to_geocentric(0.0, 0.0)
+    @test ϕ_gc ≈ 0
+    @test r    ≈ R0
+
+    # D < 0
+    ϕ_gc, r = geodetic_to_geocentric(1.3567978765139961, -6353137.8454352869)
+    @test ϕ_gc ≈ deg2rad(15)
+    @test r    ≈ 10e3
+
+    ϕ_gc, r = geodetic_to_geocentric(-1.3567978765139961, -6353137.8454352869)
+    @test ϕ_gc ≈ -deg2rad(15)
+    @test r    ≈ 10e3
 end
