@@ -22,7 +22,7 @@ export sv_ecef_to_ecef
     sv_ecef_to_ecef(sv::OrbitStateVector, args...) -> OrbitStateVector
 
 Convert the orbit state vector `sv` from an ECEF frame to another ECEF frame.  The arguments
-`args...` must match those of the function [`r_ecef_to_ecef`](@ref) **wihtout** the rotation
+`args...` must match those of the function [`r_ecef_to_ecef`](@ref) **without** the rotation
 representation.
 """
 function sv_ecef_to_ecef(sv::OrbitStateVector, args...)

@@ -22,7 +22,7 @@ export sv_eci_to_eci
     sv_eci_to_eci(sv::OrbitStateVector, args...) -> OrbitStateVector
 
 Convert the orbit state vector `sv` from an ECI frame to another ECI frame. The arguments
-`args...` must match those of the function [`r_eci_to_eci`](@ref) **wihtout** the rotation
+`args...` must match those of the function [`r_eci_to_eci`](@ref) **without** the rotation
 representation.
 """
 function sv_eci_to_eci(sv::OrbitStateVector, args...)
