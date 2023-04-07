@@ -13,8 +13,9 @@ ecosystem. Currently, the following algorithms are available:
 
 - Conversion between ECI and ECEF reference frames (IAU-76/FK5 and IAU-2006/2010A);
 - Conversion between ECEF and local frames (NED);
-- Conversion between Geodetic and Geocentric variables; and
-- Conversion between time epochs (UTC, UT1, TT).
+- Conversion between geodetic and geocentric variables;
+- Conversion between time epochs (UTC, UT1, TT); and
+- Conversion between orbit anomalies (eccentric, mean, and true).
 
 ## Installation
 
