@@ -78,7 +78,7 @@ function sv_ecef_to_eci(
     # account from it when converting the velocity and acceleration. The angular velocity
     # between those frames is computed using `we` and corrected by the length of day (LOD)
     # parameter of the EOP data, if available.
-    ω  = _EARTH_ROTATION_RATE * (1 - (eop !== nothing ? eop.lod(jd_utc) / 86400000 : 0))
+    ω  = EARTH_ANGULAR_SPEED * (1 - (eop !== nothing ? eop.lod(jd_utc) / 86400000 : 0))
     vω = SVector{3}(0, 0, ω)
 
     # Compute the position in the ECI frame.

@@ -7,9 +7,11 @@ using Downloads: download
 using Interpolations
 using LinearAlgebra
 using ReferenceFrameRotations
-using SatelliteToolboxBase
+using Reexport
 using Scratch
 using StaticArrays
+
+@reexport using SatelliteToolboxBase
 
 import Base: show
 
@@ -29,10 +31,6 @@ include("./types.jl")
 const _CRAYON_BOLD      = Crayon(bold = true)
 const _CRAYON_DARK_GRAY = crayon"dark_gray"
 const _CRAYON_RESET     = Crayon(reset = true)
-
-# Earth's angular rotation [rad / s] without LOD correction.
-# TODO: Move to SatelliteToolboxBase.jl.
-const _EARTH_ROTATION_RATE = 7.292_115_146_706_979e-5
 
 ############################################################################################
 #                                         Includes

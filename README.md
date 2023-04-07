@@ -7,7 +7,6 @@ SatelliteToolboxTransformations.jl
 [![](https://img.shields.io/badge/docs-dev-blue.svg)][docs-dev-url]
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 
-
 This package contains transformations that are useful for the **SatelliteToolbox.jl**
 ecosystem. Currently, the following algorithms are available:
 

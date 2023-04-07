@@ -4,7 +4,6 @@ Transformations of Orbit Representations
 ```@meta
 CurrentModule = SatelliteToolboxTransformations
 DocTestSetup = quote
-    using SatelliteToolboxBase
     using SatelliteToolboxTransformations
 end
 ```
