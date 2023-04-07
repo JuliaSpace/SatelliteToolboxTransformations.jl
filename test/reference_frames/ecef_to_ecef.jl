@@ -60,7 +60,7 @@ eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
 ############################################################################################
 
 @testset "Function r_ecef_to_ecef ITRF <=> PEF" begin
-    JD_UTC = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
+    jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
 
     # ITRF => PEF
     # ======================================================================================
@@ -71,7 +71,7 @@ eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
     # DCM
     # --------------------------------------------------------------------------------------
 
-    D_pef_itrf = r_ecef_to_ecef(ITRF(), PEF(), JD_UTC, eop_iau1980)
+    D_pef_itrf = r_ecef_to_ecef(ITRF(), PEF(), jd_utc, eop_iau1980)
 
     r_pef = D_pef_itrf * r_itrf
     v_pef = D_pef_itrf * v_itrf
@@ -87,7 +87,7 @@ eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
     # Quaternion
     # --------------------------------------------------------------------------------------
 
-    q_pef_itrf = r_ecef_to_ecef(Quaternion, ITRF(), PEF(), JD_UTC, eop_iau1980)
+    q_pef_itrf = r_ecef_to_ecef(Quaternion, ITRF(), PEF(), jd_utc, eop_iau1980)
 
     r_pef = vect(conj(q_pef_itrf) * r_itrf * q_pef_itrf)
     v_pef = vect(conj(q_pef_itrf) * v_itrf * q_pef_itrf)
@@ -109,7 +109,7 @@ eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
     # DCM
     # --------------------------------------------------------------------------------------
 
-    D_itrf_pef = r_ecef_to_ecef(PEF(), ITRF(), JD_UTC, eop_iau1980)
+    D_itrf_pef = r_ecef_to_ecef(PEF(), ITRF(), jd_utc, eop_iau1980)
 
     r_itrf = D_itrf_pef * r_pef
     v_itrf = D_itrf_pef * v_pef
@@ -125,7 +125,7 @@ eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
     # Quaternion
     # --------------------------------------------------------------------------------------
 
-    q_itrf_pef = r_ecef_to_ecef(Quaternion, PEF(), ITRF(), JD_UTC, eop_iau1980)
+    q_itrf_pef = r_ecef_to_ecef(Quaternion, PEF(), ITRF(), jd_utc, eop_iau1980)
 
     r_itrf = vect(conj(q_itrf_pef) * r_pef * q_itrf_pef)
     v_itrf = vect(conj(q_itrf_pef) * v_pef * q_itrf_pef)
@@ -169,7 +169,7 @@ end
 ############################################################################################
 
 @testset "Function r_ecef_to_ecef ITRF <=> TIRS" begin
-    JD_UTC = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
+    jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
 
     # ITRF => TIRS
     # ======================================================================================
@@ -180,7 +180,7 @@ end
     # DCM
     # --------------------------------------------------------------------------------------
 
-    D_tirs_itrf = r_ecef_to_ecef(ITRF(), TIRS(), JD_UTC, eop_iau2000a)
+    D_tirs_itrf = r_ecef_to_ecef(ITRF(), TIRS(), jd_utc, eop_iau2000a)
 
     r_tirs = D_tirs_itrf * r_itrf
     v_tirs = D_tirs_itrf * v_itrf
@@ -196,7 +196,7 @@ end
     # Quaternion
     # --------------------------------------------------------------------------------------
 
-    q_tirs_itrf = r_ecef_to_ecef(Quaternion, ITRF(), TIRS(), JD_UTC, eop_iau2000a)
+    q_tirs_itrf = r_ecef_to_ecef(Quaternion, ITRF(), TIRS(), jd_utc, eop_iau2000a)
 
     r_tirs = vect(conj(q_tirs_itrf) * r_itrf * q_tirs_itrf)
     v_tirs = vect(conj(q_tirs_itrf) * v_itrf * q_tirs_itrf)
@@ -218,7 +218,7 @@ end
     # DCM
     # --------------------------------------------------------------------------------------
 
-    D_itrf_tirs = r_ecef_to_ecef(TIRS(), ITRF(), JD_UTC, eop_iau2000a)
+    D_itrf_tirs = r_ecef_to_ecef(TIRS(), ITRF(), jd_utc, eop_iau2000a)
 
     r_itrf = D_itrf_tirs * r_tirs
     v_itrf = D_itrf_tirs * v_tirs
@@ -234,7 +234,7 @@ end
     # Quaternion
     # --------------------------------------------------------------------------------------
 
-    q_itrf_tirs = r_ecef_to_ecef(Quaternion, TIRS(), ITRF(), JD_UTC, eop_iau2000a)
+    q_itrf_tirs = r_ecef_to_ecef(Quaternion, TIRS(), ITRF(), jd_utc, eop_iau2000a)
 
     r_itrf = vect(conj(q_itrf_tirs) * r_tirs * q_itrf_tirs)
     v_itrf = vect(conj(q_itrf_tirs) * v_tirs * q_itrf_tirs)
