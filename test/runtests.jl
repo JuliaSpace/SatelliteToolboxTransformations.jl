@@ -69,7 +69,6 @@ end
 
 @testset "Orbit Transformations" verbose = true begin
     cd("./orbit")
-    include("./orbit/anomalies.jl")
     include("./orbit/orb_eci_to_eci.jl")
     include("./orbit/sv_ecef_to_ecef.jl")
     include("./orbit/sv_ecef_to_eci.jl")

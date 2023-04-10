@@ -69,7 +69,6 @@ include("./reference_frames/iau2006/constants/nutation.jl")
 
 include("./reference_frames/teme/teme.jl")
 
-include("./orbit/anomalies.jl")
 include("./orbit/orb_eci_to_eci.jl")
 include("./orbit/sv_ecef_to_ecef.jl")
 include("./orbit/sv_ecef_to_eci.jl")

@@ -12,9 +12,8 @@ ecosystem. Currently, the following algorithms are available:
 
 - Conversion between ECI and ECEF reference frames (IAU-76/FK5 and IAU-2006/2010A);
 - Conversion between ECEF and local frames (NED);
-- Conversion between geodetic and geocentric variables;
-- Conversion between time epochs (UTC, UT1, TT); and
-- Conversion between orbit anomalies (eccentric, mean, and true).
+- Conversion between geodetic and geocentric variables; and
+- Conversion between time epochs (UTC, UT1, TT).
 
 ## Installation
 
@@ -24,6 +23,10 @@ This package can be installed using:
 julia> using Pkg
 julia> Pkg.add("SatelliteToolboxTransformations")
 ```
+
+## Usage
+
+See the [package documentation][docs-stable-url].
 
 [docs-dev-url]: https://juliaspace.github.io/SatelliteToolboxTransformations.jl/dev
 [docs-stable-url]: https://juliaspace.github.io/SatelliteToolboxTransformations.jl/stable
