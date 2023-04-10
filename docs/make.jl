@@ -15,7 +15,6 @@ makedocs(
             "ECI and ECEF"            => "man/ecef_eci.md",
             "ECEF and Local frames"   => "man/ecef_local_frames.md",
             "Geodetic and Geocentric" => "man/geodetic_geocentric.md",
-            "Orbit anomalies"         => "man/orbit_anomalies.md",
             "Orbit representations"   => "man/orbit_representations.md",
         ],
         "Library" => "lib/library.md",
