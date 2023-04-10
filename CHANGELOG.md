@@ -1,6 +1,13 @@
 SatelliteToolboxTransformations.jl Changelog
 ============================================
 
+Version 0.1.1
+-------------
+
+- ![Info][badge-info] The functions related to orbit anomalies were transferred to
+  **SatelliteToolboxBase.jl**. These functions are re-exported here. Hence, this
+  modifications is note breaking from this package point of view.
+
 Version 0.1.0
 -------------
 
