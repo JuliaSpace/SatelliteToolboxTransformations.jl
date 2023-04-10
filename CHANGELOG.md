@@ -1,6 +1,12 @@
 SatelliteToolboxTransformations.jl Changelog
 ============================================
 
+Version 0.1.2
+-------------
+
+- ![Bugfix][badge-bugfix] We fixed a bug that was failing the task that builds the stable
+  documentation.
+
 Version 0.1.1
 -------------
 
