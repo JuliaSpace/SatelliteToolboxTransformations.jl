@@ -24,8 +24,39 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+export ecef_to_geocentric
 export ecef_to_geodetic, geodetic_to_ecef
 export geocentric_to_geodetic, geodetic_to_geocentric
+
+"""
+    ecef_to_geocentric(r_e::AbstractVector{T}) -> NTuple{3, float(T)}
+
+Convert the vector `r_e` represented in the Earth-Centered, Earth-Fixed (ECEF) reference
+frame into geocentric coordinates (geocentric latitude, longitude, and distance from Earth's
+center).
+
+# Returns
+
+- `float(T)`: Geocentric latitude [rad].
+- `float(T)`: Longitude [rad].
+- `float(T)`: Distance from Earth's center [m].
+"""
+function ecef_to_geocentric(r_e::AbstractVector)
+    T = float(eltype(r_e))
+
+    # Auxiliary variables.
+    x  = T(r_e[1])
+    y  = T(r_e[2])
+    z  = T(r_e[3])
+    x² = x^2
+    y² = y^2
+
+    lat = atan(z, √(x² + y²))
+    lon = atan(y, x)
+    r   = √(x² + y² + z²)
+
+    return lat, lon, r
+end
 
 """
     ecef_to_geodetic(r_e::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> NTuple{3, T}
