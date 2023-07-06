@@ -60,7 +60,7 @@ function ecef_to_geocentric(r_e::AbstractVector)
 end
 
 """
-    geocentric_to_ecef(lat::T1, lon::T2, r::T3) where {T1<:Number, T2<:Number, T3<:Number} -> SVector{3, T}
+    geocentric_to_ecef(lat::Number, lon::Number, r::Number) -> SVector{3, T}
 
 Convert the geocentric coordinates (latitude `lat` [rad], longitude `lon` [rad], and
 distance from Earth's center `r` [m]) into a Earth-Centered, Earth-Fixed vector [m].
