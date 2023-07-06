@@ -8,15 +8,73 @@ DocTestSetup = quote
 end
 ```
 
-There are three functions that can help to convert between geodetic and geocentric
+There are six functions that can help to convert between geodetic and geocentric
 representations. Notice that currently all Geodetic representations are based on the WGS84
 reference ellipsoid.
 
+## ECEF to Geocentric
+
+We can convert a position vector represented in an Earth-Centered, Earth-Fixed frame (ECEF)
+`r_e` to the Geocentric latitude, longitude, and distance from Earth's center using the
+following function:
+
+```julia
+function ecef_to_geocentric(r_e::AbstractVector{T})
+```
+
+which returns a tuple with:
+
+- The Geocentric latitude [rad];
+- The longitude [rad]; and
+- The distance from the Earth's center [m].
+
+```jldoctest
+julia> ecef_to_geocentric([7000, 0, 7000])
+(0.7853981633974483, 0.0, 9899.494936611665)
+
+julia> ecef_to_geocentric([0, 0, 7000])
+(1.5707963267948966, 0.0, 7000.0)
+
+julia> ecef_to_geocentric([7000, 0, 0])
+(0.0, 0.0, 7000.0)
+```
+
+### Geocentric to ECEF
+
+We can convert a Geocentric coordinate (latitude `lat` [rad], longitude `lon` [rad], and
+distance from Earth's center `r` [m]) to a vector represented in the Earth-Centered,
+Earth-Fixed (ECEF) frame using the following function:
+
+```julia
+function geocentric_to_ecef(lat::Number, lon::Number, r::Number) -> SVector{3, T}
+```
+
+which returns a 3x1 vector.
+
+```jldoctest
+julia> geocentric_to_ecef(0, 0, 7000e3)
+3-element StaticArraysCore.SVector{3, Float64} with indices SOneTo(3):
+ 7.0e6
+ 0.0
+ 0.0
+ 
+julia> geocentric_to_ecef(pi / 2, 0, 7000e3)
+3-element StaticArraysCore.SVector{3, Float64} with indices SOneTo(3):
+ 4.286263797015736e-10
+ 0.0
+ 7.0e6
+ 
+julia> geocentric_to_ecef(pi / 4, 0, 7000e3)
+3-element StaticArraysCore.SVector{3, Float64} with indices SOneTo(3):
+ 4.949747468305833e6
+ 0.0
+ 4.949747468305832e6
+```
+
 ## ECEF to Geodetic
 
-It is possible to convert a position vector represented in an Earth-Centered, Earth-Fixed
-frame (ECEF) `r_e` to the Geodetic latitude, longitude, and altitude by the following
-function:
+We can convert a position vector represented in an Earth-Centered, Earth-Fixed frame (ECEF)
+`r_e` to the Geodetic latitude, longitude, and altitude using the following function:
 
 ```julia
 function ecef_to_geodetic(r_e::AbstractVector)
@@ -48,7 +106,7 @@ converted to a vector represented in an ECEF reference frame by the following fu
 function geodetic_to_ecef(lat::Number, lon::Number, h::Number)
 ```
 
-in which a 3x1 vector will be returned.
+which returns a 3x1 vector.
 
 ```jldoctest
 julia> geodetic_to_ecef(0, 0, 0)
@@ -74,7 +132,7 @@ ellipsoid - WGS84) using the following function:
 function geocentric_to_geodetic(ϕ_gc::Number, r::Number)
 ```
 
-in which a tuple with two values will be returned:
+in which returns a tuple with two values:
 
 - The Geodetic latitude [rad]; and
 - The altitude above the reference ellipsoid (WGS-84) [m].
@@ -100,7 +158,7 @@ of Earth) using the following function:
 function geodetic_to_geocentric(ϕ_gd::Number, h::Number)
 ```
 
-in which a tuple with two values will be returned:
+which returns a tuple with two values:
 
 - The Geocentric latitude [rad]; and
 - The distance from the center of Earth [m].
