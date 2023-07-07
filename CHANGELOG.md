@@ -1,6 +1,12 @@
 SatelliteToolboxTransformations.jl Changelog
 ============================================
 
+Version 0.1.3
+-------------
+
+- ![Feature][badge-feature] We added the functions `ecef_to_geocentric` and
+  `geocentric_to_ecef` to convert between ECEF vectors and Geocentric coordinates.
+
 Version 0.1.2
 -------------
 
