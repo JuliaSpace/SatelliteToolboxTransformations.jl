@@ -25,7 +25,7 @@ Convert the orbit state vector `sv` from an ECEF frame to another ECEF frame.  T
 `args...` must match those of the function [`r_ecef_to_ecef`](@ref) **without** the rotation
 representation.
 """
-function sv_ecef_to_ecef(sv::OrbitStateVector, args...)
+function sv_ecef_to_ecef(sv::OrbitStateVector, args::Vararg{Any, N}) where N
     D = r_ecef_to_ecef(DCM, args...)
 
     # Since both frames does not have a significant angular velocity between
