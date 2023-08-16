@@ -1,6 +1,13 @@
 SatelliteToolboxTransformations.jl Changelog
 ============================================
 
+Version 0.1.4
+-------------
+
+- ![Enhancement][badge-enhancement] We updated the dependency compatibility bounds.
+- ![Enhancement][badge-enhancement] We forced specialization in the function
+  `sv_ecef_to_ecef`, reducing the allocations due to compilation. (PR [#2][gh-pr-2])
+
 Version 0.1.3
 -------------
 
@@ -33,3 +40,4 @@ Version 0.1.0
 [badge-bugfix]: https://img.shields.io/badge/Bugfix-purple.svg
 [badge-info]: https://img.shields.io/badge/Info-gray.svg
 
+[gh-pr-2]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/2
