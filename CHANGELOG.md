@@ -1,6 +1,12 @@
 SatelliteToolboxTransformations.jl Changelog
 ============================================
 
+Version 0.1.6
+-------------
+
+- ![Info][badge-info] We updated Interpolations.jl compat bounds to v0.15. Notice that v0.14
+  is still supported. (PR [#4][gh-pr-4])
+
 Version 0.1.5
 -------------
 
@@ -49,3 +55,4 @@ Version 0.1.0
 
 [gh-pr-2]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/2
 [gh-pr-3]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/3
+[gh-pr-4]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/4
