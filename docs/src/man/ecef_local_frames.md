@@ -41,14 +41,14 @@ julia> r_ecef = [
 julia> ecef_to_ned(r_ecef, -45 |> deg2rad, -53 |> deg2rad, 500; translate = true)
 3-element StaticArraysCore.SVector{3, Float64} with indices SOneTo(3):
   1.000000000073973
- -1.3464800140860807e-10
+ -1.346480016848351e-10
  -6.608675073698631e-11
  
 julia> ecef_to_ned(r_ecef, -45 |> deg2rad, -53 |> deg2rad, 500; translate = false)
 3-element StaticArraysCore.SVector{3, Float64} with indices SOneTo(3):
  21385.655604819105
-    -2.9738721822476036e-10
-    -6.36795363451633e6
+    -2.4815366958196177e-10
+    -6.3679536345163295e6
 ```
 
 ## Converting from NED to ECEF

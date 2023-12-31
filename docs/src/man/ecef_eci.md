@@ -71,10 +71,10 @@ The following keywords are available:
 
 ```jldoctest ECEF_ECI
 julia> eop_iau1980 = fetch_iers_eop();
-[ Info: Downloading file 'EOP_IAU1980.TXT' from 'https://datacenter.iers.org/data/csv/finals.all.csv'...
+[ Info: Downloading the file 'finals.all.csv' from 'https://datacenter.iers.org/data/csv/finals.all.csv'...
 
 julia> eop_iau2000a = fetch_iers_eop(Val(:IAU2000A));
-[ Info: Downloading file 'EOP_IAU2000A.TXT' from 'https://datacenter.iers.org/data/csv/finals2000A.all.csv'...
+[ Info: Downloading the file 'finals2000A.all.csv' from 'https://datacenter.iers.org/data/csv/finals2000A.all.csv'...
 ```
 
 ## ECEF to ECEF
@@ -191,45 +191,85 @@ the free core nutation will not be available, reducing the precision.
 ```jldoctest ECEF_ECI
 julia> r_eci_to_eci(DCM, GCRF(), J2000(), date_to_jd(1986, 6, 19, 21, 35, 0), eop_iau1980)
 DCM{Float64}:
-  1.0         -4.71332e-12   1.53474e-9
-  4.7133e-12   1.0          -3.53979e-9
- -1.53474e-9   3.53979e-9    1.0
+  1.0          -4.71326e-12   1.53474e-9
+  4.71332e-12   1.0          -3.53979e-9
+ -1.53474e-9    3.53979e-9    1.0
 
-julia> r_eci_to_eci(Quaternion, TEME(), GCRF(), date_to_jd(1986, 6, 19, 21, 35, 0), eop_iau1980)
+julia> r_eci_to_eci(
+            Quaternion,
+            TEME(),
+            GCRF(),
+            date_to_jd(1986, 6, 19, 21, 35, 0),
+            eop_iau1980
+        )
 Quaternion{Float64}:
   + 0.999999 + 1.83013e-5⋅i + 0.000665304⋅j - 0.00151324⋅k
 
-julia> r_eci_to_eci(TOD(), date_to_jd(1986, 6, 19, 21, 35, 0), TOD(), date_to_jd(1987, 5, 19, 3, 0, 0), eop_iau1980)
+julia> r_eci_to_eci(
+            TOD(),
+            date_to_jd(1986, 6, 19, 21, 35, 0),
+            TOD(),
+            date_to_jd(1987, 5, 19 , 3, 0, 0),
+            eop_iau1980
+        )
 DCM{Float64}:
  1.0          -0.000224088  -9.73787e-5
  0.000224087   1.0          -5.80065e-6
  9.738e-5      5.77883e-6    1.0
 
-julia> r_eci_to_eci(Quaternion, TOD(), 2451545.0, MOD(), 2451545.0, eop_iau1980)
+julia> r_eci_to_eci(
+            Quaternion,
+            TOD(),
+            2451545.0,
+            MOD(),
+            2451545.0,
+            eop_iau1980
+        )
 Quaternion{Float64}:
   + 1.0 - 1.40025e-5⋅i + 1.34736e-5⋅j - 3.10785e-5⋅k
 
-julia> r_eci_to_eci(J2000(), TEME(), date_to_jd(1986, 6, 19, 21, 35, 0))
+julia> r_eci_to_eci(
+            J2000(),
+            TEME(),
+            date_to_jd(1986, 6, 19, 21, 35, 0)
+        )
 DCM{Float64}:
   0.999995    0.0030265    0.00133055
  -0.00302645  0.999995    -3.86125e-5
  -0.00133066  3.45854e-5   0.999999
 
-julia> r_eci_to_eci(CIRS(), GCRF(), date_to_jd(1986, 6, 19, 21, 35, 0), eop_iau2000a)
+julia> r_eci_to_eci(
+            CIRS(),
+            GCRF(),
+            date_to_jd(1986, 6, 19, 21, 35, 0),
+            eop_iau2000a
+        )
 DCM{Float64}:
  0.999999     3.88389e-8  -0.00133066
  7.18837e-9   1.0          3.45897e-5
  0.00133066  -3.45897e-5   0.999999
 
-julia> r_eci_to_eci(Quaternion, CIRS(), GCRF(), date_to_jd(1986, 6, 19, 21, 35, 0), eop_iau2000a)
+julia> r_eci_to_eci(
+            Quaternion,
+            CIRS(),
+            GCRF(),
+            date_to_jd(1986, 6, 19, 21, 35, 0),
+            eop_iau2000a
+        )
 Quaternion{Float64}:
   + 1.0 + 1.72949e-5⋅i + 0.000665332⋅j + 7.91263e-9⋅k
 
-julia> r_eci_to_eci(DCM, GCRF(), J2000(), date_to_jd(1986, 6, 19, 21, 35, 0), eop_iau1980)
+julia> r_eci_to_eci(
+            DCM,
+            GCRF(),
+            J2000(),
+            date_to_jd(1986, 6, 19, 21, 35, 0),
+            eop_iau1980
+        )
 DCM{Float64}:
-  1.0         -4.71332e-12   1.53474e-9
-  4.7133e-12   1.0          -3.53979e-9
- -1.53474e-9   3.53979e-9    1.0
+  1.0          -4.71326e-12   1.53474e-9
+  4.71332e-12   1.0          -3.53979e-9
+ -1.53474e-9    3.53979e-9    1.0
 ```
 
 ## ECEF to ECI
