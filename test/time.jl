@@ -47,26 +47,26 @@
         3692217600 37 1 "Jan" 2017;
     ]
 
-    for i in 1:size(leap_secs,1)
-        ΔAT   = leap_secs[i,2]
-        day   = leap_secs[i,3]
+    for i in axes(leap_secs, 1)
+        ΔAT   = leap_secs[i, 2]
+        day   = leap_secs[i, 3]
         month = begin
-            if leap_secs[i,4] == "Jan"
+            if leap_secs[i, 4] == "Jan"
                 1
-            elseif leap_secs[i,4] == "Jul"
+            elseif leap_secs[i, 4] == "Jul"
                 7
             else
                 error("Invalid array `leap_secs`.")
             end
         end
-        year  = leap_secs[i,5]
+        year  = leap_secs[i, 5]
 
-        @test get_Δat(date_to_jd(year,month,day,0,0,0)) == ΔAT
+        @test get_Δat(date_to_jd(year, month, day)) == ΔAT
 
         # One second before the entry in `leap_secs`, we must have `ΔAT-1` leap seconds.
         # However, this is not true for the very first line.
         (i == 1) && continue
-        @test get_Δat(date_to_jd(year,month,day,0,0,0)-1/86400) == ΔAT-1
+        @test get_Δat(date_to_jd(year, month, day) - 1 / 86400) == ΔAT-1
     end
 end
 
@@ -111,7 +111,7 @@ end
     # -- jd_utc_to_ut1 ---------------------------------------------------------------------
 
     # At the mentioned date, Mountain Standard Time is 6h behind UTC.
-    JD_UTC = date_to_jd(2004, 5, 14, 10+6, 43, 0)
+    JD_UTC = date_to_jd(2004, 5, 14, 10 + 6, 43, 0)
     JD_UT1 = jd_utc_to_ut1(JD_UTC, ΔUT1)
 
     (year, month, day, hour, minute, second) = jd_to_date(JD_UT1)
@@ -180,7 +180,7 @@ end
     # -- jd_utc_to_ut1 ---------------------------------------------------------------------
 
     # At the mentioned date, Mountain Standard Time is 6h behind UTC.
-    JD_UTC = date_to_jd(2004, 5, 14, 10+6, 43, 0)
+    JD_UTC = date_to_jd(2004, 5, 14, 10 + 6, 43, 0)
 
     JD_UT1 = jd_utc_to_ut1(JD_UTC, eop_iau1980)
 
@@ -270,7 +270,7 @@ end
     # -- jd_utc_to_tt ----------------------------------------------------------------------
 
     # At the mentioned date, Mountain Standard Time is 6h behind UTC.
-    JD_UTC = date_to_jd(2004, 5, 14, 10+6, 43, 0)
+    JD_UTC = date_to_jd(2004, 5, 14, 10 + 6, 43, 0)
     JD_TT  = jd_utc_to_tt(JD_UTC)
 
     (year, month, day, hour, minute, second) = jd_to_date(JD_TT)
