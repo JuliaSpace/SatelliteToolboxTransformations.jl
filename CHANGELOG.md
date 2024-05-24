@@ -1,6 +1,12 @@
 SatelliteToolboxTransformations.jl Changelog
 ============================================
 
+Version 0.1.8
+-------------
+
+- ![Bugfix][badge-bugfix] We fixed the compat bound of the package `Downloads` so that we
+  can still use **SatelliteToolboxTransformations.jl** in Julia 1.6.
+
 Version 0.1.7
 -------------
 
