@@ -51,7 +51,7 @@ function ecef_to_ned(
     T = promote_type(T1, T2, T3, T4) |> float
 
     # Convert the input vector to the right type.
-    r_ecef_T = @SVector T[r_ecef[begin + 0], r_ecef[begin + 1], r_ecef[begin + 2]]
+    r_ecef_T = @SVector T[r_ecef[0 + begin], r_ecef[1 + begin], r_ecef[2 + begin]]
 
     # Create the matrix that rotates the ECEF into NED.
     D_ned_ecef = angle_to_dcm(T(lon), -T(lat + π / 2), T(0), :ZYX)
@@ -106,7 +106,7 @@ function ned_to_ecef(
     T = promote_type(T1, T2, T3, T4) |> float
 
     # Convert the input vector to the right type.
-    r_ned_T = @SVector T[r_ned[begin + 0], r_ned[begin + 1], r_ned[begin + 2]]
+    r_ned_T = @SVector T[r_ned[0 + begin], r_ned[1 + begin], r_ned[2 + begin]]
 
     # Create the matrix that rotates the NED into ECEF.
     D_ecef_ned = angle_to_dcm(T(0), T(lat + π/2), -T(lon), :XYZ)
