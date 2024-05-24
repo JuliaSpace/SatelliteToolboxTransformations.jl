@@ -6,6 +6,8 @@ makedocs(
     format = Documenter.HTML(
         prettyurls = !("local" in ARGS),
         canonical = "https://juliaspace.github.io/SatelliteToolboxTransformations.jl/stable/",
+        size_threshold = 500 * 1024,
+        size_threshold_warn = 300 * 1024,
     ),
     sitename = "SatelliteToolboxTransformations.jl",
     authors = "Ronan Arraes Jardim Chagas",

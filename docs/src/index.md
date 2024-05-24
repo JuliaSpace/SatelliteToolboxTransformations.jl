@@ -1,5 +1,4 @@
-SatelliteToolboxTransformations.jl
-==================================
+# SatelliteToolboxTransformations.jl
 
 This package contains transformations that are useful for the **SatelliteToolbox.jl**
 ecosystem. Currently, the following algorithms are available:
