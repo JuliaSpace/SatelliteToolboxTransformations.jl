@@ -20,12 +20,18 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
 Crayons = "4.0"
+Dates = "1.6"
+DelimitedFiles = "1.6"
+Downloads = "1.6"
 Interpolations = "0.14, 0.15"
+LinearAlgebra = "1.6"
+Logging = "1.6"
 Reexport = "1"
 ReferenceFrameRotations = "3"
 SatelliteToolboxBase = "0.2, 0.3"
 Scratch = "1"
 StaticArrays = "1"
+Test = "1.6"
 julia = "1.6"
 
 [extras]
