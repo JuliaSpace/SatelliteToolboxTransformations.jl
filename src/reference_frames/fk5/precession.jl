@@ -1,24 +1,18 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions to compute the precession according to IAU-76/FK5.
 #
-#   Functions to compute the precession according to IAU-76/FK5.
+## References ##############################################################################
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm Press,
+#     Hawthorn, CA, USA.
 #
-# References
-# ==========================================================================================
-#
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.
-#       Microcosm Press, Hawthorn, CA, USA.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export precession_fk5
 
 ############################################################################################
-#                                        Functions
+#                                        Functions                                         #
 ############################################################################################
 
 """
@@ -33,8 +27,8 @@ Compute the angles related to the precession movement in the Julian Day `jd_tt`
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.
-    Microcosm Press, Hawthorn, CA, USA.
+- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+    Press, Hawthorn, CA, USA.
 """
 function precession_fk5(jd_tt::Number)
     # Compute the Julian Centuries from `jd_tt`.

@@ -1,23 +1,17 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions related with the model IAU-76/FK5.
 #
-#   Functions related with the model IAU-76/FK5.
+## References ##############################################################################
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm Press,
+#     Hawthorn, CA, USA.
 #
-# References
-# ==========================================================================================
+# [2] Gontier, A. M., Capitaine, N (1991). High-Accuracy Equation of Equinoxes and VLBI
+#     Astrometric Modelling. Radio Interferometry: Theory, Techniques and Applications, IAU
+#     Coll. 131, ASP Conference Series, Vol. 19.
 #
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.
-#       Microcosm Press, Hawthorn, CA, USA.
-#
-#   [2] Gontier, A. M., Capitaine, N (1991). High-Accuracy Equation of Equinoxes
-#       and VLBI Astrometric Modelling. Radio Interferometry: Theory, Techniques
-#       and Applications, IAU Coll. 131, ASP Conference Series, Vol. 19.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export r_itrf_to_pef_fk5, r_pef_to_itrf_fk5
 export r_pef_to_tod_fk5,  r_tod_to_pef_fk5
@@ -28,7 +22,7 @@ export r_itrf_to_gcrf_fk5, r_gcrf_to_itrf_fk5
 export r_pef_to_mod_fk5,   r_mod_to_pef_fk5
 
 ############################################################################################
-#                                  IAU-76/FK5 Reductions
+#                                 IAU-76 / FK5 Reductions                                  #
 ############################################################################################
 #
 # The conversion between the Geocentric Celestial Reference Frame (GCRF) to the
@@ -52,11 +46,10 @@ export r_pef_to_mod_fk5,   r_mod_to_pef_fk5
 ############################################################################################
 
 ############################################################################################
-#                                     Single Rotations
+#                                     Single Rotations                                     #
 ############################################################################################
 
-#                                       ITRF <=> PEF
-# ==========================================================================================
+# == ITRF <=> PEF ==========================================================================
 
 """
     r_itrf_to_pef_fk5([T, ]x_p::Number, y_p::Number) -> T
@@ -144,8 +137,7 @@ function r_pef_to_itrf_fk5(T::Type, x_p::Number, y_p::Number)
     return smallangle_to_rot(T, -y_p, -x_p, 0)
 end
 
-#                                       PEF <=> TOD
-# ==========================================================================================
+# == PEF <=> TOD ===========================================================================
 
 """
     r_pef_to_tod_fk5([T, ]jd_ut1::Number, jd_tt::Number[, δΔψ_1980::Number]) -> T
@@ -255,8 +247,7 @@ function r_tod_to_pef_fk5(T::T_ROT, jd_ut1::Number, jd_tt::Number, δΔψ_1980::
     return inv_rotation(r_pef_to_tod_fk5(T, jd_ut1, jd_tt, δΔψ_1980))
 end
 
-#                                       TOD <=> MOD
-# ==========================================================================================
+# == TOD <=> MOD ===========================================================================
 
 """
     r_tod_to_mod_fk5([T, ]jd_tt::Number[, δΔϵ_1980::Number, δΔψ_1980::Number]) -> T
@@ -331,8 +322,7 @@ function r_mod_to_tod_fk5(T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔ
     return inv_rotation(r_tod_to_mod_fk5(T, jd_tt, δΔϵ_1980, δΔψ_1980))
 end
 
-#                                       MOD <=> GCRF
-# ==========================================================================================
+# == MOD <=> GCRF ==========================================================================
 
 """
     r_mod_to_gcrf_fk5([T, ]jd_tt::Number) -> T
@@ -394,7 +384,7 @@ r_gcrf_to_mod_fk5(jd_tt::Number) = r_gcrf_to_mod_fk5(DCM,jd_tt)
 r_gcrf_to_mod_fk5(T::T_ROT, jd_tt::Number) = inv_rotation(r_mod_to_gcrf_fk5(T, jd_tt))
 
 ############################################################################################
-#                                    Multiple Rotations
+#                                    Multiple Rotations                                    #
 ############################################################################################
 
 # The functions with multiple rotations must be added only in two cases:
@@ -404,8 +394,7 @@ r_gcrf_to_mod_fk5(T::T_ROT, jd_tt::Number) = inv_rotation(r_mod_to_gcrf_fk5(T, j
 #     with the single rotations.
 #
 
-#                                      ITRF <=> GCRF
-# ==========================================================================================
+# == ITRF <=> GCRF =========================================================================
 
 """
     r_itrf_to_gcrf_fk5([T, ]jd_ut1::Number, jd_tt::Number, x_p::Number, y_p::Number[, δΔϵ_1980::Number, δΔψ_1980::Number]) -> T
@@ -545,8 +534,7 @@ function r_gcrf_to_itrf_fk5(
     return inv_rotation(r_itrf_to_gcrf_fk5(T, jd_ut1, jd_tt, x_p, y_p, δΔϵ_1980, δΔψ_1980))
 end
 
-#                                       PEF <=> MOD
-# ==========================================================================================
+# == PEF <=> MOD ===========================================================================
 
 """
     r_pef_to_mod_fk5([T, ]jd_ut1::Number, jd_tt::Number[, δΔϵ_1980::Number, δΔψ_1980::Number]) -> T

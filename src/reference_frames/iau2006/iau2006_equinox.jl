@@ -1,26 +1,19 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions related with the equinox-based model IAU-2006 with IAU-2010 conventions.
 #
-#   Functions related with the equinox-based model IAU-2006 with IAU-2010 conventions.
+## References ##############################################################################
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm Press,
+#     Hawthorn, CA, USA.
 #
-# References
-# ==========================================================================================
+# [2] Capitaine, N., Wallace, P. T (2006). High precision methods for locating the celestial
+#     intermediate pole and origin. Astronomy & Astrophysics.
 #
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
-#       Press, Hawthorn, CA, USA.
+# [3] IERS (2010). Transformation between the International Terrestrial Reference System and
+#     the Geocentric Celestial Reference System. IERS Technical Note No. 36, Chapter 5.
 #
-#   [2] Capitaine, N., Wallace, P. T (2006). High precision methods for locating the
-#       celestial intermediate pole and origin. Astronomy & Astrophysics.
-#
-#   [3] IERS (2010). Transformation between the International Terrestrial Reference System
-#       and the Geocentric Celestial Reference System. IERS Technical Note No. 36, Chapter
-#       5.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export r_tirs_to_ers_iau2006, r_ers_to_tirs_iau2006
 export r_ers_to_mod_iau2006, r_mod_to_ers_iau2006
@@ -29,7 +22,7 @@ export r_mj2000_to_gcrf_iau2006, r_gcrf_to_mj2000_iau2006
 export r_tirs_to_mod_iau2006, r_mod_to_tirs_iau2006
 
 ############################################################################################
-#                            IAU-2006 equinox-based reductions
+#                            IAU-2006 Equinox-Based Reductions                             #
 ############################################################################################
 #
 # The conversion between the Geocentric Celestial Reference Frame (GCRF) to the
@@ -55,11 +48,10 @@ export r_tirs_to_mod_iau2006, r_mod_to_tirs_iau2006
 ############################################################################################
 
 ############################################################################################
-#                                     Single Rotations
+#                                     Single Rotations                                     #
 ############################################################################################
 
-#                                       TIRS <=> ERS
-# ==========================================================================================
+# == TIRS <=> ERS ==========================================================================
 
 """
     r_tirs_to_ers_iau2006([T, ]jd_ut1::Number, jd_tt::Number, δΔΨ_2000::Number = 0) -> T
@@ -146,8 +138,7 @@ function r_ers_to_tirs_iau2006(T::Type, jd_ut1::Number, jd_tt::Number, δΔΨ_20
     return inv_rotation(r_tirs_to_ers_iau2006(T, jd_ut1, jd_tt, δΔΨ_2000))
 end
 
-#                                       ERS <=> MOD
-# ==========================================================================================
+# == ERS <=> MOD ===========================================================================
 
 """
     r_ers_to_mod_iau2006([T, ]jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_2000::Number = 0) -> T
@@ -220,8 +211,7 @@ function r_mod_to_ers_iau2006(
     return inv_rotation(r_ers_to_mod_iau2006(T, jd_tt, δΔϵ_2000, δΔΨ_2000))
 end
 
-#                                      MOD <=> MJ2000
-# ==========================================================================================
+# == MOD <=> MJ2000 ========================================================================
 
 """
     r_mod_to_mj2000_iau2006([T, ]jd_tt::Number) -> T
@@ -319,9 +309,7 @@ function r_mj2000_to_mod_iau2006(T::Type, jd_tt::Number)
     return inv_rotation(r_mod_to_mj2000_iau2006(T, jd_tt))
 end
 
-############################################################################################
-#                                     MJ2000 <=> GCRF
-############################################################################################
+# == MJ2000 <=> GCRF =======================================================================
 
 """
     r_mj2000_to_gcrf_iau2006([T, ]jd_tt::Number = 0) -> T
@@ -336,6 +324,7 @@ be returned. Otherwise, if it is `Quaternion`, then a Quaternion will be returne
 this parameter is omitted, then it falls back to `DCM`.
 
 !!! info
+
     According to **[1]**, the frame bias that converts MJ2000 <=> GCRF is not a precise
     transformation for all the times.
 
@@ -376,6 +365,7 @@ be returned. Otherwise, if it is `Quaternion`, then a Quaternion will be returne
 this parameter is omitted, then it falls back to `DCM`.
 
 !!! info
+
     According to **[1]**, the frame bias that converts MJ2000 <=> GCRF is not a precise
     transformation for all the times.
 
@@ -395,7 +385,7 @@ function r_gcrf_to_mj2000_iau2006(T::Type, jd_tt::Number = 0)
 end
 
 ############################################################################################
-#                                    Multiple Rotations
+#                                    Multiple Rotations                                    #
 ############################################################################################
 
 # The functions with multiple rotations must be added here only when the it will decrease
@@ -418,6 +408,7 @@ be returned. Otherwise, if it is `Quaternion`, then a Quaternion will be returne
 this parameter is omitted, then it falls back to `DCM`.
 
 !!! info
+
     This composed rotation TIRS <=> ERS <=> MOD is implemented as a new function because the
     single rotations TIRS <=> ERS and ERS <=> MOD call the function `nutation_eo`, which has
     a high computational burden. In this case, the composed algorithm is about 2x faster

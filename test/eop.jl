@@ -1,18 +1,13 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Tests related to the EOP data.
 #
-#   Tests related to the EOP data.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
-# File: ./src/transformations/eop.jl
-# ==========================================================================================
+# == File: ./src/transformations/eop.jl ====================================================
 
 @testset "EOP data (IAU1980)" begin
-    # Compare the fetched data to the one available locally
-    # ======================================================================================
+    # == Compare the Fetched Data to the One Available Locally =============================
 
     # Fetch EOP from the internet.
     eop = get_iers_eop()
@@ -41,8 +36,7 @@
     @test eop.dPsi(JD)        == eop_local.dPsi(JD)
     @test eop.dEps(JD)        == eop_local.dEps(JD)
 
-    # Show
-    # ======================================================================================
+    # == Show ==============================================================================
 
     buf = IOBuffer()
     io = IOContext(buf)
@@ -82,8 +76,7 @@
 end
 
 @testset "EOP data (IAU2000A)" begin
-    # Compare the fetched data to the one available locally
-    # ======================================================================================
+    # == Compare the Fetched Data to the One Available Locally =============================
 
     # Fetch EOP from the internet.
     eop = get_iers_eop(Val(:IAU2000A))
@@ -112,8 +105,7 @@ end
     @test eop.dX(JD)          == eop_local.dX(JD)
     @test eop.dY(JD)          == eop_local.dY(JD)
 
-    # Show
-    # ======================================================================================
+    # == Show ==============================================================================
 
     buf = IOBuffer()
     io = IOContext(buf)

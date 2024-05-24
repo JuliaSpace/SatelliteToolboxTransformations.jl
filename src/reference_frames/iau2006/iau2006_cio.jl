@@ -1,26 +1,20 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions related with the CIO-based model IAU-2006 with IAU-2010 conventions.
 #
-#   Functions related with the CIO-based model IAU-2006 with IAU-2010 conventions.
+## References ##############################################################################
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
+#     Press, Hawthorn, CA, USA.
 #
-# References
-# ==========================================================================================
-#
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
-#       Press, Hawthorn, CA, USA.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export r_itrf_to_tirs_iau2006, r_tirs_to_itrf_iau2006
 export r_tirs_to_cirs_iau2006, r_cirs_to_tirs_iau2006
 export r_cirs_to_gcrf_iau2006, r_gcrf_to_cirs_iau2006
 
 ############################################################################################
-#                                   IAU-2006 Reductions
+#                                   IAU-2006 Reductions                                    #
 ############################################################################################
 #
 # The conversion between the Geocentric Celestial Reference Frame (GCRF) to the
@@ -43,11 +37,10 @@ export r_cirs_to_gcrf_iau2006, r_gcrf_to_cirs_iau2006
 ############################################################################################
 
 ############################################################################################
-#                                     Single Rotations
+#                                     Single Rotations                                     #
 ############################################################################################
 
-#                                      ITRF <=> TIRS
-# ==========================================================================================
+# == ITRF <=> TIRS =========================================================================
 
 """
     r_itrf_to_tirs_iau2006([T, ]jd_tt::Number, x_p::Number, y_p::Number) -> T
@@ -159,8 +152,7 @@ function r_tirs_to_itrf_iau2006(T::Type, jd_tt::Number, x_p::Number, y_p::Number
     return angle_to_rot(T, sl, -x_p, -y_p, :ZYX)
 end
 
-#                                      TIRS <=> CIRS
-# ==========================================================================================
+# == TIRS <=> CIRS =========================================================================
 
 """
     r_tirs_to_cirs_iau2006([T, ]jd_ut1::Number) -> T
@@ -245,8 +237,7 @@ function r_cirs_to_tirs_iau2006(T::Type, jd_ut1::Number)
     return angle_to_rot(T, θ_era, 0, 0, :ZXY)
 end
 
-#                                      CIRS <=> GCRF
-# ==========================================================================================
+# == CIRS <=> GCRF =========================================================================
 
 """
     r_cirs_to_gcrf_iau2006([T, ]jd_tt::Number, δx::Number = 0, δy::Number = 0) -> T
@@ -284,8 +275,7 @@ function r_cirs_to_gcrf_iau2006(::Type{DCM}, jd_tt::Number, δx::Number = 0, δy
     y² = y^2
     xy = x * y
 
-    # Compute the rotation matrix
-    # ======================================================================================
+    # == Compute the Rotation Matrix =======================================================
 
     # This is the approximate value for:
     #
@@ -344,8 +334,7 @@ function r_gcrf_to_cirs_iau2006(::Type{DCM}, jd_tt::Number, δx::Number = 0, δy
     y² = y^2
     xy = x * y
 
-    # Compute the rotation matrix
-    # ======================================================================================
+    # == Compute the Rotation Matrix =======================================================
 
     # This is the approximate value for:
     #

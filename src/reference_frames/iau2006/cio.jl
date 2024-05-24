@@ -1,22 +1,16 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions to compute the Celestial Intermediate Origin (CIO).
 #
-#   Functions to compute the Celestial Intermediate Origin (CIO).
+## References ##############################################################################
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
+#     Press, Hawthorn, CA, USA.
 #
-# References
-# ==========================================================================================
+# [2] Vallado, D. A (06-Feb-2018). Consolidated Errata of Fundamentals of Astrodynamics and
+#     Applications 4th Ed.
 #
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
-#       Press, Hawthorn, CA, USA.
-#
-#   [2] Vallado, D. A (06-Feb-2018). Consolidated Errata of Fundamentals of Astrodynamics
-#       and Applications 4th Ed.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export cio_iau2006
 
@@ -47,15 +41,13 @@ function cio_iau2006(jd_tt::Number)
     # Compute the Julian Centuries from `jd_tt`.
     t_tt = (jd_tt - JD_J2000) / 36525
 
-    # Auxiliary variables
-    # ======================================================================================
+    # == Auxiliary variables ===============================================================
 
     a2d = 1 / 3600
     d2r = π / 180
     a2r = a2d * d2r
 
-    # Fundamental arguments
-    # ======================================================================================
+    # == Fundamental arguments =============================================================
 
     # Luni-solar part.
     M_s, M_m, u_Mm, D_s, Ω_m = luni_solar_args_iau2006(jd_tt)
@@ -63,8 +55,7 @@ function cio_iau2006(jd_tt::Number)
     # Planetary part.
     λ_M☿, λ_M♀, λ_Me, λ_M♂, λ_M♃, λ_M♄, λ_M⛢, λ_M♆, p_λ = planetary_args_iau2006(jd_tt)
 
-    # X position of the CIP
-    # ======================================================================================
+    # == X Position of the CIP =============================================================
 
     ΔX = _iau2006_sum(
         (
@@ -104,8 +95,7 @@ function cio_iau2006(jd_tt::Number)
     # Convert to [rad].
     X *= a2r
 
-    # Y position of the CIP
-    # ======================================================================================
+    # == Y Position of the CIP =============================================================
 
     ΔY = _iau2006_sum(
         (
@@ -145,8 +135,7 @@ function cio_iau2006(jd_tt::Number)
     # Convert to [rad].
     Y *= a2r
 
-    # Parameter `s` (CIO locator)
-    # ======================================================================================
+    # == Parameter `s` (CIO locator) =======================================================
     #
     # The value `s` provides the position of the CIO on the Equator of the CIP corresponding
     # to the kinematical definition of the non-rotation origin in the GCRS when the CIP is

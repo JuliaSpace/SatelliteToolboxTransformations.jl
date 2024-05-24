@@ -1,20 +1,14 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Convert an orbit representation from an Earth-Centered Inertial (ECI) reference frame to
+# another ECI reference frame.
 #
-#   Convert an orbit representation from an Earth-Centered Inertial (ECI) reference frame to
-#   another ECI reference frame.
+## References ##############################################################################
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm Press,
+#     Hawthorn, CA, USA.
 #
-# References
-# ==========================================================================================
-#
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
-#       Press, Hawthorn, CA, USA.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export orb_eci_to_eci
 

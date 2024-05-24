@@ -1,33 +1,26 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions to compute the nutation according to IAU-76/FK5.
 #
-#   Functions to compute the nutation according to IAU-76/FK5.
+## References ##############################################################################
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
+#     Press, Hawthorn, CA, USA.
 #
-# References
-# ==========================================================================================
+# [2] Vallado, D. A (06-Feb-2018). Consolidated Errata of Fundamentals of Astrodynamics and
+#     Applications 4th Ed.
 #
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
-#       Press, Hawthorn, CA, USA.
-#
-#   [2] Vallado, D. A (06-Feb-2018). Consolidated Errata of Fundamentals of Astrodynamics
-#       and Applications 4th Ed.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export nutation_fk5
 
 ############################################################################################
-#                                        Constants
+#                                        Constants                                         #
 ############################################################################################
 
 ############################################################################################
 #
-# 1980 IAU Theory of Nutation Coefficients
-# ==========================================================================================
+# == 1980 IAU Theory of Nutation Coefficients ==============================================
 #
 # Those coefficients can be found on:
 #
@@ -159,7 +152,7 @@ const _IAU_1980_NUTATION_COEFFICIENTS = [
 ]
 
 ############################################################################################
-#                                        Functions
+#                                        Functions                                         #
 ############################################################################################
 
 """
@@ -183,8 +176,8 @@ when computing the nutation. If `n_max` is omitted, the it defaults to 106.
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.
-    Microcosm Press, Hawthorn, CA, USA.
+- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+    Press, Hawthorn, CA, USA.
 """
 function nutation_fk5(
     jd_tt::Number,
@@ -203,13 +196,11 @@ function nutation_fk5(
     # Compute the Julian Centuries from `jd_tt`.
     t_tt = (jd_tt - JD_J2000) / 36525
 
-    # Auxiliary variables
-    # ===================
+    # == Auxiliary variables ===============================================================
 
     d2r = π / 180
 
-    # Mean obliquity of the ecliptic
-    # ==============================
+    # == Mean Obliquity of the Ecliptic ====================================================
 
     # Compute the mean obliquity of the ecliptic [°].
     mϵ_1980 = @evalpoly(t_tt, 23.439291, -0.0130042, -1.64e-7, +5.04e-7)
@@ -217,8 +208,7 @@ function nutation_fk5(
     # Reduce to the interval [0, 2π]°.
     mϵ_1980 = mod(mϵ_1980, 360) * d2r
 
-    # Delaunay parameters of the Sun and Moon
-    # =======================================
+    # == Delaunay Parameters of the Sun and Moon ===========================================
 
     # Evaluate the Delaunay parameters associated with the Moon and the Sun
     # in the interval [0,2π]°.
@@ -271,8 +261,7 @@ function nutation_fk5(
     )
     Ω_m = mod(Ω_m, 360) * d2r
 
-    # Nutation in longitude and obliquity
-    # ===================================
+    # == Nutation in Longitude and Obliquity ===============================================
 
     # Compute the nutation in the longitude and in obliquity.
     ΔΨ_1980 = 0.0

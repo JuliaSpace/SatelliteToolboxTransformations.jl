@@ -1,20 +1,14 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Convert an orbit state vector from an Earth-Centered, Earth-Fixed (ECEF) reference frame
+# to a Earth-Centered Inertial (ECI) reference frame.
 #
-#   Convert an orbit state vector from an Earth-Centered, Earth-Fixed (ECEF) reference frame
-#   to a Earth-Centered Inertial (ECI) reference frame.
+## References ##############################################################################
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+#     Press, Hawthorn, CA, USA.
 #
-# References
-# ==========================================================================================
-#
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
-#       Press, Hawthorn, CA, USA.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export sv_ecef_to_eci
 
@@ -28,6 +22,7 @@ reference system. For more information, see the documentation of the function
 [`r_ecef_to_eci`](@ref).
 
 !!! info
+
     It is assumed that the input velocity and acceleration in `sv` are obtained by an
     observer on the ECEF frame. Thus, the output will contain the velocity and acceleration
     as measured by an observer on the ECI frame.

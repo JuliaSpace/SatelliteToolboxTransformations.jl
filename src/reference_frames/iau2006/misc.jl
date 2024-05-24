@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Miscellaneous functions for the functions of IAU-2006 theory.
 #
-#   Miscellaneous functions for the functions of IAU-2006 theory.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 # Compute the sum as used in many computations of IAU-2006 theory. The first parameter is a
 # tuple with the coefficient matrices, the second is the Julian century [TT], and the rest

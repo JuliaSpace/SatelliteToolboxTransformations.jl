@@ -1,28 +1,22 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions related time transformations.
 #
-#   Functions related time transformations.
+## References ##############################################################################
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm Press,
+#     Hawthorn, CA, USA.
 #
-# References
-# ==========================================================================================
+# [2] https://support.microsoft.com/en-us/help/214019/method-to-determine-whether-a-year-is-a-leap-year
 #
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
-#       Press, Hawthorn, CA, USA.
-#
-#   [2] https://support.microsoft.com/en-us/help/214019/method-to-determine-whether-a-year-is-a-leap-year
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export jd_ut1_to_utc, jd_utc_to_ut1
 export jd_utc_to_tt,  jd_tt_to_utc
 export get_Δat
 
 ############################################################################################
-#                                        Constants
+#                                        Constants                                         #
 ############################################################################################
 
 # Table containing the leap seconds between UTC and the International Atomic Time (TAI).
@@ -89,7 +83,7 @@ function get_Δat(JD::Number)
 end
 
 ############################################################################################
-#                                        Functions
+#                                        Functions                                         #
 ############################################################################################
 
 """

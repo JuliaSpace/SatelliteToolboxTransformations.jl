@@ -1,26 +1,19 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Compute the precession as in equinox-based IAU-2006 theory.
 #
-#   Compute the precession as in equinox-based IAU-2006 theory.
+## References ##############################################################################
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm Press,
+#     Hawthorn, CA, USA.
 #
-# References
-# ==========================================================================================
+# [2] Wallace, P. T., Capitaine, N (2006). Precession-nutation procedures consistent with
+#     IAU 2006 resolutions. Astronomy & Astrophysics.
 #
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
-#       Press, Hawthorn, CA, USA.
+# [3] IERS (2010). Transformation between the International Terrestrial Reference System and
+#     the Geocentric Celestial Reference System. IERS Technical Note No. 36, Chapter 5.
 #
-#   [2] Wallace, P. T., Capitaine, N (2006). Precession-nutation procedures consistent with
-#       IAU 2006 resolutions. Astronomy & Astrophysics.
-#
-#   [3] IERS (2010). Transformation between the International Terrestrial Reference System
-#       and the Geocentric Celestial Reference System. IERS Technical Note No. 36, Chapter
-#       5.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export precession_iau2006
 
@@ -42,8 +35,7 @@ function precession_iau2006(jd_tt::Number)
     # Compute the Julian Centuries from `jd_tt`.
     t_tt = (jd_tt - JD_J2000) / 36525
 
-    # Auxiliary variables
-    # ===================
+    # == Auxiliary Variables ===============================================================
 
     a2d = 1 / 3600
     d2r = π / 180

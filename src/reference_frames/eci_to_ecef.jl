@@ -1,20 +1,14 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Rotations from an Earth-Fixed Inertial (ECI) reference frame to an Earth-Fixed,
+# Earth-Centered (ECEF) reference frame.
 #
-#   Rotations from an Earth-Fixed Inertial (ECI) reference frame to an Earth-Fixed,
-#   Earth-Centered (ECEF) reference frame.
+## References ##############################################################################
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm Press,
+#     Hawthorn, CA, USA.
 #
-# References
-# ==========================================================================================
-#
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
-#       Press, Hawthorn, CA, USA.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export r_eci_to_ecef
 
@@ -62,6 +56,7 @@ The ECI frame is selected by the parameter `ECI`. The possible values are:
 - `MJ2000()`: ECI will be selected as the J2000 mean equatorial frame (MJ2000).
 
 !!! note
+
     The frames `MOD()` and `MOD06()` are virtually the same. However, we selected different
     names to make clear which theory are being used since mixing transformation between
     frames from IAU-76/FK5 and IAU-2006/2010 must be performed with caution.

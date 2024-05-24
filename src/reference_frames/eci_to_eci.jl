@@ -1,20 +1,14 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Rotations from an Earth-Centered Inertial (ECI) reference frame to another ECI reference
+# frame.
 #
-#   Rotations from an Earth-Centered Inertial (ECI) reference frame to another ECI reference
-#   frame.
+## References ##############################################################################
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm Press,
+#     Hawthorn, CA, USA.
 #
-# References
-# ==========================================================================================
-#
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
-#       Press, Hawthorn, CA, USA.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export r_eci_to_eci
 
@@ -72,6 +66,7 @@ The supported ECI frames for both origin `ECIo` and destination `ECIf` are:
 - `MJ2000()`: ECI will be selected as the J2000 mean equatorial frame (MJ2000).
 
 !!! note
+
     The frames `MOD()` and `MOD06()` are virtually the same. However, we selected different
     names to make clear which theory are being used since mixing transformation between
     frames from IAU-76/FK5 and IAU-2006/2010 must be performed with caution.
@@ -284,11 +279,10 @@ function r_eci_to_eci(
 end
 
 ############################################################################################
-#                                        IAU-76/FK5
+#                                       IAU-76 / FK5                                       #
 ############################################################################################
 
-#                                      GCRF <=> J2000
-# ==========================================================================================
+# == GCRF <=> J2000 ========================================================================
 
 function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:J2000}, jd_utc::Number, eop::EopIau1980)
     milliarcsec_to_rad = π / 648000000
@@ -325,8 +319,7 @@ function r_eci_to_eci(
     return inv_rotation(r_eci_to_eci(T, T_ECIf, T_ECIo, jd_utc, eop))
 end
 
-#                                       GCRF <=> MOD
-# ==========================================================================================
+# == GCRF <=> MOD ==========================================================================
 
 function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:MOD}, jd_utc::Number, eop::EopIau1980)
     # Get the time in TT.
@@ -346,8 +339,7 @@ function r_eci_to_eci(
     return inv_rotation(r_eci_to_eci(T, T_ECIf, T_ECIo, jd_utc, eop))
 end
 
-#                                       GCRF <=> TOD
-# ==========================================================================================
+# == GCRF <=> TOD ==========================================================================
 
 function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:TOD}, jd_utc::Number, eop::EopIau1980)
     milliarcsec_to_rad = π / 648000000
@@ -377,8 +369,7 @@ function r_eci_to_eci(
     return inv_rotation(r_eci_to_eci(T, T_ECIf, T_ECIo, jd_utc, eop))
 end
 
-#                                      GCRF <=> TEME
-# ==========================================================================================
+# == GCRF <=> TEME =========================================================================
 
 function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:TEME}, jd_utc::Number, eop::EopIau1980)
     milliarcsec_to_rad = π / 648000000
@@ -408,8 +399,7 @@ function r_eci_to_eci(
     return inv_rotation(r_eci_to_eci(T, T_ECIf, T_ECIo, jd_utc, eop))
 end
 
-#                                      J2000 <=> MOD
-# ==========================================================================================
+# == J2000 <=> MOD =========================================================================
 
 function r_eci_to_eci(T::T_ROT, ::Val{:J2000}, ::Val{:MOD}, jd_utc::Number, eop::EopIau1980)
     milliarcsec_to_rad = π / 648000000
@@ -459,8 +449,7 @@ function r_eci_to_eci(T::T_ROT, T_ECIo::Val{:MOD}, T_ECIf::Val{:J2000}, jd_utc::
     return inv_rotation(r_eci_to_eci(T, T_ECIf, T_ECIo, jd_utc))
 end
 
-#                                      J2000 <=> TOD
-# ==========================================================================================
+# == J2000 <=> TOD =========================================================================
 
 function r_eci_to_eci(T::T_ROT, ::Val{:J2000}, ::Val{:TOD}, jd_utc::Number, eop::EopIau1980)
     milliarcsec_to_rad = π / 648000000
@@ -511,8 +500,7 @@ function r_eci_to_eci(T::T_ROT, T_ECIo::Val{:TOD}, T_ECIf::Val{:J2000}, jd_utc::
     return inv_rotation(r_eci_to_eci(T, T_ECIf, T_ECIo, jd_utc))
 end
 
-#                                      J2000 <=> TEME
-# ==========================================================================================
+# == J2000 <=> TEME ========================================================================
 
 function r_eci_to_eci(
     T::T_ROT,
@@ -551,8 +539,7 @@ function r_eci_to_eci(
     return inv_rotation(r_eci_to_eci(T, T_ECIf, T_ECIo, jd_utc))
 end
 
-#                                Between MOD, TOD, and TEME
-# ==========================================================================================
+# == Between MOD, TOD, and TEME ============================================================
 
 function r_eci_to_eci(
     T::T_ROT,
@@ -589,11 +576,10 @@ function r_eci_to_eci(
 end
 
 ############################################################################################
-#                                 IAU-2006/2010 CIO-based
+#                                IAU-2006 / 2010 CIO-based                                 #
 ############################################################################################
 
-#                                      GCRF <=> CIRS
-# ==========================================================================================
+# == GCRF <=> CIRS =========================================================================
 
 function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:CIRS}, jd_utc::Number, eop::EopIau2000A)
     milliarcsec_to_rad = π / 648000000
@@ -631,8 +617,7 @@ function r_eci_to_eci(T::T_ROT, T_ECIo::Val{:CIRS}, T_ECIf::Val{:GCRF}, jd_utc::
     return inv_rotation(r_eci_to_eci(T, T_ECIf, T_ECIo, jd_utc))
 end
 
-#                                       Between CIRS
-# ==========================================================================================
+# == Between CIRS ==========================================================================
 
 function r_eci_to_eci(
     T::T_ROT,
@@ -668,11 +653,10 @@ function r_eci_to_eci(
 end
 
 ############################################################################################
-#                               IAU-2006/2010 equinox-based
+#                              IAU-2006 / 2010 Equinox-based                               #
 ############################################################################################
 
-#                                     GCRF <=> MJ2000
-# ==========================================================================================
+# == GCRF <=> MJ2000 =======================================================================
 
 function r_eci_to_eci(T::T_ROT, ::Val{:MJ2000}, ::Val{:GCRF}, jd_utc::Number, eop::EopIau2000A)
     return r_mj2000_to_gcrf_iau2006(T)
@@ -690,8 +674,7 @@ function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:MJ2000}, jd_utc::Number)
     return r_gcrf_to_mj2000_iau2006(T)
 end
 
-#                                       GCRF <=> MOD
-# ==========================================================================================
+# == GCRF <=> MOD ==========================================================================
 
 function r_eci_to_eci(T::T_ROT, ::Val{:MOD06}, ::Val{:GCRF}, jd_utc::Number, eop::EopIau2000A)
     return r_eci_to_eci(T, Val(:MOD06), Val(:GCRF), jd_utc)
@@ -716,8 +699,7 @@ function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:MOD06}, jd_utc::Number)
     return inv_rotation(r_eci_to_eci(T, Val(:MOD06), Val(:GCRF), jd_utc))
 end
 
-#                                       GCRF <=> ERS
-# ==========================================================================================
+# == GCRF <=> ERS ==========================================================================
 
 function r_eci_to_eci(T::T_ROT, ::Val{:ERS}, ::Val{:GCRF}, jd_utc::Number, eop::EopIau2000A)
     milliarcsec_to_rad = π / 648000000
@@ -758,8 +740,7 @@ function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:ERS}, jd_utc::Number)
     return inv_rotation(r_eci_to_eci(T, Val(:ERS), Val(:GCRF), jd_utc))
 end
 
-#                                      MJ2000 <=> MOD
-# ==========================================================================================
+# == MJ2000 <=> MOD ========================================================================
 
 function r_eci_to_eci(T::T_ROT, ::Val{:MOD06}, ::Val{:MJ2000}, jd_utc::Number, eop::EopIau2000A)
     return r_eci_to_eci(T, Val(:MOD06), Val(:MJ2000), jd_utc)
@@ -786,8 +767,7 @@ function r_eci_to_eci(
     return inv_rotation(r_eci_to_eci(T, Val(:MOD06), Val(:MJ2000), jd_utc))
 end
 
-#                                      MJ2000 <=> ERS
-# ==========================================================================================
+# == MJ2000 <=> ERS ========================================================================
 
 function r_eci_to_eci(T::T_ROT, ::Val{:ERS}, ::Val{:MJ2000}, jd_utc::Number, eop::EopIau2000A)
     milliarcsec_to_rad = π / 648000000
@@ -826,8 +806,7 @@ function r_eci_to_eci(T::T_ROT, ::Val{:MJ2000}, ::Val{:ERS}, jd_utc::Number)
     return inv_rotation(r_eci_to_eci(T, Val(:ERS), Val(:MJ2000), jd_utc))
 end
 
-#                                   Between ERS and MOD
-# ==========================================================================================
+# == Between ERS and MOD ===================================================================
 
 function r_eci_to_eci(
     T::T_ROT,

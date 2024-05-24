@@ -1,28 +1,22 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
-#
-#   Compute the nutation and the Equation of the Origins (EO) as in equinox-based IAU-2006
+# Compute the nutation and the Equation of the Origins (EO) as in equinox-based IAU-2006
 #   theory.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## References ##############################################################################
 #
-# References
-# ==========================================================================================
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
+#     Press, Hawthorn, CA, USA.
 #
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
-#       Press, Hawthorn, CA, USA.
+# [2] ftp://tai.bipm.org/iers/conv2010/chapter5/tab5.2e.txt
 #
-#   [2] ftp://tai.bipm.org/iers/conv2010/chapter5/tab5.2e.txt
+# [3] Wallace, P. T., Capitaine, N (2006). Precession-nutation procedures consistent with
+#     IAU 2006 resolutions. Astronomy & Astrophysics.
 #
-#   [3] Wallace, P. T., Capitaine, N (2006). Precession-nutation procedures consistent with
-#       IAU 2006 resolutions. Astronomy & Astrophysics.
+# [4] Capitaine, N., Wallace, P. T (2006). High precision methods for locating the celestial
+#     intermediate pole and origin. Astronomy & Astrophysics.
 #
-#   [4] Capitaine, N., Wallace, P. T (2006). High precision methods for locating the
-#       celestial intermediate pole and origin. Astronomy & Astrophysics.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export mean_obliquity_iau2006, nutation_eo_iau2006
 
@@ -43,15 +37,13 @@ function mean_obliquity_iau2006(jd_tt::Number)
     # Compute the Julian Centuries from `jd_tt`.
     t_tt = (jd_tt - JD_J2000) / 36525
 
-    # Auxiliary variables
-    # ======================================================================================
+    # == Auxiliary variables ===============================================================
 
     a2d = 1 / 3600
     d2r = π / 180
     a2r = a2d * d2r
 
-    # Mean obliquity of the ecliptic
-    # ======================================================================================
+    # == Mean Obliquity of the Ecliptic ====================================================
 
     # Compute the mean obliquity of the ecliptic [s].
 
@@ -96,8 +88,7 @@ function nutation_eo_iau2006(
     # Compute the Julian Centuries from `jd_tt`.
     t_tt = (jd_tt - JD_J2000) / 36525
 
-    # Auxiliary variables
-    # ======================================================================================
+    # == Auxiliary Variables ===============================================================
 
     a2d = 1 / 3600
     d2r = π / 180
@@ -106,8 +97,7 @@ function nutation_eo_iau2006(
     d2a = 3600
     r2a = r2d * d2a
 
-    # Fundamental arguments
-    # ======================================================================================
+    # == Fundamental Arguments =============================================================
 
     # Luni-solar part.
     M_s, M_m, u_Mm, D_s, Ω_m = luni_solar_args_iau2006(jd_tt)
@@ -115,13 +105,11 @@ function nutation_eo_iau2006(
     # Planetary part.
     λ_M☿, λ_M♀, λ_Me, λ_M♂, λ_M♃, λ_M♄, λ_M⛢, λ_M♆, p_λ = planetary_args_iau2006(jd_tt)
 
-    # Mean obliquity of the ecliptic
-    # ======================================================================================
+    # == Mean Obliquity of the Ecliptic ====================================================
 
     mϵ_2000 = mean_obliquity_iau2006(jd_tt)
 
-    # Nutation in the obliquity
-    # ======================================================================================
+    # == Nutation in the Obliquity =========================================================
 
     Δϵ_2000 = _iau2006_sum(
         (
@@ -148,8 +136,7 @@ function nutation_eo_iau2006(
     # Apply the correction given EOP data.
     Δϵ_2000 += δΔϵ_2000 * r2a
 
-    # Nutation in longitude
-    # ======================================================================================
+    # == Nutation in Longitude =============================================================
 
     ΔΨ_2000 = _iau2006_sum(
         (
@@ -176,8 +163,7 @@ function nutation_eo_iau2006(
     # Apply the correction given EOP data.
     ΔΨ_2000 += δΔΨ_2000 * r2a
 
-    # Equation of Origins (EO)
-    # ======================================================================================
+    # == Equation of Origins (EO) ==========================================================
 
     ΔEO = _iau2006_sum(
         (

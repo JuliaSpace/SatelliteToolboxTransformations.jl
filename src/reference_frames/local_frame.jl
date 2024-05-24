@@ -1,18 +1,12 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+#  Coordinate transformations related with local reference frames.
 #
-#    Coordinate transformations related with local reference frames.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-#
-# References
-# ==========================================================================================
+## References ##############################################################################
 #
 #   [1] https://gssc.esa.int/navipedia/index.php/Transformations_between_ECEF_and_ENU_coordinates
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export ecef_to_ned, ned_to_ecef
 
@@ -77,13 +71,13 @@ end
 """
     ned_to_ecef(r_ned::AbstractVector, lat::Number, lon::Number, h::Number; translate::Bool = false)
 
-Convert a vector `r_ned` represented in the local reference frame NED (North,
-East, Down) at the geodetic position `lat` [rad], `lon` [rad], and `h` [m] to
-the Earth-Centered, Earth-Fixed (ECEF) frame.
+Convert a vector `r_ned` represented in the local reference frame NED (North, East, Down) at
+the geodetic position `lat` [rad], `lon` [rad], and `h` [m] to the Earth-Centered,
+Earth-Fixed (ECEF) frame.
 
-If `translate` is `false`, then this function computes only the rotation between
-NED and ECEF. Otherwise, it will also translate the vector considering the
-distance between the Earth's center and NED origin.
+If `translate` is `false`, then this function computes only the rotation between NED and
+ECEF. Otherwise, it will also translate the vector considering the distance between the
+Earth's center and NED origin.
 
 # Remarks
 

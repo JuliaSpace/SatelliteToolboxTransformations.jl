@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Private functions related to the EOP data.
 #
-#   Private functions related to the EOP data.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 # Create the interpolation object for the `knots` and `field` from IERS.
 function _create_iers_eop_interpolation(knots::AbstractVector, field::AbstractVector)

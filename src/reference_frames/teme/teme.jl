@@ -1,37 +1,27 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions related with True Equator Mean Equinox (TEME) reference frame.
 #
-#   Functions related with True Equator Mean Equinox (TEME) reference frame.
+## References ##############################################################################
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm Press,
+#     Hawthorn, CA, USA.
 #
-# References
-# ==========================================================================================
-#
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
-#       Press, Hawthorn, CA, USA.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-#
-# Remarks
-# ==========================================================================================
+## Remarks #################################################################################
 #
 # As mentioned in [1](p. 233), there is not an official definition of the TEME frame. Hence,
 # in this package, it is considered the definition presented in [1](p. 233) in which the
 # complete form of the Equation of Equinoxes is used.  This seems to be the case when
 # comparing the values shown in Table 3-6 [1](p.  232).
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export r_teme_to_tod,  r_tod_to_teme
 export r_teme_to_mod,  r_mod_to_teme
 export r_teme_to_gcrf, r_gcrf_to_teme
 export r_teme_to_pef,  r_pef_to_teme
 
-#                                       TEME <=> TOD
-# ==========================================================================================
+# == TEME <=> TOD ==========================================================================
 
 """
     r_teme_to_tod([T, ]jd_tt::Number[, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0]) -> T
@@ -114,8 +104,7 @@ function r_tod_to_teme(T::Type, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1
     return inv_rotation(r_teme_to_tod(T, jd_tt, δΔϵ_1980, δΔψ_1980))
 end
 
-#                                       TEME <=> MOD
-# ==========================================================================================
+# == TEME <=> MOD ==========================================================================
 
 """
     r_teme_to_mod([T, ]jd_tt::Number[, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0]) -> T
@@ -211,8 +200,7 @@ function r_mod_to_teme(T::Type, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1
     return inv_rotation(r_teme_to_mod(T, jd_tt, δΔϵ_1980, δΔψ_1980))
 end
 
-#                                      TEME <=> GCRF
-# ==========================================================================================
+# == TEME <=> GCRF =========================================================================
 
 """
     r_teme_to_gcrf([T, ]jd_tt::Number[, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0]) -> T
@@ -292,8 +280,7 @@ function r_gcrf_to_teme(T::Type, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_
     return inv_rotation(r_teme_to_gcrf(T, jd_tt, δΔϵ_1980, δΔψ_1980))
 end
 
-#                                       TEME <=> PEF
-# ==========================================================================================
+# == TEME <=> PEF ==========================================================================
 
 """
     r_teme_to_pef([T, ]jd_tt::Number) -> T

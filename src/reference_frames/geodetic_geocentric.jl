@@ -1,28 +1,22 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+#  Coordinate transformations related with the geodetic and geocentric coordinates.
 #
-#    Coordinate transformations related with the geodetic and geocentric coordinates.
+## References ##############################################################################
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
+#     Press, Hawthorn, CA, USA.
 #
-# References
-# ==========================================================================================
+# [2] ESA Navipedia: http://www.navipedia.net/
 #
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
-#       Press, Hawthorn, CA, USA.
+# [3] mu-blox ag (1999). Datum Transformations of GPS Positions. Application Note.
 #
-#   [2] ESA Navipedia: http://www.navipedia.net/
+# [4] ISO TC 20/SC 14 N (2011). Geomagnetic Reference Models.
 #
-#   [3] mu-blox ag (1999). Datum Transformations of GPS Positions. Application Note.
+# [5] Borkowski, K. M (1987). Transformation of geocentric to geodetic coordinates without
+#     approximations. Astrophysics and Space Science, vol.  139, pp. 1-4.
 #
-#   [4] ISO TC 20/SC 14 N (2011). Geomagnetic Reference Models.
-#
-#   [5] Borkowski, K. M (1987). Transformation of geocentric to geodetic coordinates without
-#       approximations. Astrophysics and Space Science, vol.  139, pp. 1-4.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export ecef_to_geocentric, geocentric_to_ecef
 export ecef_to_geodetic, geodetic_to_ecef
@@ -92,6 +86,7 @@ Convert the vector `r_e` [m] represented in the Earth-Centered, Earth-Fixed (ECE
 frame into Geodetic coordinates for a custom target ellipsoid (defaults to WGS-84).
 
 !!! info
+
     The algorithm is based in **[1]**.
 
 # Returns
@@ -151,12 +146,12 @@ reference ellipsoid (defaults to WGS-84) into a vector represented on the Earth-
 Earth-Fixed (ECEF) reference frame.
 
 !!! info
+
     The algorithm is based in **[1]**.
 
 # Reference
 
-- **[1]**: mu-blox ag (1999). Datum Transformations of GPS Positions.
-    Application Note.
+- **[1]**: mu-blox ag (1999). Datum Transformations of GPS Positions. Application Note.
 """
 function geodetic_to_ecef(
     lat::Number,
@@ -191,6 +186,7 @@ WGS-84) from the geocentric latitude `ϕ_gc` (-π/2, π/2) [rad] and radius `r` 
 that the longitude is the same in both geocentric and geodetic coordinates.
 
 !!! info
+
     The algorithm is based in **[1]**.
 
 # Returns

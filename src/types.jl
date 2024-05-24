@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Definition of types and structures.
 #
-#   Definition of types and structures.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export T_ECEFs, T_ECIs, T_ECIs_of_date, T_ECEFs_IAU_2006, T_ECIs_IAU_2006
 export T_ECIs_IAU_2006_Equinox_of_date, T_ROT
@@ -13,7 +10,7 @@ export ITRF, PEF, TOD, MOD, GCRF, J2000, TEME, CIRS, TIRS, ERS, MOD06, MJ2000
 export EopIau1980, EopIau2000A
 
 ############################################################################################
-#                                     Reference frames
+#                                     Reference Frames                                     #
 ############################################################################################
 
 """
@@ -98,7 +95,7 @@ T_ROT = Union{Type{DCM}, Type{Quaternion}}
 @inline MJ2000() = Val(:MJ2000)
 
 ############################################################################################
-#                               Earth Orientation Parameters
+#                               Earth Orientation Parameters                               #
 ############################################################################################
 
 """
@@ -107,6 +104,7 @@ T_ROT = Union{Type{DCM}, Type{Quaternion}}
 Earth orientation parameters for the model IAU 1980.
 
 !!! note
+
     Each field will be an `AbstractInterpolation` indexed by the Julian Day.  Hence, if one
     wants to obtain, for example, the X component of the polar motion with respect to the
     crust at 19 June 2018, the following can be used:
@@ -144,6 +142,7 @@ end
 Earth orientation parameters for the model IAU 2000A.
 
 !!! note
+
     Each field will be an `AbstractInterpolation` indexed by the Julian Day.  Hence, if one
     want to obtain, for example, the X component of the polar motion with respect to the
     crust at 19 June 2018, the following can be used:
