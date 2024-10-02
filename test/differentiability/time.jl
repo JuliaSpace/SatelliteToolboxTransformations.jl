@@ -30,8 +30,8 @@
     jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
     ΔUT1 = -0.463326
 
-    eop_iau1980  = read_iers_eop("test/eop_IAU1980.txt",  Val(:IAU1980))
-    eop_iau2000a = read_iers_eop("test/eop_IAU2000A.txt", Val(:IAU2000A))
+    eop_iau1980  = read_iers_eop("./eop_IAU1980.txt",  Val(:IAU1980))
+    eop_iau2000a = read_iers_eop("./eop_IAU2000A.txt", Val(:IAU2000A))
 
     for func in test_functions
         f_fd, df_fd = value_and_derivative(

@@ -5,8 +5,8 @@
 ############################################################################################
 @testset "ECEF to ECEF Time Automatic Differentiation" begin
 
-    eop_iau1980  = read_iers_eop("test/eop_IAU1980.txt",  Val(:IAU1980))
-    eop_iau2000a = read_iers_eop("test/eop_IAU2000A.txt", Val(:IAU2000A))
+    eop_iau1980  = read_iers_eop("./eop_IAU1980.txt",  Val(:IAU1980))
+    eop_iau2000a = read_iers_eop("./eop_IAU2000A.txt", Val(:IAU2000A))
 
     jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
 
@@ -41,14 +41,15 @@ end
 
 @testset "ECEF to ECI Time Automatic Differentiation" begin
 
-    eop_iau1980  = read_iers_eop("test/eop_IAU1980.txt",  Val(:IAU1980))
-    eop_iau2000a = read_iers_eop("test/eop_IAU2000A.txt", Val(:IAU2000A))
+    eop_iau1980  = read_iers_eop("./eop_IAU1980.txt",  Val(:IAU1980))
+    eop_iau2000a = read_iers_eop("./eop_IAU2000A.txt", Val(:IAU2000A))
 
     jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
 
     frame_sets = (
         (ITRF(), GCRF(), eop_iau1980),
         (ITRF(), J2000(), eop_iau1980),
+        (ITRF(), TOD(), eop_iau1980),
         (ITRF(), MOD(), eop_iau1980),
         (ITRF(), TEME(), eop_iau1980),
         (PEF(), GCRF(), eop_iau1980),
@@ -63,6 +64,7 @@ end
         (ITRF(), ERS(), eop_iau2000a),
         (ITRF(), MOD06(), eop_iau2000a),
         (ITRF(), MJ2000(), eop_iau2000a),
+        (TIRS(), ERS(), eop_iau2000a),
         (TIRS(), MOD06(), eop_iau2000a),
         (TIRS(), MJ2000(), eop_iau2000a),
     )
@@ -92,14 +94,15 @@ end
 
 @testset "ECI to ECEF Time Automatic Differentiation" begin
 
-    eop_iau1980  = read_iers_eop("test/eop_IAU1980.txt",  Val(:IAU1980))
-    eop_iau2000a = read_iers_eop("test/eop_IAU2000A.txt", Val(:IAU2000A))
+    eop_iau1980  = read_iers_eop("./eop_IAU1980.txt",  Val(:IAU1980))
+    eop_iau2000a = read_iers_eop("./eop_IAU2000A.txt", Val(:IAU2000A))
 
     jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
 
     frame_sets = (
         (GCRF(), ITRF(), eop_iau1980),
         (J2000(), ITRF(), eop_iau1980),
+        (TOD(), ITRF(), eop_iau1980),
         (MOD(), ITRF(), eop_iau1980),
         (TEME(), ITRF(), eop_iau1980),
         (GCRF(), PEF(), eop_iau1980),
@@ -107,13 +110,14 @@ end
         (TOD(), PEF(), eop_iau1980),
         (MOD(), PEF(), eop_iau1980),
         (TEME(), PEF(), eop_iau1980),
-        (CIRS(), ITRF(), eop_iau2000a),
+        (GCRF(), TIRS(), eop_iau2000a),
         (GCRF(), ITRF(), eop_iau2000a),
         (CIRS(), TIRS(), eop_iau2000a),
-        (GCRF(), TIRS(), eop_iau2000a),
+        (CIRS(), ITRF(), eop_iau2000a),
         (ERS(), ITRF(), eop_iau2000a),
         (MOD06(), ITRF(), eop_iau2000a),
         (MJ2000(), ITRF(), eop_iau2000a),
+        (ERS(), TIRS(), eop_iau2000a),
         (MOD06(), TIRS(), eop_iau2000a),
         (MJ2000(), TIRS(), eop_iau2000a),
     )
@@ -143,31 +147,40 @@ end
 
 @testset "ECI to ECI Time Automatic Differentiation" begin
 
-    eop_iau1980  = read_iers_eop("test/eop_IAU1980.txt",  Val(:IAU1980))
-    eop_iau2000a = read_iers_eop("test/eop_IAU2000A.txt", Val(:IAU2000A))
+    eop_iau1980  = read_iers_eop("./eop_IAU1980.txt",  Val(:IAU1980))
+    eop_iau2000a = read_iers_eop("./eop_IAU2000A.txt", Val(:IAU2000A))
 
     jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
 
     frame_sets = (
-        (J2000(), MOD(), eop_iau1980),
+        (GCRF(), J2000(), eop_iau1980),
+        (J2000(), GCRF(), eop_iau1980),
+        (GCRF(), MOD(), eop_iau1980),
+        (MOD(), GCRF(), eop_iau1980),
+        (GCRF(), TOD(), eop_iau1980),
+        (TOD(), GCRF(), eop_iau1980),
+        (GCRF(), TEME(), eop_iau1980),
+        (TEME(), GCRF(), eop_iau1980),
         (MOD(), J2000(), eop_iau1980),
-        (J2000(), TOD(), eop_iau1980),
+        (J2000(), MOD(), eop_iau1980),
         (TOD(), J2000(), eop_iau1980),
-        (J2000(), TEME(), eop_iau1980),
+        (J2000(), TOD(), eop_iau1980),
         (TEME(), J2000(), eop_iau1980),
+        (J2000(), TEME(), eop_iau1980),
         (GCRF(), CIRS(), eop_iau2000a),
         (CIRS(), GCRF(), eop_iau2000a),
-        (MOD06(), GCRF(), eop_iau2000a),
+        (GCRF(), MJ2000(), eop_iau2000a),
+        (MJ2000(), GCRF(), eop_iau2000a),
         (GCRF(), MOD06(), eop_iau2000a),
-        (ERS(), GCRF(), eop_iau2000a),
+        (MOD06(), GCRF(), eop_iau2000a),
         (GCRF(), ERS(), eop_iau2000a),
-        (MOD06(), MJ2000(), eop_iau2000a),
+        (ERS(), GCRF(), eop_iau2000a),
         (MJ2000(), MOD06(), eop_iau2000a),
-        (ERS(), MJ2000(), eop_iau2000a),
+        (MOD06(), MJ2000(), eop_iau2000a),
         (MJ2000(), ERS(), eop_iau2000a),
+        (ERS(), MJ2000(), eop_iau2000a),
     )
     
-
     for frames in frame_sets
         f_fd, df_fd = value_and_derivative(
             (x) -> r_eci_to_eci(frames[1], frames[2], x, frames[3]),
@@ -192,8 +205,8 @@ end
 
 @testset "ECI to ECI Time Automatic Differentiation" begin
 
-    eop_iau1980  = read_iers_eop("test/eop_IAU1980.txt",  Val(:IAU1980))
-    eop_iau2000a = read_iers_eop("test/eop_IAU2000A.txt", Val(:IAU2000A))
+    eop_iau1980  = read_iers_eop("./eop_IAU1980.txt",  Val(:IAU1980))
+    eop_iau2000a = read_iers_eop("./eop_IAU2000A.txt", Val(:IAU2000A))
 
     jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
     
@@ -204,6 +217,7 @@ end
         (TEME(), MOD(), eop_iau1980),
         (TOD(), TEME(), eop_iau1980),
         (TEME(), TOD(), eop_iau1980),
+        (CIRS(), CIRS(), eop_iau2000a),
         (ERS(), MOD06(), eop_iau2000a),
         (MOD06(), ERS(), eop_iau2000a),
     )
@@ -225,7 +239,7 @@ end
                 )
 
                 @test $f_fd ≈ f_ad rtol=1e-14
-                @test $df_fd ≈ df_ad rtol=2e-1
+                @test $df_fd ≈ df_ad atol=1e-4
             end
         end
     end
