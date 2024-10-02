@@ -9,6 +9,9 @@ using SatelliteToolboxTransformations
 using Scratch
 using StaticArrays
 
+using DifferentiationInterface
+import FiniteDiff, ForwardDiff
+
 @testset "Earth Orientation Parameters" verbose = true begin
     cd("./eop")
     include("./eop/read.jl")
@@ -79,4 +82,14 @@ end
 
 @testset "Time" verbose = true begin
     include("./time.jl")
+end
+
+const _BACKENDS = (
+    ("ForwardDiff", AutoForwardDiff()),
+)
+
+@testset "Automatic Differentiation" verbose = true begin
+    include("./differentiability/eop.jl")
+    include("./differentiability/reference_frames.jl")
+    include("./differentiability/time.jl")
 end

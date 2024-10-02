@@ -22,7 +22,10 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 Crayons = "4.0"
 Dates = "1.6"
 DelimitedFiles = "1.6"
+DifferentiationInterface = "0.5"
 Downloads = "1"
+FiniteDiff = "2.24"
+ForwardDiff = "0.10"
 Interpolations = "0.14, 0.15"
 LinearAlgebra = "1.6"
 Logging = "1.6"
@@ -35,8 +38,11 @@ Test = "1.6"
 julia = "1.6"
 
 [extras]
+DifferentiationInterface = "a0c0ee7d-e4b9-4e03-894e-1c5f64a51d63"
+FiniteDiff = "6a86dc24-6348-571c-b903-95158fe2bd41"
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "Logging"]
+test = ["Test", "Logging", "DifferentiationInterface", "FiniteDiff", "ForwardDiff"]

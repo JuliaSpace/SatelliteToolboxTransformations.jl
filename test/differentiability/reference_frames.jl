@@ -1,0 +1,364 @@
+## Description #############################################################################
+#
+# Tests related to automatic differentiation for the Reference Frame Rotations.
+#
+############################################################################################
+@testset "ECEF to ECEF Time Automatic Differentiation" begin
+
+    eop_iau1980  = read_iers_eop("test/eop_IAU1980.txt",  Val(:IAU1980))
+    eop_iau2000a = read_iers_eop("test/eop_IAU2000A.txt", Val(:IAU2000A))
+
+    jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
+
+    frame_sets = (
+        (ITRF(), PEF(), eop_iau1980),
+        (PEF(), ITRF(), eop_iau1980),
+        (ITRF(), TIRS(), eop_iau2000a),
+        (TIRS(), ITRF(), eop_iau2000a),
+    )
+
+    for frames in frame_sets
+        f_fd, df_fd = value_and_derivative(
+            (x) -> r_ecef_to_ecef(frames[1], frames[2], x, frames[3]),
+            AutoFiniteDiff(),
+            jd_utc
+        )
+
+        for backend in _BACKENDS
+            @eval @testset $("DCM " * string(frames[1])[6:end-3] * " to " * string(frames[2])[6:end-3] * " Rotation " * string(backend[1])) begin
+                f_ad, df_ad = value_and_derivative(
+                    (x) -> r_ecef_to_ecef($frames[1], $frames[2], x, $frames[3]),
+                    $backend[2],
+                    $jd_utc
+                )
+
+                @test $f_fd == f_ad
+                @test $df_fd ≈ df_ad rtol=1e-4
+            end
+        end
+    end
+end
+
+@testset "ECEF to ECI Time Automatic Differentiation" begin
+
+    eop_iau1980  = read_iers_eop("test/eop_IAU1980.txt",  Val(:IAU1980))
+    eop_iau2000a = read_iers_eop("test/eop_IAU2000A.txt", Val(:IAU2000A))
+
+    jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
+
+    frame_sets = (
+        (ITRF(), GCRF(), eop_iau1980),
+        (ITRF(), J2000(), eop_iau1980),
+        (ITRF(), MOD(), eop_iau1980),
+        (ITRF(), TEME(), eop_iau1980),
+        (PEF(), GCRF(), eop_iau1980),
+        (PEF(), J2000(), eop_iau1980),
+        (PEF(), TOD(), eop_iau1980),
+        (PEF(), MOD(), eop_iau1980),
+        (PEF(), TEME(), eop_iau1980),
+        (ITRF(), CIRS(), eop_iau2000a),
+        (ITRF(), GCRF(), eop_iau2000a),
+        (TIRS(), CIRS(), eop_iau2000a),
+        (TIRS(), GCRF(), eop_iau2000a),
+        (ITRF(), ERS(), eop_iau2000a),
+        (ITRF(), MOD06(), eop_iau2000a),
+        (ITRF(), MJ2000(), eop_iau2000a),
+        (TIRS(), MOD06(), eop_iau2000a),
+        (TIRS(), MJ2000(), eop_iau2000a),
+    )
+    
+
+    for frames in frame_sets
+        f_fd, df_fd = value_and_derivative(
+            (x) -> r_ecef_to_eci(frames[1], frames[2], x, frames[3]),
+            AutoFiniteDiff(),
+            jd_utc,
+        )
+
+        for backend in _BACKENDS
+            @eval @testset $("DCM " * string(frames[1])[6:end-3] * " to " * string(frames[2])[6:end-3] * " Rotation " * string(backend[1])) begin
+                f_ad, df_ad = value_and_derivative(
+                    (x) -> r_ecef_to_eci($frames[1], $frames[2], x, $frames[3]),
+                    $backend[2],
+                    $jd_utc
+                )
+
+                @test $f_fd ≈ f_ad rtol=1e-14
+                @test $df_fd ≈ df_ad rtol=2e-1
+            end
+        end
+    end
+end
+
+@testset "ECI to ECEF Time Automatic Differentiation" begin
+
+    eop_iau1980  = read_iers_eop("test/eop_IAU1980.txt",  Val(:IAU1980))
+    eop_iau2000a = read_iers_eop("test/eop_IAU2000A.txt", Val(:IAU2000A))
+
+    jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
+
+    frame_sets = (
+        (GCRF(), ITRF(), eop_iau1980),
+        (J2000(), ITRF(), eop_iau1980),
+        (MOD(), ITRF(), eop_iau1980),
+        (TEME(), ITRF(), eop_iau1980),
+        (GCRF(), PEF(), eop_iau1980),
+        (J2000(), PEF(), eop_iau1980),
+        (TOD(), PEF(), eop_iau1980),
+        (MOD(), PEF(), eop_iau1980),
+        (TEME(), PEF(), eop_iau1980),
+        (CIRS(), ITRF(), eop_iau2000a),
+        (GCRF(), ITRF(), eop_iau2000a),
+        (CIRS(), TIRS(), eop_iau2000a),
+        (GCRF(), TIRS(), eop_iau2000a),
+        (ERS(), ITRF(), eop_iau2000a),
+        (MOD06(), ITRF(), eop_iau2000a),
+        (MJ2000(), ITRF(), eop_iau2000a),
+        (MOD06(), TIRS(), eop_iau2000a),
+        (MJ2000(), TIRS(), eop_iau2000a),
+    )
+    
+
+    for frames in frame_sets
+        f_fd, df_fd = value_and_derivative(
+            (x) -> r_eci_to_ecef(frames[1], frames[2], x, frames[3]),
+            AutoFiniteDiff(),
+            jd_utc,
+        )
+
+        for backend in _BACKENDS
+            @eval @testset $("DCM " * string(frames[1])[6:end-3] * " to " * string(frames[2])[6:end-3] * " Rotation " * string(backend[1])) begin
+                f_ad, df_ad = value_and_derivative(
+                    (x) -> r_eci_to_ecef($frames[1], $frames[2], x, $frames[3]),
+                    $backend[2],
+                    $jd_utc
+                )
+
+                @test $f_fd ≈ f_ad rtol=1e-14
+                @test $df_fd ≈ df_ad rtol=2e-1
+            end
+        end
+    end
+end
+
+@testset "ECI to ECI Time Automatic Differentiation" begin
+
+    eop_iau1980  = read_iers_eop("test/eop_IAU1980.txt",  Val(:IAU1980))
+    eop_iau2000a = read_iers_eop("test/eop_IAU2000A.txt", Val(:IAU2000A))
+
+    jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
+
+    frame_sets = (
+        (J2000(), MOD(), eop_iau1980),
+        (MOD(), J2000(), eop_iau1980),
+        (J2000(), TOD(), eop_iau1980),
+        (TOD(), J2000(), eop_iau1980),
+        (J2000(), TEME(), eop_iau1980),
+        (TEME(), J2000(), eop_iau1980),
+        (GCRF(), CIRS(), eop_iau2000a),
+        (CIRS(), GCRF(), eop_iau2000a),
+        (MOD06(), GCRF(), eop_iau2000a),
+        (GCRF(), MOD06(), eop_iau2000a),
+        (ERS(), GCRF(), eop_iau2000a),
+        (GCRF(), ERS(), eop_iau2000a),
+        (MOD06(), MJ2000(), eop_iau2000a),
+        (MJ2000(), MOD06(), eop_iau2000a),
+        (ERS(), MJ2000(), eop_iau2000a),
+        (MJ2000(), ERS(), eop_iau2000a),
+    )
+    
+
+    for frames in frame_sets
+        f_fd, df_fd = value_and_derivative(
+            (x) -> r_eci_to_eci(frames[1], frames[2], x, frames[3]),
+            AutoFiniteDiff(),
+            jd_utc,
+        )
+
+        for backend in _BACKENDS
+            @eval @testset $("DCM " * string(frames[1])[6:end-3] * " to " * string(frames[2])[6:end-3] * " Rotation " * string(backend[1])) begin
+                f_ad, df_ad = value_and_derivative(
+                    (x) -> r_eci_to_eci($frames[1], $frames[2], x, $frames[3]),
+                    $backend[2],
+                    $jd_utc
+                )
+
+                @test $f_fd ≈ f_ad rtol=1e-14
+                @test $df_fd ≈ df_ad rtol=2e-1
+            end
+        end
+    end
+end
+
+@testset "ECI to ECI Time Automatic Differentiation" begin
+
+    eop_iau1980  = read_iers_eop("test/eop_IAU1980.txt",  Val(:IAU1980))
+    eop_iau2000a = read_iers_eop("test/eop_IAU2000A.txt", Val(:IAU2000A))
+
+    jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
+    
+    frame_sets = (
+        (MOD(), TOD(), eop_iau1980),
+        (TOD(), MOD(), eop_iau1980),
+        (MOD(), TEME(), eop_iau1980),
+        (TEME(), MOD(), eop_iau1980),
+        (TOD(), TEME(), eop_iau1980),
+        (TEME(), TOD(), eop_iau1980),
+        (ERS(), MOD06(), eop_iau2000a),
+        (MOD06(), ERS(), eop_iau2000a),
+    )
+    
+
+    for frames in frame_sets
+        f_fd, df_fd = value_and_derivative(
+            (x) -> r_eci_to_eci(frames[1], x, frames[2], x, frames[3]),
+            AutoFiniteDiff(),
+            jd_utc,
+        )
+
+        for backend in _BACKENDS
+            @eval @testset $("DCM " * string(frames[1])[6:end-3] * " to " * string(frames[2])[6:end-3] * " Rotation " * string(backend[1])) begin
+                f_ad, df_ad = value_and_derivative(
+                    (x) -> r_eci_to_eci($frames[1], x, $frames[2], x, $frames[3]),
+                    $backend[2],
+                    $jd_utc
+                )
+
+                @test $f_fd ≈ f_ad rtol=1e-14
+                @test $df_fd ≈ df_ad rtol=2e-1
+            end
+        end
+    end
+end
+
+@testset "Geodetic Geocentric State Automatic Differentiation" begin
+    
+    ecef_pos = [7000e3; 0.0; 7000e3]
+
+    f_fd, df_fd = value_and_jacobian(
+        ecef_to_geocentric,
+        AutoFiniteDiff(),
+        ecef_pos,
+    )
+
+    for backend in _BACKENDS
+        @eval @testset $("ECEF to Geocentric " * string(backend[1])) begin
+            f_ad, df_ad = value_and_jacobian(
+                ecef_to_geocentric,
+                $backend[2],
+                $ecef_pos
+            )
+
+            @test $f_fd ≈ f_ad rtol=1e-14
+            @test $df_fd ≈ df_ad rtol=2e-1
+        end
+    end
+
+    geocentric_state = [deg2rad(45.0); deg2rad(0.0); 7000 * √2]
+
+    f_fd, df_fd = value_and_jacobian(
+        geocentric_to_ecef,
+        AutoFiniteDiff(),
+        geocentric_state,
+    )
+    
+    for backend in _BACKENDS
+        @eval @testset $("Geocentric to ECEF " * string(backend[1])) begin
+            f_ad, df_ad = value_and_jacobian(
+                geocentric_to_ecef,
+                $backend[2],
+                $geocentric_state
+            )
+
+            @test $f_fd ≈ f_ad rtol=1e-14
+            @test $df_fd ≈ df_ad rtol=2e-1
+        end
+    end
+
+    ecef_pos = [7000e3; 0.0; 7000e3]
+
+    f_fd, df_fd = value_and_jacobian(
+        ecef_to_geodetic,
+        AutoFiniteDiff(),
+        ecef_pos,
+    )
+
+    for backend in _BACKENDS
+        @eval @testset $("ECEF to Geodetic " * string(backend[1])) begin
+            f_ad, df_ad = value_and_jacobian(
+                ecef_to_geodetic,
+                $backend[2],
+                $ecef_pos
+            )
+
+            @test $f_fd ≈ f_ad rtol=1e-14
+            @test $df_fd ≈ df_ad rtol=2e-1
+        end
+    end
+
+    geodetic_state = [deg2rad(45.0); deg2rad(0.0); 400.0]
+    
+    f_fd, df_fd = value_and_jacobian(
+        geodetic_to_ecef,
+        AutoFiniteDiff(),
+        geodetic_state,
+    )
+
+    for backend in _BACKENDS
+        @eval @testset $("Geodetic to ECEF " * string(backend[1])) begin
+            f_ad, df_ad = value_and_jacobian(
+                geodetic_to_ecef,
+                $backend[2],
+                $geodetic_state
+            )
+
+            @test $f_fd ≈ f_ad rtol=1e-14
+            @test $df_fd ≈ df_ad rtol=2e-1
+        end
+    end
+
+    geocentric_state = [deg2rad(45.0); 7000 * √2]
+    
+    f_fd, df_fd = value_and_jacobian(
+        geocentric_to_geodetic,
+        AutoFiniteDiff(),
+        geocentric_state,
+    )
+    
+    for backend in _BACKENDS
+        @eval @testset $("Geocentric to Geodetic " * string(backend[1])) begin
+            f_ad, df_ad = value_and_jacobian(
+                geocentric_to_geodetic,
+                $backend[2],
+                $geocentric_state
+            )
+
+            @test $f_fd ≈ f_ad rtol=1e-14
+            @test $df_fd ≈ df_ad rtol=2e-1
+        end
+    end
+
+    geodetic_state = [deg2rad(45.0); 400.0]
+    
+    f_fd, df_fd = value_and_jacobian(
+        geodetic_to_geocentric,
+        AutoFiniteDiff(),
+        geodetic_state,
+    )
+
+    for backend in _BACKENDS
+        @eval @testset $("Geodetic to Geocentric " * string(backend[1])) begin
+            f_ad, df_ad = value_and_jacobian(
+                geodetic_to_geocentric,
+                $backend[2],
+                $geodetic_state
+            )
+
+            @test $f_fd ≈ f_ad rtol=1e-14
+            @test $df_fd ≈ df_ad rtol=2e-1
+        end
+    end
+
+end
+
+        
