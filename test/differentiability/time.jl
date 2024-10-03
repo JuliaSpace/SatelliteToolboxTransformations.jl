@@ -79,18 +79,18 @@
                 @test $df_fd2 ≈ df_ad2 atol=1e-4
 
                 f_ad3, df_ad3 = value_and_derivative(
-                    (x) -> func(x, eop_iau1980),
+                    (x) -> $func(x, $eop_iau1980),
                     $backend[2],
-                    jd_utc
+                    $jd_utc
                 )
 
                 @test $f_fd3 ≈ f_ad3 rtol=1e-10
                 @test $df_fd3 ≈ df_ad3 atol=1e-4
 
                 f_ad4, df_ad4 = value_and_derivative(
-                    (x) -> func(x, eop_iau2000a),
+                    (x) -> $func(x, $eop_iau2000a),
                     $backend[2],
-                    jd_utc
+                    $jd_utc
                 )
 
                 @test $f_fd4 ≈ f_ad4 rtol=1e-10
