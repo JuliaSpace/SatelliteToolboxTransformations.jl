@@ -23,15 +23,16 @@ export ecef_to_geodetic, geodetic_to_ecef
 export geocentric_to_geodetic, geodetic_to_geocentric
 
 """
-    ecef_to_geocentric(r_e::AbstractVector{T}) -> NTuple{3, float(T)}
+    ecef_to_geocentric(r_e::AbstractVector{T}) -> NTuple{3, T}
 
 Convert the vector `r_e` represented in the Earth-Centered, Earth-Fixed (ECEF) reference
 frame into geocentric coordinates (geocentric latitude, longitude, and distance from Earth's
 center).
 
 # Returns
-
-- `SVector`: The Geocentric state: [Geocentric latitude [rad] ∈ [-π / 2, π / 2], Longitude [rad] ∈ [-π , π], Distance from Earth's center [m]].
+- `T`: Geocentric latitude [rad] ∈ [-π / 2, π / 2].
+- `T`: Longitude [rad] ∈ [-π , π].
+- `T`: Distance from Earth's center [m].
 """
 function ecef_to_geocentric(r_e::AbstractVector)
 
@@ -98,7 +99,9 @@ frame into Geodetic coordinates for a custom target ellipsoid (defaults to WGS-8
 
 # Returns
 
-- `SVector`: The Geodetic State: [Latitude [rad], Longitude [rad], Altitude [m]]
+- `T`: Latitude [rad].
+- `T`: Longitude [rad].
+- `T`: Altitude [m].
 
 # Reference
 
@@ -220,7 +223,8 @@ that the longitude is the same in both geocentric and geodetic coordinates.
 
 # Returns
 
-- `SVector`: The Geodetic State [Geodetic latitude [rad], Altitude above the reference ellipsoid (defaults to WGS-84) [m]].
+- `T`: Geodetic latitude [rad].
+- `T`: Altitude above the reference ellipsoid (defaults to WGS-84) [m].
 
 # References
 
@@ -294,7 +298,8 @@ that the longitude is the same in both geocentric and geodetic coordinates.
 
 # Returns
 
-- `SVector`: The Geodetic State [Geodetic latitude [rad], Altitude above the reference ellipsoid (defaults to WGS-84) [m]].
+- `T`: Geodetic latitude [rad].
+- `T`: Altitude above the reference ellipsoid (defaults to WGS-84) [m].
 
 # References
 
@@ -322,7 +327,8 @@ the longitude is the same in both geocentric and geodetic coordinates.
 
 # Returns
 
-- `SVector`: The Geocentric State [Geocentric latitude [rad]; Radius from the center of the Earth [m]].
+- `T`: Geocentric latitude [rad].
+- `T`: Radius from the center of the Earth [m].
 
 # References
 
@@ -367,7 +373,8 @@ the longitude is the same in both geocentric and geodetic coordinates.
 
 # Returns
 
-- `SVector`: The Geocentric State [Geocentric latitude [rad]; Radius from the center of the Earth [m]].
+- `T`: Geocentric latitude [rad].
+- `T`: Radius from the center of the Earth [m].
 
 # References
 
