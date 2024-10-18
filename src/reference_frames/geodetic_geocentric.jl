@@ -47,7 +47,7 @@ function ecef_to_geocentric(r_e::AbstractVector)
     lon = atan(y, x)
     r   = √(x² + y² + z²)
 
-    return SVector(lat, lon, r)
+    return lat, lon, r
 end
 
 """
@@ -140,7 +140,7 @@ function ecef_to_geodetic(
         h = z / sin_lat - N * (1 - e²)
     end
 
-    return SVector(lat, lon, h)
+    return lat, lon, h
 end
 
 """
@@ -276,7 +276,7 @@ function geocentric_to_geodetic(
     sin_ϕ_gd, cos_ϕ_gd = sincos(ϕ_gd)
     h = (re - a * t) * cos_ϕ_gd + (z - b) * sin_ϕ_gd
 
-    return SVector(ϕ_gd, h)
+    return ϕ_gd, h
 end
 
 """
@@ -349,7 +349,7 @@ function geodetic_to_geocentric(
     r    = √(ρ^2 + z^2)
     ϕ_gc = asin(z / r)
 
-    return SVector(ϕ_gc, r)
+    return ϕ_gc, r
 end
 
 """

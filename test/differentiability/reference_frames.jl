@@ -250,7 +250,7 @@ end
     ecef_pos = [7000e3; 0.0; 7000e3]
 
     f_fd, df_fd = value_and_jacobian(
-        ecef_to_geocentric,
+        (x) -> [i for i in ecef_to_geocentric(x)],
         AutoFiniteDiff(),
         ecef_pos,
     )
@@ -258,7 +258,7 @@ end
     for backend in _BACKENDS
         @eval @testset $("ECEF to Geocentric " * string(backend[1])) begin
             f_ad, df_ad = value_and_jacobian(
-                ecef_to_geocentric,
+                (x) -> [i for i in ecef_to_geocentric(x)],
                 $backend[2],
                 $ecef_pos
             )
@@ -271,7 +271,7 @@ end
     geocentric_state = [deg2rad(45.0); deg2rad(0.0); 7000 * √2]
 
     f_fd, df_fd = value_and_jacobian(
-        geocentric_to_ecef,
+        (x) -> [i for i in geocentric_to_ecef(x)],
         AutoFiniteDiff(),
         geocentric_state,
     )
@@ -279,7 +279,7 @@ end
     for backend in _BACKENDS
         @eval @testset $("Geocentric to ECEF " * string(backend[1])) begin
             f_ad, df_ad = value_and_jacobian(
-                geocentric_to_ecef,
+                (x) -> [i for i in geocentric_to_ecef(x)],
                 $backend[2],
                 $geocentric_state
             )
@@ -292,7 +292,7 @@ end
     ecef_pos = [7000e3; 0.0; 7000e3]
 
     f_fd, df_fd = value_and_jacobian(
-        ecef_to_geodetic,
+        (x) -> [i for i in ecef_to_geodetic(x)],
         AutoFiniteDiff(),
         ecef_pos,
     )
@@ -300,7 +300,7 @@ end
     for backend in _BACKENDS
         @eval @testset $("ECEF to Geodetic " * string(backend[1])) begin
             f_ad, df_ad = value_and_jacobian(
-                ecef_to_geodetic,
+                (x) -> [i for i in ecef_to_geodetic(x)],
                 $backend[2],
                 $ecef_pos
             )
@@ -313,7 +313,7 @@ end
     geodetic_state = [deg2rad(45.0); deg2rad(0.0); 400.0]
     
     f_fd, df_fd = value_and_jacobian(
-        geodetic_to_ecef,
+        (x) -> [i for i in geodetic_to_ecef(x)],
         AutoFiniteDiff(),
         geodetic_state,
     )
@@ -321,7 +321,7 @@ end
     for backend in _BACKENDS
         @eval @testset $("Geodetic to ECEF " * string(backend[1])) begin
             f_ad, df_ad = value_and_jacobian(
-                geodetic_to_ecef,
+                (x) -> [i for i in geodetic_to_ecef(x)],
                 $backend[2],
                 $geodetic_state
             )
@@ -334,7 +334,7 @@ end
     geocentric_state = [deg2rad(45.0); 7000 * √2]
     
     f_fd, df_fd = value_and_jacobian(
-        geocentric_to_geodetic,
+        (x) -> [i for i in geocentric_to_geodetic(x)],
         AutoFiniteDiff(),
         geocentric_state,
     )
@@ -342,7 +342,7 @@ end
     for backend in _BACKENDS
         @eval @testset $("Geocentric to Geodetic " * string(backend[1])) begin
             f_ad, df_ad = value_and_jacobian(
-                geocentric_to_geodetic,
+                (x) -> [i for i in geocentric_to_geodetic(x)],
                 $backend[2],
                 $geocentric_state
             )
@@ -355,7 +355,7 @@ end
     geodetic_state = [deg2rad(45.0); 400.0]
     
     f_fd, df_fd = value_and_jacobian(
-        geodetic_to_geocentric,
+        (x) -> [i for i in geodetic_to_geocentric(x)],
         AutoFiniteDiff(),
         geodetic_state,
     )
@@ -363,7 +363,7 @@ end
     for backend in _BACKENDS
         @eval @testset $("Geodetic to Geocentric " * string(backend[1])) begin
             f_ad, df_ad = value_and_jacobian(
-                geodetic_to_geocentric,
+                (x) -> [i for i in geodetic_to_geocentric(x)],
                 $backend[2],
                 $geodetic_state
             )
