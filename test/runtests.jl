@@ -86,6 +86,11 @@ end
 
 const _BACKENDS = (
     ("ForwardDiff", AutoForwardDiff()),
+    ("Diffractor", AutoDiffractor()),
+    ("Enzyme", AutoEnzyme()),
+    ("Mooncake", AutoMooncake(;config=nothing)),
+    ("PolyesterForwardDiff", AutoPolyesterForwardDiff()),
+    ("Zygote", AutoZygote()),
 )
 
 @testset "Automatic Differentiation" verbose = true begin
