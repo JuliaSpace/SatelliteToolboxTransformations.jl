@@ -3,9 +3,6 @@
 # Tests related to automatic differentiation for the EOP functions.
 #
 ############################################################################################
-using Test
-using FiniteDiff, ForwardDiff, Diffractor, Enzyme, Mooncake, PolyesterForwardDiff, Zygote
-
 @testset "Time Automatic Differentiation" begin
 
     eop_iau1980  = read_iers_eop("test/eop_IAU1980.txt",  Val(:IAU1980))

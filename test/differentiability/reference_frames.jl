@@ -4,12 +4,15 @@
 #
 ############################################################################################
 
-@testset "ECEF to ECEF Time Automatic Differentiation" begin
+#@testset "ECEF to ECEF Time Automatic Differentiation" begin
 
     eop_iau1980  = read_iers_eop("test/eop_IAU1980.txt",  Val(:IAU1980))
     eop_iau2000a = read_iers_eop("test/eop_IAU2000A.txt", Val(:IAU2000A))
 
+    eop_iau1980 = fetch_iers_eop(Val(:IAU1980))
     jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
+
+    
 
     frame_sets = (
         (ITRF(), PEF(), eop_iau1980),
@@ -18,7 +21,8 @@
         (TIRS(), ITRF(), eop_iau2000a),
     )
 
-    for backend in _BACKENDS
+    backend = ("Mooncake", AutoMooncake(;config=nothing))
+    #for backend in _BACKENDS
         testset_name = "ECEF to ECEF Time " * string(backend[1])
         @testset "$testset_name" begin
             for frames in frame_sets

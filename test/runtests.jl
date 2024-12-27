@@ -10,7 +10,7 @@ using Scratch
 using StaticArrays
 
 using DifferentiationInterface
-import FiniteDiff, ForwardDiff
+using FiniteDiff, ForwardDiff, Diffractor, Enzyme, Mooncake, PolyesterForwardDiff, Zygote
 
 @testset "Earth Orientation Parameters" verbose = true begin
     cd("./eop")
