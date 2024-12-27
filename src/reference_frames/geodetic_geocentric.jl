@@ -162,14 +162,17 @@ Earth-Fixed (ECEF) reference frame.
 - **[1]**: mu-blox ag (1999). Datum Transformations of GPS Positions. Application Note.
 """
 function geodetic_to_ecef(
-    lat::Number,
-    lon::Number,
-    h::Number;
+    lat::LT,
+    lon::LT2,
+    h::HT;
     ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
-) where T<:Number
+) where {LT<:Number, LT2<:Number, HT<:Number, T<:Number}
+
+    RT = promote_type(LT, LT2, HT, T)
+
     # Auxiliary variables.
-    sin_lat, cos_lat = sincos(lat)
-    sin_lon, cos_lon = sincos(lon)
+    sin_lat, cos_lat = sincos(RT(lat))
+    sin_lon, cos_lon = sincos(RT(lon))
 
     a  = ellipsoid.a
     b  = ellipsoid.b
@@ -180,9 +183,9 @@ function geodetic_to_ecef(
 
     # Compute the position in ECEF frame.
     return SVector(
-        (            N + h) * cos_lat * cos_lon,
-        (            N + h) * cos_lat * sin_lon,
-        ((b / a)^2 * N + h) * sin_lat
+        (            N + RT(h)) * cos_lat * cos_lon,
+        (            N + RT(h)) * cos_lat * sin_lon,
+        ((b / a)^2 * N + RT(h)) * sin_lat
     )
 end
 
