@@ -58,8 +58,9 @@ Convert the geocentric coordinates (latitude `lat` [rad], longitude `lon` [rad],
 distance from Earth's center `r` [m]) into a Earth-Centered, Earth-Fixed vector [m].
 
 !!! note
-    The output type `T` is obtained by promoting the input types `T1`, `T2`, and `T3` to
-    float.
+
+    The output type `T` is obtained by promoting the input types `T1`, `T2`, and `T3`. If
+    all of them are integers, they will be converted to float.
 """
 function geocentric_to_ecef(lat::T1, lon::T2, r::T3) where {T1<:Number, T2<:Number, T3<:Number}
     T = promote_type(T1, T2, T3)
@@ -77,13 +78,7 @@ function geocentric_to_ecef(lat::T1, lon::T2, r::T3) where {T1<:Number, T2<:Numb
     return r_ecef
 end
 
-"""
-    geocentric_to_ecef(lat::Int, lon::Int, r::Int) -> SVector{3, Float64}
-
-Convert the geocentric coordinates (latitude `lat` [rad], longitude `lon` [rad], and
-distance from Earth's center `r` [m]) into a Earth-Centered, Earth-Fixed vector [m].
-"""
-function geocentric_to_ecef(lat::Int, lon::Int, r::Int) 
+function geocentric_to_ecef(lat::Integer, lon::Integer, r::Integer)
     return geocentric_to_ecef(float(lat), float(lon), float(r))
 end
 
