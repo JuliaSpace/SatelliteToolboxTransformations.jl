@@ -65,16 +65,26 @@ function geocentric_to_ecef(lat::T1, lon::T2, r::T3) where {T1<:Number, T2<:Numb
     T = promote_type(T1, T2, T3)
 
     # Compute the vector at Earth's center that points to the desired geocentric point.
-    sin_lon, cos_lon = sincos(lon)
-    sin_lat, cos_lat = sincos(lat)
+    sin_lon, cos_lon = sincos(T(lon))
+    sin_lat, cos_lat = sincos(T(lat))
 
     r_ecef = SVector{3, T}(
-        r * cos_lat * cos_lon,
-        r * cos_lat * sin_lon,
-        r * sin_lat
+        T(r) * cos_lat * cos_lon,
+        T(r) * cos_lat * sin_lon,
+        T(r) * sin_lat
     )
 
     return r_ecef
+end
+
+"""
+    geocentric_to_ecef(lat::Int, lon::Int, r::Int) -> SVector{3, Float64}
+
+Convert the geocentric coordinates (latitude `lat` [rad], longitude `lon` [rad], and
+distance from Earth's center `r` [m]) into a Earth-Centered, Earth-Fixed vector [m].
+"""
+function geocentric_to_ecef(lat::Int, lon::Int, r::Int) 
+    return geocentric_to_ecef(float(lat), float(lon), float(r))
 end
 
 """
