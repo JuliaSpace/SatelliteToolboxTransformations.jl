@@ -85,81 +85,92 @@ end
 
 # -- Function: geocentric_to_ecef ----------------------------------------------------------
 
-@testset "Function ecef_to_geocentric" begin
+@testset "Function geocentric_to_ecef" verbose = true begin
     for T in (Float64, Float32)
-        R₀ = T(7000e3)
+        @testset "Type: $T" begin
+            R₀ = T(7000e3)
 
-        lat = deg2rad(T(45))
-        lon = deg2rad(T(0))
-        r   = T(R₀ * √2)
-        R   = geocentric_to_ecef(lat, lon, r)
-        @test R[1] ≈ R₀
+            lat = deg2rad(T(45))
+            lon = deg2rad(T(0))
+            r   = T(R₀ * √2)
+            R   = geocentric_to_ecef(lat, lon, r)
+            @test R[1] ≈ R₀
+            @test R[2] ≈ 0
+            @test R[3] ≈ R₀
+            @test eltype(R) === T
+
+            lat = deg2rad(T(-45))
+            lon = deg2rad(T(0))
+            r   = T(R₀ * √2)
+            R   = geocentric_to_ecef(lat, lon, r)
+            @test R[1] ≈ R₀
+            @test R[2] ≈ 0
+            @test R[3] ≈ -R₀
+            @test eltype(R) === T
+
+            lat = deg2rad(T(45))
+            lon = deg2rad(T(180))
+            r   = T(R₀ * √2)
+            R   = geocentric_to_ecef(lat, lon, r)
+            @test R[1] ≈ -R₀
+            @test R[2] ≈ 0 atol = (T == Float64 ? 1e-9 : 1)
+            @test R[3] ≈ R₀
+            @test eltype(R) === T
+
+            lat = deg2rad(T(-45))
+            lon = deg2rad(T(180))
+            r   = T(R₀ * √2)
+            R   = geocentric_to_ecef(lat, lon, r)
+            @test R[1] ≈ -R₀
+            @test R[2] ≈ 0 atol = (T == Float64 ? 1e-9 : 1)
+            @test R[3] ≈ -R₀
+            @test eltype(R) === T
+
+            lat = deg2rad(T(0))
+            lon = deg2rad(T(45))
+            r   = T(R₀ * √2)
+            R   = geocentric_to_ecef(lat, lon, r)
+            @test R[1] ≈ R₀
+            @test R[2] ≈ R₀
+            @test R[3] ≈ 0
+            @test eltype(R) === T
+
+            lat = deg2rad(T(0))
+            lon = deg2rad(T(135))
+            r   = T(R₀ * √2)
+            R   = geocentric_to_ecef(lat, lon, r)
+            @test R[1] ≈ -R₀
+            @test R[2] ≈ R₀
+            @test R[3] ≈ 0
+            @test eltype(R) === T
+
+            lat = deg2rad(T(0))
+            lon = deg2rad(T(-135))
+            r   = T(R₀ * √2)
+            R   = geocentric_to_ecef(lat, lon, r)
+            @test R[1] ≈ -R₀
+            @test R[2] ≈ -R₀
+            @test R[3] ≈ 0
+            @test eltype(R) === T
+
+            lat = deg2rad(T(0))
+            lon = deg2rad(T(-45))
+            r   = T(R₀ * √2)
+            R   = geocentric_to_ecef(lat, lon, r)
+            @test R[1] ≈ R₀
+            @test R[2] ≈ -R₀
+            @test R[3] ≈ 0
+            @test eltype(R) === T
+        end
+    end
+
+    @testset "Type: Integer" begin
+        R = geocentric_to_ecef(0, 0, 1000)
+
+        @test R[1] ≈ 1000
         @test R[2] ≈ 0
-        @test R[3] ≈ R₀
-        @test eltype(R) === T
-
-        lat = deg2rad(T(-45))
-        lon = deg2rad(T(0))
-        r   = T(R₀ * √2)
-        R   = geocentric_to_ecef(lat, lon, r)
-        @test R[1] ≈ R₀
-        @test R[2] ≈ 0
-        @test R[3] ≈ -R₀
-        @test eltype(R) === T
-
-        lat = deg2rad(T(45))
-        lon = deg2rad(T(180))
-        r   = T(R₀ * √2)
-        R   = geocentric_to_ecef(lat, lon, r)
-        @test R[1] ≈ -R₀
-        @test R[2] ≈ 0 atol = (T == Float64 ? 1e-9 : 1)
-        @test R[3] ≈ R₀
-        @test eltype(R) === T
-
-        lat = deg2rad(T(-45))
-        lon = deg2rad(T(180))
-        r   = T(R₀ * √2)
-        R   = geocentric_to_ecef(lat, lon, r)
-        @test R[1] ≈ -R₀
-        @test R[2] ≈ 0 atol = (T == Float64 ? 1e-9 : 1)
-        @test R[3] ≈ -R₀
-        @test eltype(R) === T
-
-        lat = deg2rad(T(0))
-        lon = deg2rad(T(45))
-        r   = T(R₀ * √2)
-        R   = geocentric_to_ecef(lat, lon, r)
-        @test R[1] ≈ R₀
-        @test R[2] ≈ R₀
         @test R[3] ≈ 0
-        @test eltype(R) === T
-
-        lat = deg2rad(T(0))
-        lon = deg2rad(T(135))
-        r   = T(R₀ * √2)
-        R   = geocentric_to_ecef(lat, lon, r)
-        @test R[1] ≈ -R₀
-        @test R[2] ≈ R₀
-        @test R[3] ≈ 0
-        @test eltype(R) === T
-
-        lat = deg2rad(T(0))
-        lon = deg2rad(T(-135))
-        r   = T(R₀ * √2)
-        R   = geocentric_to_ecef(lat, lon, r)
-        @test R[1] ≈ -R₀
-        @test R[2] ≈ -R₀
-        @test R[3] ≈ 0
-        @test eltype(R) === T
-
-        lat = deg2rad(T(0))
-        lon = deg2rad(T(-45))
-        r   = T(R₀ * √2)
-        R   = geocentric_to_ecef(lat, lon, r)
-        @test R[1] ≈ R₀
-        @test R[2] ≈ -R₀
-        @test R[3] ≈ 0
-        @test eltype(R) === T
+        @test eltype(R) === float(Int)
     end
 end
 
