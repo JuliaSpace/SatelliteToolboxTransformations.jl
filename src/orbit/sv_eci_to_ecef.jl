@@ -32,7 +32,7 @@ an observer on the ECEF frame.
 
 # Returns
 
-- `OrbitStateVector`: The orbit state vector `sv` converted to the `ECI` reference frame.
+- `OrbitStateVector`: Orbit state vector `sv` converted to the `ECI` reference frame.
 
 # Extended Help
 

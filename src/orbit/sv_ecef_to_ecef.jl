@@ -28,7 +28,7 @@ vector `sv` (`sv.t`). The algorithm also requires the Earth Orientation Paramete
 
 # Returns
 
-- `OrbitStateVector`: The orbit state vector `sv` converted to the `ECEFf` reference frame.
+- `OrbitStateVector`: Orbit state vector `sv` converted to the `ECEFf` reference frame.
 
 # Extended Help
 

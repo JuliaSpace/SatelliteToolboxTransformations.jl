@@ -28,8 +28,7 @@ the source and destination frames.
 
 # Returns
 
-- `T`: The rotation entity that aligns the ECEF reference frame with the ECI reference
-    frame.
+- `T`: Rotation entity that aligns the ECEF reference frame with the ECI reference frame.
 
 # Extended Help
 

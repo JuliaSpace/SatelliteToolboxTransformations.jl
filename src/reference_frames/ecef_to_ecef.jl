@@ -27,8 +27,8 @@ algorithm also requires the Earth Orientation Parameters (EOP) `eop`.
 
 # Returns
 
-- `T`: The rotation entity that aligns the `ECEFo` reference frame with the `ECEFf`
-    reference frame at the epoch `jd_utc`.
+- `T`: Rotation entity that aligns the `ECEFo` reference frame with the `ECEFf` reference
+    frame at the epoch `jd_utc`.
 
 # Extended Help
 

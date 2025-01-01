@@ -35,7 +35,7 @@ Parameters (EOP) `eop` depending on the source and destination frames.
 
 # Returns
 
-- `T`: The rotation that aligns the origin ECI reference frame with the destination ECI
+- `T`: Rotation that aligns the origin ECI reference frame with the destination ECI
     reference frame.
 
 # Extended Help
