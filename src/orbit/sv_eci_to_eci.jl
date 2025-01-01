@@ -13,8 +13,8 @@
 export sv_eci_to_eci
 
 """
-    sv_eci_to_eci(sv::OrbitStateVector, ECIo, ECIf[, jd_utc::Number][, eop]) -> T
-    sv_eci_to_eci(sv::OrbitStateVector, ECIo, [jd_utco::Number, ]ECIf[, jd_utcf::Number][, eop]) -> T
+    sv_eci_to_eci(sv::OrbitStateVector, ECIo, ECIf[, jd_utc::Number][, eop]) -> OrbitStateVector
+    sv_eci_to_eci(sv::OrbitStateVector, ECIo, [jd_utco::Number, ]ECIf[, jd_utcf::Number][, eop]) -> OrbitStateVector
 
 Convert the orbit state vector `sv` from an Earth-Centered Inertial (ECI) reference frame
 `ECIo` to another ECI reference frame `ECIf`. If the origin and destination frame contain
@@ -29,6 +29,8 @@ Parameters (EOP) `eop` depending on the source and destination frames.
 
     For more information, including how to specify the origin and destination reference
     frames, see the **Extended Help**.
+
+`¹`: TEME is an *of date* frame.
 
 # Returns
 

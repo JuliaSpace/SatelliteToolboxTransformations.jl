@@ -13,7 +13,6 @@
 export orb_eci_to_eci
 
 """
-    orb_eci_to_eci(orb::T, args...) where T<:Orbit -> T
     orb_eci_to_eci(orb::T, ECIo, ECIf[, jd_utc::Number][, eop]) where T<: Orbit -> T
     orb_eci_to_eci(orb::T, ECIo, [jd_utco::Number, ]ECIf[, jd_utcf::Number][, eop]) where T<:Orbit -> T
 
@@ -30,6 +29,8 @@ Parameters (EOP) `eop` depending on the source and destination frames.
 
     For more information, including how to specify the origin and destination reference
     frames, see the **Extended Help**.
+
+`¹`: TEME is an *of date* frame.
 
 # Returns
 

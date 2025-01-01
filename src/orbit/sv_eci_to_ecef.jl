@@ -13,7 +13,7 @@
 export sv_eci_to_ecef
 
 """
-    sv_eci_to_ecef(sv::OrbitStateVector, ECI, ECEF, jd_utc[, eop]) -> OrbitStateVector
+    sv_eci_to_ecef(sv::OrbitStateVector, ECI, ECEF[, jd_utc][, eop]) -> OrbitStateVector
 
 Compute the orbit state vector `sv` from an Earth-Centered Inertial (`ECI`) reference frame
 to an Earth-Centered, Earth-Fixed (`ECEF`) reference frame at the Julian Day `jd_utc` [UTC].
