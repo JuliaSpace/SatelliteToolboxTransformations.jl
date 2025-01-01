@@ -22,8 +22,9 @@ only one *of date* frame, the first signature is used and the Julian Day `jd_utc
 the epoch of this frame. On the other hand, if the origin and destination frame contain two
 *of date* frame`¹`, e.g. TOD => MOD, the second signature must be used in which the Julian
 Day `jd_utco` [UTC] is the epoch of the origin frame and the Julian Day `jd_utcf` [UTC] is
-the epoch of the destination frame. The algorithm might also require the Earth Orientation
-Parameters (EOP) `eop` depending on the source and destination frames.
+the epoch of the destination frame. If the epochs are not provided, the algorithm will use
+the epoch of the orbit state vector `sv` (`sv.t`). The algorithm might also require the
+Earth Orientation Parameters (EOP) `eop` depending on the source and destination frames.
 
 !!! note
 
