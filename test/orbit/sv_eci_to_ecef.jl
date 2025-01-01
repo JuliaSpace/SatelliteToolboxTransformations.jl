@@ -59,14 +59,14 @@ eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
 ############################################################################################
 
 @testset "Function sv_eci_to_ecef GCRF => ITRF" begin
-    JD_UTC = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
+    jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
 
     r_gcrf = [5102.50895790; 6123.01140070; 6378.13692820]
     v_gcrf = [-4.7432201570; 0.7905364970; 5.5337557270]
-    sv_gcrf = OrbitStateVector(JD_UTC, r_gcrf, v_gcrf)
-    sv_itrf = sv_eci_to_ecef(sv_gcrf, GCRF(), ITRF(), JD_UTC, eop_iau1980)
+    sv_gcrf = OrbitStateVector(jd_utc, r_gcrf, v_gcrf)
+    sv_itrf = sv_eci_to_ecef(sv_gcrf, GCRF(), ITRF(), eop_iau1980)
 
-    @test sv_itrf.t === JD_UTC
+    @test sv_itrf.t === jd_utc
 
     @test sv_itrf.r[1] ≈ -1033.4793830 atol = 3e-4
     @test sv_itrf.r[2] ≈ +7901.2952754 atol = 3e-4
@@ -102,14 +102,14 @@ end
 ############################################################################################
 
 @testset "Function sv_eci_to_ecef J2000 => PEF" begin
-    JD_UT1 = date_to_jd(2004,4,6,7,51,28.386009) - 0.4399619/86400
+    jd_ut1 = date_to_jd(2004,4,6,7,51,28.386009) - 0.4399619/86400
 
     r_j2000  = [5102.50960000; 6123.01152000; 6378.13630000]
     v_j2000  = [-4.7432196000; 0.7905366000; 5.5337561900]
-    sv_j2000 = OrbitStateVector(JD_UT1, r_j2000, v_j2000)
-    sv_pef   = sv_eci_to_ecef(sv_j2000, J2000(), PEF(), JD_UT1)
+    sv_j2000 = OrbitStateVector(jd_ut1, r_j2000, v_j2000)
+    sv_pef   = sv_eci_to_ecef(sv_j2000, J2000(), PEF())
 
-    @test sv_pef.t === JD_UT1
+    @test sv_pef.t === jd_ut1
 
     @test sv_pef.r[1] ≈ -1033.47503130 atol = 1e-7
     @test sv_pef.r[2] ≈ +7901.30558560 atol = 1e-7
@@ -148,14 +148,14 @@ end
 ############################################################################################
 
 @testset "Function sv_eci_to_ecef GCRF => ITRF" begin
-    JD_UTC = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
+    jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
 
     r_gcrf = [5102.50895290; 6123.01139910; 6378.13693380]
     v_gcrf = [-4.7432201610; 0.7905364950; 5.5337557240]
-    sv_gcrf = OrbitStateVector(JD_UTC, r_gcrf, v_gcrf)
-    sv_itrf = sv_eci_to_ecef(sv_gcrf, GCRF(), ITRF(), JD_UTC, eop_iau2000a)
+    sv_gcrf = OrbitStateVector(jd_utc, r_gcrf, v_gcrf)
+    sv_itrf = sv_eci_to_ecef(sv_gcrf, GCRF(), ITRF(), eop_iau2000a)
 
-    @test sv_itrf.t === JD_UTC
+    @test sv_itrf.t === jd_utc
 
     @test sv_itrf.r[1] ≈ -1033.4793830 atol = 3e-4
     @test sv_itrf.r[2] ≈ +7901.2952754 atol = 3e-4
@@ -191,14 +191,14 @@ end
 ############################################################################################
 
 @testset "Function sv_eci_to_ecef TIRS => GCRF" begin
-    JD_UT1 = date_to_jd(2004, 4, 6, 7, 51, 28.386009) - 0.4399619 / 86400
+    jd_ut1 = date_to_jd(2004, 4, 6, 7, 51, 28.386009) - 0.4399619 / 86400
 
     r_gcrf = [5102.50895290; 6123.01139910; 6378.13693380]
     v_gcrf = [-4.7432201610; 0.7905364950; 5.5337557240]
-    sv_gcrf = OrbitStateVector(JD_UT1, r_gcrf, v_gcrf)
-    sv_tirs = sv_eci_to_ecef(sv_gcrf, GCRF(), TIRS(), JD_UT1)
+    sv_gcrf = OrbitStateVector(jd_ut1, r_gcrf, v_gcrf)
+    sv_tirs = sv_eci_to_ecef(sv_gcrf, GCRF(), TIRS())
 
-    @test sv_tirs.t === JD_UT1
+    @test sv_tirs.t === jd_ut1
 
     @test sv_tirs.r[1] ≈ -1033.47503120 atol = 3e-4
     @test sv_tirs.r[2] ≈ +7901.30558560 atol = 3e-4

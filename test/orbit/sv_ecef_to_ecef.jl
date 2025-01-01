@@ -57,7 +57,7 @@ eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
     r_itrf  = [-1033.4793830; 7901.2952754; 6380.3565958]
     v_itrf  = [-3.225636520; -2.872451450; +5.531924446]
     sv_itrf = OrbitStateVector(JD_UTC, r_itrf, v_itrf)
-    sv_pef  = sv_ecef_to_ecef(sv_itrf, ITRF(), PEF(), JD_UTC, eop_iau1980)
+    sv_pef  = sv_ecef_to_ecef(sv_itrf, ITRF(), PEF(), eop_iau1980)
 
     @test sv_pef.t === JD_UTC
 
@@ -74,7 +74,7 @@ eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
     r_pef   = [-1033.47503130; 7901.30558560; 6380.34453270]
     v_pef   = [-3.2256327470; -2.8724425110; +5.5319312880]
     sv_pef  = OrbitStateVector(JD_UTC, r_pef, v_pef)
-    sv_itrf = sv_ecef_to_ecef(sv_pef, PEF(), ITRF(), JD_UTC, eop_iau1980)
+    sv_itrf = sv_ecef_to_ecef(sv_pef, PEF(), ITRF(), eop_iau1980)
 
     @test sv_itrf.t === JD_UTC
 
@@ -123,7 +123,7 @@ end
     r_itrf = [-1033.4793830; 7901.2952754; 6380.3565958]
     v_itrf = [-3.225636520; -2.872451450; +5.531924446]
     sv_itrf = OrbitStateVector(JD_UTC, r_itrf, v_itrf)
-    sv_tirs = sv_ecef_to_ecef(sv_itrf, ITRF(), TIRS(), JD_UTC, eop_iau2000a)
+    sv_tirs = sv_ecef_to_ecef(sv_itrf, ITRF(), TIRS(), eop_iau2000a)
 
     @test sv_tirs.t === JD_UTC
 
@@ -140,7 +140,7 @@ end
     r_tirs  = [-1033.47503120; 7901.30558560; 6380.34453270]
     v_tirs  = [-3.2256327470; -2.8724425110; +5.5319312880]
     sv_tirs = OrbitStateVector(JD_UTC, r_tirs, v_tirs)
-    sv_itrf = sv_ecef_to_ecef(sv_tirs, TIRS(), ITRF(), JD_UTC, eop_iau2000a)
+    sv_itrf = sv_ecef_to_ecef(sv_tirs, TIRS(), ITRF(), eop_iau2000a)
 
     @test sv_itrf.t === JD_UTC
 

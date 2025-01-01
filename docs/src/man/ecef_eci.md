@@ -18,10 +18,10 @@ described later on.
 | `ITRF()`   | ECEF | International terrestrial reference frame    |
 | `PEF()`    | ECEF | Pseudo-earth fixed reference frame           |
 | `TIRS()`   | ECEF | Terrestrial intermediate reference system    |
-| `ERS()`    | ECEF | Earth reference system                       | 
-| `MOD()`    | ECI  | Mean-of-date reference frame                 | 
-| `TOD()`    | ECI  | True-of-data reference frame                 | 
-| `GCRF()`   | ECI  | Geocentric celestial reference frame (GCRF)  | 
+| `ERS()`    | ECEF | Earth reference system                       |
+| `MOD()`    | ECI  | Mean-of-date reference frame                 |
+| `TOD()`    | ECI  | True-of-data reference frame                 |
+| `GCRF()`   | ECI  | Geocentric celestial reference frame (GCRF)  |
 | `J2000()`  | ECI  | J2000 reference frame                        |
 | `TEME()`   | ECI  | True equator, mean equinox reference frame   |
 | `CIRS()`   | ECI  | Celestial intermediate reference system      |
@@ -43,7 +43,7 @@ described later on.
     However, this will only work for past dates since the Earth orientation parameters are
     required.
 
-## Earth orientation parameters (EOP)
+## Earth Orientation Parameters (EOP)
 
 Some conversions here requires additional data related to the Earth orientation.  This
 information is provided by [IERS](https://www.iers.org) (International Earth Rotation and
@@ -63,7 +63,7 @@ in which `data_type` specifies what EOP type is desired (`Val(:IAU1980)` for IAU
 This function returns an instance of the structure [`EopIau1980`](@ref) or
 [`EopIau2000A`](@ref) depending on the selection of `data_type`. The returned value should
 be passed to the reference frame conversion functions as described in the following.
-  
+
 The following keywords are available:
 
 - `force_download::Bool`: If the EOP file exists and is less than 7 days old, it will not be
@@ -82,14 +82,14 @@ eop_iau2000a = fetch_iers_eop(Val(:IAU2000A))
 One ECEF frame can be converted to another one by the following function:
 
 ```julia
-r_ecef_to_ecef([T,] ECEFo, ECEFf, JD_UTC::Number, eop) -> T
+r_ecef_to_ecef([T, ]ECEFo, ECEFf, jd_utc::Number, eop) -> T
 ```
 
-where it will be computed the rotation from the ECEF reference frame `ECEFo` to the ECEF
-reference frame `ECEFf` at the Julian Day [UTC] `JD_UTC`. The rotation description that will
+where it will compute the rotation from the ECEF reference frame `ECEFo` to the ECEF
+reference frame `ECEFf` at the Julian Day `jd_utc` [UTC]. The rotation description that will
 be used is given by `T`, which can be `DCM` or `Quaternion`. If `T` is omitted, then it
 defaults to `DCM`. The `eop` in this case is always necessary. Hence, the user must
-initialize it as described in the section [Earth orientation parameters (EOP)](@ref).
+initialize it as described in the section [Earth Orientation Parameters (EOP)](@ref).
 
 ```@repl ecef_eci
 r_ecef_to_ecef(PEF(), ITRF(), date_to_jd(1986, 6, 19, 21, 35, 0), eop_iau1980)
@@ -106,20 +106,20 @@ r_ecef_to_ecef(Quaternion, TIRS(), ITRF(), date_to_jd(1986, 6, 19, 21, 35, 0), e
 One ECI frame can be converted to another ECI frame by one of the following functions:
 
 ```julia
-r_eci_to_eci([T,] ECIo, ECIf, JD_UTC::Number[, eop]) -> T
-r_eci_to_eci([T,] ECIo, JD_UTCo::Number, ECIf, JD_UTCf::Number[, eop]) -> T
+r_eci_to_eci([T, ]ECIo, ECIf, jd_utc::Number[, eop]) -> T
+r_eci_to_eci([T, ]ECIo, jd_utco::Number, ECIf, jd_utcf::Number[, eop]) -> T
 ```
 
-where it will be computed compute the rotation from the ECI reference frame `ECIo` to
-another ECI reference frame `ECIf`. If the origin and destination frame contain only one *of
-date* frame, then the first signature is used and `JD_UTC` is the epoch of this frame. On
-the other hand, if the origin and destination frame contain two *of date* frame[^1], e.g.
-`TOD => MOD`, then the second signature must be used in which `JD_UTCo` is the epoch of the
-origin frame and `JD_UTCf` is the epoch of the destination frame. The rotation description
-that will be used is given by `T`, which can be `DCM` or `Quaternion`. If `T` is omitted,
-then it defaults to `DCM`. The EOP data `eop_data`, as described in section [Earth
-orientation parameters (EOP)](@ref), is required in some conversions, as described in the
-following table.
+where it will compute the rotation from the ECI reference frame `ECIo` to another ECI
+reference frame `ECIf`. If the origin and destination frame contain only one *of date*
+frame, the first signature is used and the Julian Day `jd_utc` [UTC] is the epoch of this
+frame. On the other hand, if the origin and destination frame contain two *of date*
+frame[^1], e.g. `TOD => MOD`, the second signature must be used in which the Julian Day
+`jd_utco` [UTC] is the epoch of the origin frame and the Julian Day `jd_utcf` [UTC] is the
+epoch of the destination frame. The rotation description that will be used is given by `T`,
+which can be `DCM` or `Quaternion`. If `T` is omitted, then it defaults to `DCM`. The EOP
+data `eop_data`, as described in section [Earth Orientation Parameters (EOP)](@ref), is
+required in some conversions, as described in the following table.
 
 [^1]: TEME is an *of date* frame.
 
@@ -206,14 +206,14 @@ r_eci_to_eci(DCM, GCRF(), J2000(), date_to_jd(1986, 6, 19, 21, 35, 0), eop_iau19
 One ECEF frame can be convert to one ECI frame using the following function:
 
 ```julia
-r_ecef_to_eci([T,] ECEF, ECI, JD_UTC::Number[, eop]) -> T
+r_ecef_to_eci([T, ]ECEF, ECI, jd_utc::Number[, eop]) -> T
 ```
 
-where it will be compute the rotation from the ECEF frame `ECEF` to the ECI frame `ECI` at
-the Julian Day [UTC] `JD_UTC`. The rotation description that will be used is given by `T`,
-which can be `DCM` or `Quaternion`. If it is omitted, then it defaults to `DCM`. The EOP
-data `eop_data`, as described in section [Earth orientation parameters (EOP)](@ref), is
-required in some conversions, as described in the following table.
+where it will compute the rotation from the `ECEF` frame to the `ECI` frame at the Julian
+Day [UTC] `jd_utc`. The rotation description that will be used is given by `T`, which can be
+`DCM` or `Quaternion`. If it is omitted, then it defaults to `DCM`. The EOP data `eop_data`,
+as described in section [Earth Orientation Parameters (EOP)](@ref), is required in some
+conversions, as described in the following table.
 
 |   Model                     |  ECEF  |   ECI    |    EOP Data     |
 |:----------------------------|:-------|:---------|:----------------|
@@ -278,11 +278,11 @@ r_ecef_to_eci(Quaternion, ITRF(), GCRF(), date_to_jd(1986, 06, 19, 21, 35, 0), e
 One ECI frame can be converted to one ECEF frame using the following function:
 
 ```julia
-r_eci_to_ecef([T,] ECI, ECEF, JD_UTC::Number[, eop]) -> T
+r_eci_to_ecef([T, ]ECI, ECEF, jd_utc::Number[, eop]) -> T
 ```
 
 which has the same characteristics of the function [`r_ecef_to_eci`](@ref) described in
-Section [ECEF to ECI](@ref), but with the inputs `ECI`  and `ECEF` swapped.
+Section [ECEF to ECI](@ref), but with the inputs `ECI` and `ECEF` swapped.
 
 !!! note
 

@@ -24,12 +24,16 @@ export geocentric_to_geodetic, geodetic_to_geocentric
 
 """
     ecef_to_geocentric(r_e::AbstractVector{T}) -> NTuple{3, T}
+    ecef_to_geocentric(r_e::AbstractVector{T}) -> NTuple{3, T}
 
 Convert the vector `r_e` represented in the Earth-Centered, Earth-Fixed (ECEF) reference
 frame into geocentric coordinates (geocentric latitude, longitude, and distance from Earth's
 center).
 
 # Returns
+- `T`: Geocentric latitude [rad] ∈ [-π / 2, π / 2].
+- `T`: Longitude [rad] ∈ [-π , π].
+- `T`: Distance from Earth's center [m].
 - `T`: Geocentric latitude [rad] ∈ [-π / 2, π / 2].
 - `T`: Longitude [rad] ∈ [-π , π].
 - `T`: Distance from Earth's center [m].
@@ -58,23 +62,29 @@ Convert the geocentric coordinates (latitude `lat` [rad], longitude `lon` [rad],
 distance from Earth's center `r` [m]) into a Earth-Centered, Earth-Fixed vector [m].
 
 !!! note
-    The output type `T` is obtained by promoting the input types `T1`, `T2`, and `T3` to
-    float.
+
+    The output type `T` is obtained by promoting the input types `T1`, `T2`, and `T3`. If
+    all of them are integers, they will be converted to float.
 """
 function geocentric_to_ecef(lat::T1, lon::T2, r::T3) where {T1<:Number, T2<:Number, T3<:Number}
     T = promote_type(T1, T2, T3)
+    T = promote_type(T1, T2, T3)
 
     # Compute the vector at Earth's center that points to the desired geocentric point.
-    sin_lon, cos_lon = sincos(lon)
-    sin_lat, cos_lat = sincos(lat)
+    sin_lon, cos_lon = sincos(T(lon))
+    sin_lat, cos_lat = sincos(T(lat))
 
     r_ecef = SVector{3, T}(
-        r * cos_lat * cos_lon,
-        r * cos_lat * sin_lon,
-        r * sin_lat
+        T(r) * cos_lat * cos_lon,
+        T(r) * cos_lat * sin_lon,
+        T(r) * sin_lat
     )
 
     return r_ecef
+end
+
+function geocentric_to_ecef(lat::Integer, lon::Integer, r::Integer)
+    return geocentric_to_ecef(float(lat), float(lon), float(r))
 end
 
 """
@@ -162,14 +172,17 @@ Earth-Fixed (ECEF) reference frame.
 - **[1]**: mu-blox ag (1999). Datum Transformations of GPS Positions. Application Note.
 """
 function geodetic_to_ecef(
-    lat::Number,
-    lon::Number,
-    h::Number;
+    lat::LT,
+    lon::LT2,
+    h::HT;
     ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
-) where T<:Number
+) where {LT<:Number, LT2<:Number, HT<:Number, T<:Number}
+
+    RT = promote_type(LT, LT2, HT, T)
+
     # Auxiliary variables.
-    sin_lat, cos_lat = sincos(lat)
-    sin_lon, cos_lon = sincos(lon)
+    sin_lat, cos_lat = sincos(RT(lat))
+    sin_lon, cos_lon = sincos(RT(lon))
 
     a  = ellipsoid.a
     b  = ellipsoid.b
@@ -180,9 +193,9 @@ function geodetic_to_ecef(
 
     # Compute the position in ECEF frame.
     return SVector(
-        (            N + h) * cos_lat * cos_lon,
-        (            N + h) * cos_lat * sin_lon,
-        ((b / a)^2 * N + h) * sin_lat
+        (            N + RT(h)) * cos_lat * cos_lon,
+        (            N + RT(h)) * cos_lat * sin_lon,
+        ((b / a)^2 * N + RT(h)) * sin_lat
     )
 end
 
@@ -356,6 +369,66 @@ function geodetic_to_geocentric(
     ϕ_gc = asin(z / r)
 
     return ϕ_gc, r
+end
+
+"""
+    geodetic_to_geocentric(geodetic_state::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> T, T
+
+Compute the geocentric latitude and radius from the geodetic latitude `ϕ_gd` (-π/2, π/2)
+[rad] and height above the reference ellipsoid `h` \\[m] (defaults to WGS-84).  Notice that
+the longitude is the same in both geocentric and geodetic coordinates.
+
+!!! info
+
+    The longitude is the same between states so the geocentric state vector only includes latitude and radius.
+
+    The algorithm is based in **[1]**(p. 3).
+
+# Returns
+
+- `T`: Geocentric latitude [rad].
+- `T`: Radius from the center of the Earth [m].
+
+# References
+
+- **[1]** ISO TC 20/SC 14 N (2011). Geomagnetic Reference Models.
+"""
+function geodetic_to_geocentric(
+    geodetic_state::AbstractVector;
+    ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
+) where T<:Number
+
+    return geodetic_to_geocentric(geodetic_state...; ellipsoid=ellipsoid)
+end
+
+"""
+    geodetic_to_geocentric(geodetic_state::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> T, T
+
+Compute the geocentric latitude and radius from the geodetic latitude `ϕ_gd` (-π/2, π/2)
+[rad] and height above the reference ellipsoid `h` \\[m] (defaults to WGS-84).  Notice that
+the longitude is the same in both geocentric and geodetic coordinates.
+
+!!! info
+
+    The longitude is the same between states so the geocentric state vector only includes latitude and radius.
+
+    The algorithm is based in **[1]**(p. 3).
+
+# Returns
+
+- `T`: Geocentric latitude [rad].
+- `T`: Radius from the center of the Earth [m].
+
+# References
+
+- **[1]** ISO TC 20/SC 14 N (2011). Geomagnetic Reference Models.
+"""
+function geodetic_to_geocentric(
+    geodetic_state::AbstractVector;
+    ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
+) where T<:Number
+
+    return geodetic_to_geocentric(geodetic_state...; ellipsoid=ellipsoid)
 end
 
 """

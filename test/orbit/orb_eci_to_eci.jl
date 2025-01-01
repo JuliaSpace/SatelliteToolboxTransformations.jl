@@ -42,14 +42,14 @@
     f = mean_to_true_anomaly(e, 320 * π / 180)
     epoch = date_to_jd(2016, 6, 1, 11, 0, 0)
 
-    oe_teme  = KeplerianElements(0, a, e, i, Ω, ω, f)
-    oe_j2000 = orb_eci_to_eci(oe_teme, TEME(), J2000(), epoch, eop)
+    oe_teme  = KeplerianElements(epoch, a, e, i, Ω, ω, f)
+    oe_j2000 = orb_eci_to_eci(oe_teme, TEME(), J2000(), eop)
     m = true_to_mean_anomaly(oe_j2000.e, oe_j2000.f)
 
-    @test oe_j2000.a / 1000    ≈ 7130.982 atol=1e-8
-    @test oe_j2000.e           ≈ e        atol=1e-8
-    @test oe_j2000.i * 180 / π ≈ 98.3365  atol=1e-4
-    @test oe_j2000.Ω * 180 / π ≈ 227.134  atol=1e-3
-    @test oe_j2000.ω * 180 / π ≈ 90.0604  atol=1e-4
-    @test m * 180/π            ≈ 320      atol=1e-8
+    @test oe_j2000.a / 1000    ≈ 7130.982 atol = 1e-8
+    @test oe_j2000.e           ≈ e        atol = 1e-8
+    @test oe_j2000.i * 180 / π ≈ 98.3365  atol = 1e-4
+    @test oe_j2000.Ω * 180 / π ≈ 227.134  atol = 1e-3
+    @test oe_j2000.ω * 180 / π ≈ 90.0604  atol = 1e-4
+    @test m * 180 / π          ≈ 320      atol = 1e-8
 end

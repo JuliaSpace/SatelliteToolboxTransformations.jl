@@ -16,31 +16,39 @@ export r_ecef_to_eci
     r_ecef_to_eci([T, ]ECEF, ECI, jd_utc::Number[, eop]) -> T
 
 Compute the rotation from an Earth-Centered, Earth-Fixed (`ECEF`) reference frame to an
-Earth-Centered Inertial (`ECI`) reference frame at the Julian Day [UTC] `jd_utc`. The
+Earth-Centered Inertial (`ECI`) reference frame at the Julian Day `jd_utc` [UTC]. The
 rotation description that will be used is given by `T`, which can be `DCM` or `Quaternion`.
-The ECEF frame is selected by the input `ECEF` and the `ECI` frame is selected by the input
-`ECI`. The possible values are listed below. The model used to compute the rotation is
-specified by the selection of the origin and destination frames. Currently, there are two
-supported models: IAU-76/FK5 and IAU-2006 with 2010 conventions (CIO and equinox
-approaches).
+The algorithm might also require the Earth Orientation Parameters (EOP) `eop` depending on
+the source and destination frames.
 
-# Rotation description
+!!! note
 
-The rotations that aligns the ECEF with ECI can be described by Direction Cosine Matrices or
-Quaternions. This is selected by the parameter `T`. The possible values are:
+    For more information, including how to specify the origin and destination reference
+    frames, see the **Extended Help**.
+
+# Returns
+
+- `T`: Rotation entity that aligns the ECEF reference frame with the ECI reference frame.
+
+# Extended Help
+
+## Rotation Description
+
+The rotation can be described by Direction Cosine Matrices (DCMs) or Quaternions. This is
+selected by the parameter `T`. The possible values are:
 
 - `DCM`: The rotation will be described by a Direction Cosine Matrix.
 - `Quaternion`: The rotation will be described by a Quaternion.
 
-If no value is specified, then it falls back to `DCM`.
+If no value is specified, it falls back to `DCM`.
 
-# Conversion model
+## Conversion Model
 
 The model that will be used to compute the rotation is automatically inferred given the
 selection of the origin and destination frames. **Notice that mixing IAU-76/FK5 and
 IAU-2006/2010 frames is not supported.**
 
-# ECEF Frame
+## Supported ECEF Reference Frames
 
 The ECEF frame is selected by the parameter `ECEF`. The possible values are:
 
@@ -48,7 +56,7 @@ The ECEF frame is selected by the parameter `ECEF`. The possible values are:
 - `PEF()`: ECEF will be selected as the Pseudo-Earth Fixed (PEF) reference frame.
 - `TIRS()`: ECEF will be selected as the Terrestrial Intermediate Reference System (TIRS).
 
-# ECI Frame
+## Supported ECI Reference Frames
 
 The ECI frame is selected by the parameter `ECI`. The possible values are:
 
@@ -69,12 +77,12 @@ The ECI frame is selected by the parameter `ECI`. The possible values are:
     names to make clear which theory are being used since mixing transformation between
     frames from IAU-76/FK5 and IAU-2006/2010 must be performed with caution.
 
-# Earth orientation parameters (EOP)
+# Earth Orientation Parameters (EOP)
 
-The conversion between the frames depends on EOP (see [`fetch_iers_eop`](@ref) and
-[`read_iers_eop`](@ref)). If IAU-76/FK5 model is used, then the type of `eop` must be
-[`EopIau1980`](@ref). Otherwise, if IAU-2006/2010 model is used, then the type of `eop` must
-be [`EopIau2000A`](@ref). The following table shows the requirements for EOP data given the
+The conversion between the frames might depend on EOP (see [`fetch_iers_eop`](@ref) and
+[`read_iers_eop`](@ref)). If IAU-76/FK5 model is used, the type of `eop` must be
+[`EopIau1980`](@ref). Otherwise, if IAU-2006/2010 model is used, the type of `eop` must be
+[`EopIau2000A`](@ref). The following table shows the requirements for EOP data given the
 selected frames.
 
 |   Model                     |  ECEF  |   ECI    |    EOP Data     |
@@ -111,15 +119,11 @@ be available, reducing the precision.
 `³`: In this case, the terms that corrects the nutation in obliquity and in longitude due to
 the free core nutation will not be available, reducing the precision.
 
-## MOD and TOD
+!!! info
 
-In this function, if EOP corrections are not provided, then MOD and TOD frames will be
-computed considering the original IAU-76/FK5 theory. Otherwise, the corrected frame will be
-used.
-
-# Returns
-
-- `T`: The rotation that aligns the ECEF reference frame with the ECI reference frame.
+    In this function, if EOP corrections are not provided, MOD and TOD frames will be
+    computed considering the original IAU-76/FK5 theory. Otherwise, the corrected frame will
+    be used.
 
 # Examples
 
@@ -127,50 +131,50 @@ used.
 julia> eop_iau1980 = fetch_iers_eop(Val(:IAU1980));
 
 julia> r_ecef_to_eci(DCM, ITRF(), GCRF(), date_to_jd(1986, 06, 19, 21, 35, 0), eop_iau1980)
-3×3 StaticArrays.SMatrix{3, 3, Float64, 9} with indices SOneTo(3)×SOneTo(3):
+DCM{Float64}:
  -0.619267      0.78518     -0.00132979
  -0.78518      -0.619267     3.33509e-5
  -0.000797312   0.00106478   0.999999
 
 julia> r_ecef_to_eci(ITRF(), GCRF(), date_to_jd(1986, 06, 19, 21, 35, 0), eop_iau1980)
-3×3 StaticArrays.SMatrix{3, 3, Float64, 9} with indices SOneTo(3)×SOneTo(3):
+DCM{Float64}:
  -0.619267      0.78518     -0.00132979
  -0.78518      -0.619267     3.33509e-5
  -0.000797312   0.00106478   0.999999
 
 julia> r_ecef_to_eci(PEF(), J2000(), date_to_jd(1986, 06, 19, 21, 35, 0))
-3×3 StaticArrays.SMatrix{3, 3, Float64, 9} with indices SOneTo(3)×SOneTo(3):
+DCM{Float64}:
  -0.619271      0.785176    -0.00133066
  -0.785177     -0.619272     3.45854e-5
  -0.000796885   0.00106622   0.999999
 
 julia> r_ecef_to_eci(PEF(), J2000(), date_to_jd(1986, 06, 19, 21, 35, 0), eop_iau1980)
-3×3 StaticArrays.SMatrix{3, 3, Float64, 9} with indices SOneTo(3)×SOneTo(3):
+DCM{Float64}:
  -0.619267      0.78518     -0.00133066
  -0.78518      -0.619267     3.45854e-5
  -0.000796879   0.00106623   0.999999
 
 julia> r_ecef_to_eci(Quaternion, ITRF(), GCRF(), date_to_jd(1986, 06, 19, 21, 35, 0), eop_iau1980)
 Quaternion{Float64}:
-  + 0.43631 - 0.000590997⋅i + 0.000305106⋅j + 0.000305106⋅k
+  + 0.43631 - 0.000590997⋅i + 0.000305106⋅j + 0.899796⋅k
 
 julia> eop_iau2000a = fetch_iers_eop(Val(:IAU2000A));
 
 julia> r_ecef_to_eci(ITRF(), GCRF(), date_to_jd(1986, 06, 19, 21, 35, 0), eop_iau2000a)
-3×3 StaticArrays.SMatrix{3, 3, Float64, 9} with indices SOneTo(3)×SOneTo(3):
+DCM{Float64}:
  -0.619267      0.78518     -0.00132979
  -0.78518      -0.619267     3.33516e-5
  -0.000797311   0.00106478   0.999999
 
 julia> r_ecef_to_eci(TIRS(), GCRF(), date_to_jd(1986, 06, 19, 21, 35, 0))
-3×3 StaticArrays.SMatrix{3, 3, Float64, 9} with indices SOneTo(3)×SOneTo(3):
+DCM{Float64}:
  -0.619271      0.785176    -0.00133066
  -0.785177     -0.619272     3.45884e-5
  -0.000796885   0.00106623   0.999999
 
 julia> r_ecef_to_eci(Quaternion, ITRF(), GCRF(), date_to_jd(1986, 06, 19, 21, 35, 0), eop_iau2000a)
 Quaternion{Float64}:
-  + 0.43631 - 0.000590997⋅i + 0.000305106⋅j + 0.000305106⋅k
+  + 0.43631 - 0.000590997⋅i + 0.000305106⋅j + 0.899796⋅k
 ```
 """
 function r_ecef_to_eci(T_ECEF::T_ECEFs, T_ECI::T_ECIs, jd_utc::Number, eop::EopIau1980)
