@@ -68,13 +68,12 @@ distance from Earth's center `r` [m]) into a Earth-Centered, Earth-Fixed vector 
 """
 function geocentric_to_ecef(lat::T1, lon::T2, r::T3) where {T1<:Number, T2<:Number, T3<:Number}
     T = promote_type(T1, T2, T3)
-    T = promote_type(T1, T2, T3)
 
     # Compute the vector at Earth's center that points to the desired geocentric point.
     sin_lon, cos_lon = sincos(T(lon))
     sin_lat, cos_lat = sincos(T(lat))
 
-    r_ecef = SVector{3, T}(
+    r_ecef = SVector{3}(
         T(r) * cos_lat * cos_lon,
         T(r) * cos_lat * sin_lon,
         T(r) * sin_lat
@@ -94,7 +93,7 @@ Convert the geocentric coordinates (latitude `lat` [rad], longitude `lon` [rad],
 distance from Earth's center `r` [m]) into a Earth-Centered, Earth-Fixed vector [m].
 """
 function geocentric_to_ecef(geocentric_state::AbstractVector)
-    return geocentric_to_ecef(geocentric_state...)
+    return geocentric_to_ecef(geocentric_state[1], geocentric_state[2], geocentric_state[3])
 end
 
 """
@@ -219,7 +218,7 @@ function geodetic_to_ecef(
     ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
 ) where T<:Number
 
-    return geodetic_to_ecef(geodetic_state...; ellipsoid=ellipsoid)
+    return geodetic_to_ecef(geodetic_state[1], geodetic_state[2], geodetic_state[3]; ellipsoid=ellipsoid)
 
 end
 
@@ -324,7 +323,7 @@ function geocentric_to_geodetic(
     ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
 ) where T<:Number
 
-    return geocentric_to_geodetic(geocentric_state...; ellipsoid=ellipsoid)
+    return geocentric_to_geodetic(geocentric_state[1], geocentric_state[2]; ellipsoid=ellipsoid)
 
 end
 
@@ -398,65 +397,5 @@ function geodetic_to_geocentric(
     ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
 ) where T<:Number
 
-    return geodetic_to_geocentric(geodetic_state...; ellipsoid=ellipsoid)
-end
-
-"""
-    geodetic_to_geocentric(geodetic_state::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> T, T
-
-Compute the geocentric latitude and radius from the geodetic latitude `ϕ_gd` (-π/2, π/2)
-[rad] and height above the reference ellipsoid `h` \\[m] (defaults to WGS-84).  Notice that
-the longitude is the same in both geocentric and geodetic coordinates.
-
-!!! info
-
-    The longitude is the same between states so the geocentric state vector only includes latitude and radius.
-
-    The algorithm is based in **[1]**(p. 3).
-
-# Returns
-
-- `T`: Geocentric latitude [rad].
-- `T`: Radius from the center of the Earth [m].
-
-# References
-
-- **[1]** ISO TC 20/SC 14 N (2011). Geomagnetic Reference Models.
-"""
-function geodetic_to_geocentric(
-    geodetic_state::AbstractVector;
-    ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
-) where T<:Number
-
-    return geodetic_to_geocentric(geodetic_state...; ellipsoid=ellipsoid)
-end
-
-"""
-    geodetic_to_geocentric(geodetic_state::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> T, T
-
-Compute the geocentric latitude and radius from the geodetic latitude `ϕ_gd` (-π/2, π/2)
-[rad] and height above the reference ellipsoid `h` \\[m] (defaults to WGS-84).  Notice that
-the longitude is the same in both geocentric and geodetic coordinates.
-
-!!! info
-
-    The longitude is the same between states so the geocentric state vector only includes latitude and radius.
-
-    The algorithm is based in **[1]**(p. 3).
-
-# Returns
-
-- `T`: Geocentric latitude [rad].
-- `T`: Radius from the center of the Earth [m].
-
-# References
-
-- **[1]** ISO TC 20/SC 14 N (2011). Geomagnetic Reference Models.
-"""
-function geodetic_to_geocentric(
-    geodetic_state::AbstractVector;
-    ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
-) where T<:Number
-
-    return geodetic_to_geocentric(geodetic_state...; ellipsoid=ellipsoid)
+    return geodetic_to_geocentric(geodetic_state[1], geodetic_state[2]; ellipsoid=ellipsoid)
 end
