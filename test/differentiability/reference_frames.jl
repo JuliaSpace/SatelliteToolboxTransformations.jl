@@ -6,8 +6,8 @@
 
 @testset "ECEF to ECEF Time Automatic Differentiation" begin
 
-    eop_iau1980  = read_iers_eop("test/eop_IAU1980.txt",  Val(:IAU1980))
-    eop_iau2000a = read_iers_eop("test/eop_IAU2000A.txt", Val(:IAU2000A))
+    eop_iau1980  = read_iers_eop("./eop_IAU1980.txt",  Val(:IAU1980))
+    eop_iau2000a = read_iers_eop("./eop_IAU2000A.txt", Val(:IAU2000A))
 
     eop_iau1980 = fetch_iers_eop(Val(:IAU1980))
     jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
@@ -44,8 +44,8 @@ end
 
 @testset "ECEF to ECI Time Automatic Differentiation" begin
 
-    eop_iau1980  = read_iers_eop("test/eop_IAU1980.txt",  Val(:IAU1980))
-    eop_iau2000a = read_iers_eop("test/eop_IAU2000A.txt", Val(:IAU2000A))
+    eop_iau1980  = read_iers_eop("./eop_IAU1980.txt",  Val(:IAU1980))
+    eop_iau2000a = read_iers_eop("./eop_IAU2000A.txt", Val(:IAU2000A))
 
     jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
 
@@ -98,8 +98,8 @@ end
 
 @testset "ECI to ECEF Time Automatic Differentiation" begin
 
-    eop_iau1980  = read_iers_eop("test/eop_IAU1980.txt",  Val(:IAU1980))
-    eop_iau2000a = read_iers_eop("test/eop_IAU2000A.txt", Val(:IAU2000A))
+    eop_iau1980  = read_iers_eop("./eop_IAU1980.txt",  Val(:IAU1980))
+    eop_iau2000a = read_iers_eop("./eop_IAU2000A.txt", Val(:IAU2000A))
 
     jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
 
@@ -152,8 +152,8 @@ end
 
 @testset "ECI to ECI Time Automatic Differentiation" begin
 
-    eop_iau1980  = read_iers_eop("test/eop_IAU1980.txt",  Val(:IAU1980))
-    eop_iau2000a = read_iers_eop("test/eop_IAU2000A.txt", Val(:IAU2000A))
+    eop_iau1980  = read_iers_eop("./eop_IAU1980.txt",  Val(:IAU1980))
+    eop_iau2000a = read_iers_eop("./eop_IAU2000A.txt", Val(:IAU2000A))
 
     jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
 
@@ -239,8 +239,8 @@ end
 
 @testset "ECI to ECI Time Automatic Differentiation" begin
 
-    eop_iau1980  = read_iers_eop("test/eop_IAU1980.txt",  Val(:IAU1980))
-    eop_iau2000a = read_iers_eop("test/eop_IAU2000A.txt", Val(:IAU2000A))
+    eop_iau1980  = read_iers_eop("./eop_IAU1980.txt",  Val(:IAU1980))
+    eop_iau2000a = read_iers_eop("./eop_IAU2000A.txt", Val(:IAU2000A))
 
     jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
     
