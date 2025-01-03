@@ -16,9 +16,6 @@
     test_functions = [eop_iau1980.x, eop_iau1980.y, eop_iau2000a.x, eop_iau2000a.y]
 
     for backend in _BACKENDS
-        if backend[1] == "Diffractor"
-            continue
-        end
         testset_name = "EOP Functions " * string(backend[1])
         @testset "$testset_name" begin
             for f in test_functions
