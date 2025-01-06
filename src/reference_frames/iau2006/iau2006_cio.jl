@@ -83,7 +83,7 @@ function r_itrf_to_tirs_iau2006(jd_tt::Number, x_p::Number, y_p::Number)
     return r_itrf_to_tirs_iau2006(DCM, jd_tt, x_p, y_p)
 end
 
-function r_itrf_to_tirs_iau2006(T::Type, jd_tt::Number, x_p::Number, y_p::Number)
+function r_itrf_to_tirs_iau2006(T::T_ROT, jd_tt::Number, x_p::Number, y_p::Number)
     # Convert Julian days to Julian centuries.
     t_tt = (jd_tt - JD_J2000) / 36525
 
@@ -140,7 +140,7 @@ function r_tirs_to_itrf_iau2006(
     return r_tirs_to_itrf_iau2006(DCM, jd_tt, x_p, y_p)
 end
 
-function r_tirs_to_itrf_iau2006(T::Type, jd_tt::Number, x_p::Number, y_p::Number)
+function r_tirs_to_itrf_iau2006(T::T_ROT, jd_tt::Number, x_p::Number, y_p::Number)
     # Convert Julian days to Julian centuries.
     t_tt = (jd_tt - JD_J2000) / 36525
 
@@ -184,7 +184,7 @@ Celestial Intermediate Pole (CIP) **[1]**.
 """
 r_tirs_to_cirs_iau2006(jd_ut1::Number) = r_tirs_to_cirs_iau2006(DCM, jd_ut1)
 
-function r_tirs_to_cirs_iau2006(T::Type, jd_ut1::Number)
+function r_tirs_to_cirs_iau2006(T::T_ROT, jd_ut1::Number)
     # In this theory, the rotation of Earth is taken into account by the Earth Rotation
     # Angle, which is the angle between the Conventional International Origin (CIO) and the
     # Terrestrial Intermediate Origin (TIO) [1]. The latter is a reference meridian on Earth
@@ -226,7 +226,7 @@ Celestial Intermediate Pole (CIP) **[1]**.
 """
 r_cirs_to_tirs_iau2006(jd_ut1::Number) = r_cirs_to_tirs_iau2006(DCM, jd_ut1)
 
-function r_cirs_to_tirs_iau2006(T::Type, jd_ut1::Number)
+function r_cirs_to_tirs_iau2006(T::T_ROT, jd_ut1::Number)
     # In this theory, the rotation of Earth is taken into account by the Earth Rotation
     # Angle, which is the angle between the Conventional International Origin (CIO) and the
     # Terrestrial Intermediate Origin (TIO) [1]. The latter is a reference meridian on Earth

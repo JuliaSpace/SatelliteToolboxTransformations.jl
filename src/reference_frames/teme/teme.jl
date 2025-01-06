@@ -49,7 +49,7 @@ function r_teme_to_tod(jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Numb
     return r_teme_to_tod(DCM, jd_tt, δΔϵ_1980, δΔψ_1980)
 end
 
-function r_teme_to_tod(T::Type, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
+function r_teme_to_tod(T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
     # Compute the nutation in the Julian Day (Terrestrial Time) `jd_tt`.
     mϵ_1980, Δϵ_1980, Δψ_1980 = nutation_fk5(jd_tt)
 
@@ -100,7 +100,7 @@ function r_tod_to_teme(jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Numb
     return r_tod_to_teme(DCM, jd_tt, δΔϵ_1980, δΔψ_1980)
 end
 
-function r_tod_to_teme(T::Type, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
+function r_tod_to_teme(T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
     return inv_rotation(r_teme_to_tod(T, jd_tt, δΔϵ_1980, δΔψ_1980))
 end
 
@@ -132,7 +132,7 @@ function r_teme_to_mod(jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Numb
     return r_teme_to_mod(DCM, jd_tt, δΔϵ_1980, δΔψ_1980)
 end
 
-function r_teme_to_mod(T::Type, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
+function r_teme_to_mod(T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
     # Notice that, in this case, we will not use `r_teme_to_tod`, and `r_tod_to_mod` because
     # this would call the function `nutation` twice, leading to a huge performance drop.
     # Hence, the code of those two functions is almost entirely rewritten here.
@@ -196,7 +196,7 @@ function r_mod_to_teme(jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Numb
     return r_mod_to_teme(DCM, jd_tt, δΔϵ_1980, δΔψ_1980)
 end
 
-function r_mod_to_teme(T::Type, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
+function r_mod_to_teme(T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
     return inv_rotation(r_teme_to_mod(T, jd_tt, δΔϵ_1980, δΔψ_1980))
 end
 
@@ -234,7 +234,7 @@ function r_teme_to_gcrf(jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Num
     return r_teme_to_gcrf(DCM, jd_tt, δΔϵ_1980, δΔψ_1980)
 end
 
-function r_teme_to_gcrf(T::Type, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
+function r_teme_to_gcrf(T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
     # Compute the rotation TEME => MOD.
     r_mod_teme  = r_teme_to_mod(T, jd_tt, δΔϵ_1980, δΔψ_1980)
 
@@ -276,7 +276,7 @@ function r_gcrf_to_teme(jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Num
     return r_gcrf_to_teme(DCM, jd_tt, δΔϵ_1980, δΔψ_1980)
 end
 
-function r_gcrf_to_teme(T::Type, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
+function r_gcrf_to_teme(T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
     return inv_rotation(r_teme_to_gcrf(T, jd_tt, δΔϵ_1980, δΔψ_1980))
 end
 
@@ -304,7 +304,7 @@ this parameter is omitted, then it falls back to `DCM`.
 """
 r_teme_to_pef(jd_ut1::Number) = r_teme_to_pef(DCM, jd_ut1)
 
-function r_teme_to_pef(T::Type, jd_ut1::Number)
+function r_teme_to_pef(T::T_ROT, jd_ut1::Number)
     # Compute the Greenwich Mean Sidereal Time.
     θ_gmst = jd_to_gmst(jd_ut1)
 
@@ -333,4 +333,4 @@ this parameter is omitted, then it falls back to `DCM`.
     Press, Hawthorn, CA, USA.
 """
 r_pef_to_teme(jd_ut1::Number) = r_pef_to_teme(DCM, jd_ut1)
-r_pef_to_teme(T::Type, jd_ut1::Number) = inv_rotation(r_teme_to_pef(T, jd_ut1))
+r_pef_to_teme(T::T_ROT, jd_ut1::Number) = inv_rotation(r_teme_to_pef(T, jd_ut1))

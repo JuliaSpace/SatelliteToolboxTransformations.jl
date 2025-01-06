@@ -10,13 +10,11 @@
 
     jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
 
-    r_itrf = [-1033.4793830; 7901.2952754; 6380.3565958]
-    v_itrf = [-3.225636520; -2.872451450; +5.531924446]
-
     test_functions = [eop_iau1980.x, eop_iau1980.y, eop_iau2000a.x, eop_iau2000a.y]
 
     for backend in _BACKENDS
         if backend[1] == "Enzyme"
+            # Enzyme has trouble recognizing the anonymous function call as constant so those checks are separated
             continue
         end
         testset_name = "EOP Functions " * string(backend[1])

@@ -12,6 +12,9 @@ using StaticArrays
 using DifferentiationInterface
 using FiniteDiff, ForwardDiff, Enzyme, Mooncake, PolyesterForwardDiff, Zygote
 
+using JET
+using AllocCheck
+
 @testset "Earth Orientation Parameters" verbose = true begin
     cd("./eop")
     include("./eop/read.jl")
@@ -96,4 +99,8 @@ const _BACKENDS = (
     include("./differentiability/eop.jl")
     include("./differentiability/reference_frames.jl")
     include("./differentiability/time.jl")
+end
+
+@testset "Performace Allocations and Type Stability" verbose = true begin
+    include("./performance.jl")
 end

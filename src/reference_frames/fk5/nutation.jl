@@ -182,14 +182,15 @@ when computing the nutation. If `n_max` is omitted, the it defaults to 106.
 function nutation_fk5(
     jd_tt::Number,
     n_max::Number = 106,
-    nut_coefs_1980::Matrix = _IAU_1980_NUTATION_COEFFICIENTS
-)
+    nut_coefs_1980::Matrix = _IAU_1980_NUTATION_COEFFICIENTS;
+    verbose::Val{verbosity}=Val(false),
+) where {verbosity}
     # Check inputs.
     if n_max > 106
-        @warn("The maximum number of coefficients to compute nutation using IAU-76/FK5 theory is 106.")
+        verbosity && @warn("The maximum number of coefficients to compute nutation using IAU-76/FK5 theory is 106.")
         n_max = 106
     elseif n_max <= 0
-        @warn("n_max must greater than 0. The default value will be used (106).")
+        verbosity && @warn("n_max must greater than 0. The default value will be used (106).")
         n_max = 106
     end
 
