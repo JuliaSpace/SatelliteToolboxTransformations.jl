@@ -1,3 +1,8 @@
+## Description #############################################################################
+#
+# Tests related to performance and memory allocations.
+#
+############################################################################################
 @testset "Aqua.jl" begin
     Aqua.test_all(SatelliteToolboxTransformations; ambiguities=(recursive = false))
 end

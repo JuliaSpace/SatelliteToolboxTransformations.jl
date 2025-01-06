@@ -158,7 +158,7 @@
 
             f_ad2, df_ad2 = value_and_derivative(
                 Const((x) -> func(jd_utc, x)),
-                backend[2],
+                AutoEnzyme(),
                 ΔUT1
             )
 
@@ -167,7 +167,7 @@
 
             f_ad3, df_ad3 = value_and_derivative(
                 Const((x) -> func(x, eop_iau1980)),
-                backend[2],
+                AutoEnzyme(),
                 jd_utc
             )
 
