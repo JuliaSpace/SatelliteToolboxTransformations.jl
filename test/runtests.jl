@@ -14,6 +14,7 @@ using FiniteDiff, ForwardDiff, Enzyme, Mooncake, PolyesterForwardDiff, Zygote
 
 using JET
 using AllocCheck
+using Aqua
 
 @testset "Earth Orientation Parameters" verbose = true begin
     cd("./eop")

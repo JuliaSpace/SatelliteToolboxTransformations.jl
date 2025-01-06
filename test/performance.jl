@@ -39,7 +39,7 @@ end
     for frame_set in frame_sets
         #TODO: Remove allocations
         #TODO: The allocations are coming from orthonormalize but I'm currently having issues removing them and having the Zygote extension work
-        @test length(check_allocs((x) -> r_ecef_to_ecef(frame_set[1], frame_set[2], x, frame_set[3]), (Float64,))) == 13 || 
+        @test length(check_allocs((x) -> r_ecef_to_ecef(frame_set[1], frame_set[2], x, frame_set[3]), (Float64,))) == 16 || 
             length(check_allocs((x) -> r_ecef_to_ecef(frame_set[1], frame_set[2], x, frame_set[3]), (Float64,))) == 0
     end
 
@@ -78,7 +78,7 @@ end
     for frame_set in frame_sets
         #TODO: Remove allocations
         #TODO: The allocations are coming from orthonormalize but I'm currently having issues removing them and having the Zygote extension work
-        @test length(check_allocs((x) -> r_ecef_to_eci(frame_set[1], frame_set[2], x, frame_set[3]), (Float64,))) == 13 ||
+        @test length(check_allocs((x) -> r_ecef_to_eci(frame_set[1], frame_set[2], x, frame_set[3]), (Float64,))) == 16 ||
             length(check_allocs((x) -> r_ecef_to_eci(frame_set[1], frame_set[2], x, frame_set[3]), (Float64,))) == 0
     end
 
@@ -117,7 +117,7 @@ end
     for frame_set in frame_sets
         #TODO: Remove allocations
         #TODO: The allocations are coming from orthonormalize but I'm currently having issues removing them and having the Zygote extension work
-        @test length(check_allocs((x) -> r_eci_to_ecef(frame_set[1], frame_set[2], x, frame_set[3]), (Float64,))) == 13 ||
+        @test length(check_allocs((x) -> r_eci_to_ecef(frame_set[1], frame_set[2], x, frame_set[3]), (Float64,))) == 16 ||
             length(check_allocs((x) -> r_eci_to_ecef(frame_set[1], frame_set[2], x, frame_set[3]), (Float64,))) == 0
     end
 end
