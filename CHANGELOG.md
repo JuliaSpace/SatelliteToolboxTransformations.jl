@@ -1,6 +1,26 @@
 SatelliteToolboxTransformations.jl Changelog
 ============================================
 
+Version 1.0.0
+-------------
+
+- ![Info][badge-info] We dropped support for Julia 1.6. This version only supports the
+  current Julia version and v1.10 (LTS).
+- ![Info][badge-info] This version does not have breaking changes. We bump the version to
+  1.0.0 because we now consider the API stable.
+
+Version 0.1.9
+-------------
+
+- ![Feature][badge-feature] The functions to transform orbit state vectors `sv_<>_to_<>` can
+  now be called without the parameters related to the epoch. In this case, the epoch of the
+  state vector is used.
+- ![Feature][badge-feature] The function to transform orbit representations `orb_eci_to_eci`
+  can now be called without the parameters related to the epoch. In this case, the epoch of
+  the orbit representation is used.
+- ![Enhancement][badge-enhancement] The functions in this package are now compatible with
+  automatic differentiation. (PRs [#7][gh-pr-7], [#8][gh-pr-8], [#11][gh-pr-11])
+
 Version 0.1.8
 -------------
 
@@ -68,3 +88,6 @@ Version 0.1.0
 [gh-pr-2]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/2
 [gh-pr-3]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/3
 [gh-pr-4]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/4
+[gh-pr-7]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/7
+[gh-pr-8]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/8
+[gh-pr-11]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/11
