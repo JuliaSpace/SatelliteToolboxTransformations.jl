@@ -176,7 +176,7 @@
 
             f_ad4, df_ad4 = value_and_derivative(
                 Const((x) -> func(x, eop_iau2000a)),
-                backend[2],
+                AutoEnzyme(),
                 jd_utc
             )
 
