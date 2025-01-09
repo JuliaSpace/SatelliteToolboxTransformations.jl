@@ -41,6 +41,7 @@ SatelliteToolboxBase = "1"
 Scratch = "1"
 StaticArrays = "1"
 Test = "1.10"
+Zygote = "0.6"
 julia = "1.10, 1.11"
 
 [extras]
