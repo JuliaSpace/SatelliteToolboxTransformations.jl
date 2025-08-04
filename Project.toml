@@ -17,7 +17,6 @@ ReferenceFrameRotations = "74f56ac7-18b3-5285-802d-d4bd4f104033"
 SatelliteToolboxBase = "9e17983a-0463-41a7-9a16-1682db6d8b66"
 Scratch = "6c6a2e73-6563-6170-7368-637461726353"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
-Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 
 [compat]
 Crayons = "4.0"
