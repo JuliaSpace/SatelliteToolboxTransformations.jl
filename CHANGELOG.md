@@ -1,6 +1,13 @@
 SatelliteToolboxTransformations.jl Changelog
 ============================================
 
+Version 1.1.0
+-------------
+
+- ![Feature][badge-feature] The package now supports automatic differentiation using
+  different backends. (PRs [#12][gh-pr-12])
+- ![Enhancement][badge-enhancement] Some allocations were removed. (PRs [#12][gh-pr-12])
+
 Version 1.0.0
 -------------
 
@@ -91,3 +98,4 @@ Version 0.1.0
 [gh-pr-7]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/7
 [gh-pr-8]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/8
 [gh-pr-11]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/11
+[gh-pr-12]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/12
