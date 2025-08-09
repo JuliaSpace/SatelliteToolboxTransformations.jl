@@ -3,6 +3,7 @@
 # Tests related to automatic differentiation for the EOP functions.
 #
 ############################################################################################
+
 @testset "Time Automatic Differentiation" begin
 
     eop_iau1980  = read_iers_eop("./eop_IAU1980.txt",  Val(:IAU1980))
@@ -14,7 +15,8 @@
 
     for backend in _BACKENDS
         if backend[1] == "Enzyme"
-            # Enzyme has trouble recognizing the anonymous function call as constant so those checks are separated
+            # Enzyme has trouble recognizing the anonymous function call as constant so
+            # those checks are separated.
             continue
         end
         testset_name = "EOP Functions " * string(backend[1])
@@ -25,7 +27,7 @@
                     AutoFiniteDiff(),
                     jd_utc
                 )
-    
+
                 f_ad, df_ad = value_and_derivative(
                     (x) -> f(x),
                     backend[2],

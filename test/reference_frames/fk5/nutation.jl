@@ -80,14 +80,14 @@
     # == Warnings ==========================================================================
 
     JD_TT = 2453101.828154745
-    mϵ_1980, Δϵ_1980, Δψ_1980 = nutation_fk5(JD_TT; verbose=Val(true))
+    mϵ_1980, Δϵ_1980, Δψ_1980 = nutation_fk5(JD_TT; verbose = Val(true))
 
     @test (@test_logs(
         (
             :warn,
             "The maximum number of coefficients to compute nutation using IAU-76/FK5 theory is 106."
         ),
-        nutation_fk5(JD_TT, 107; verbose=Val(true))
+        nutation_fk5(JD_TT, 107; verbose = Val(true))
     )) == (mϵ_1980, Δϵ_1980, Δψ_1980)
 
     @test (@test_logs(
@@ -95,6 +95,6 @@
             :warn,
             "n_max must greater than 0. The default value will be used (106)."
         ),
-        nutation_fk5(JD_TT, 0; verbose=Val(true))
+        nutation_fk5(JD_TT, 0; verbose = Val(true))
     )) == (mϵ_1980, Δϵ_1980, Δψ_1980)
 end

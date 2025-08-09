@@ -30,7 +30,7 @@
                     AutoFiniteDiff(),
                     jd_utc
                 )
-        
+
                 f_ad, df_ad = value_and_derivative(
                     (x) -> Array(r_ecef_to_ecef(frames[1], frames[2], x, frames[3])),
                     backend[2],
@@ -51,7 +51,7 @@
                 AutoFiniteDiff(),
                 jd_utc
             )
-    
+
             f_ad, df_ad = value_and_derivative(
                 Const((x) -> Array(r_ecef_to_ecef(frames[1], frames[2], x, frames[3]))),
                 AutoEnzyme(),
@@ -93,7 +93,7 @@ end
         (TIRS(), MOD06(), eop_iau2000a),
         (TIRS(), MJ2000(), eop_iau2000a),
     )
-    
+
     for backend in _BACKENDS
         if backend[1] == "Enzyme"
             continue
@@ -127,7 +127,7 @@ end
                 AutoFiniteDiff(),
                 jd_utc
             )
-    
+
             f_ad, df_ad = value_and_derivative(
                 Const((x) -> Array(r_ecef_to_eci(frames[1], frames[2], x, frames[3]))),
                 AutoEnzyme(),
@@ -169,7 +169,7 @@ end
         (MOD06(), TIRS(), eop_iau2000a),
         (MJ2000(), TIRS(), eop_iau2000a),
     )
-    
+
 
     for backend in _BACKENDS
         if backend[1] == "Enzyme"
@@ -204,7 +204,7 @@ end
                 AutoFiniteDiff(),
                 jd_utc
             )
-    
+
             f_ad, df_ad = value_and_derivative(
                 Const((x) -> Array(r_eci_to_ecef(frames[1], frames[2], x, frames[3]))),
                 AutoEnzyme(),
@@ -252,7 +252,7 @@ end
         (MJ2000(), ERS(), eop_iau2000a),
         (ERS(), MJ2000(), eop_iau2000a),
     )
-    
+
     for backend in _BACKENDS
         if backend[1] == "Zygote" || backend[1] == "Enzyme"
             continue
@@ -287,7 +287,7 @@ end
                 jd_utc,
             )
 
-            try                
+            try
                 f_ad, df_ad = value_and_derivative(
                     (x) -> Array(r_eci_to_eci(frames[1], frames[2], x, frames[3])),
                     AutoZygote(),
@@ -311,7 +311,7 @@ end
                 AutoFiniteDiff(),
                 jd_utc
             )
-    
+
             f_ad, df_ad = value_and_derivative(
                 Const((x) -> Array(r_eci_to_eci(frames[1], frames[2], x, frames[3]))),
                 AutoEnzyme(),
@@ -330,7 +330,7 @@ end
     eop_iau2000a = read_iers_eop("./eop_IAU2000A.txt", Val(:IAU2000A))
 
     jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
-    
+
     frame_sets = (
         (MOD(), TOD(), eop_iau1980),
         (TOD(), MOD(), eop_iau1980),
@@ -342,7 +342,7 @@ end
         (ERS(), MOD06(), eop_iau2000a),
         (MOD06(), ERS(), eop_iau2000a),
     )
-    
+
 
     for backend in _BACKENDS
         if backend[1] == "Enzyme"
@@ -377,7 +377,7 @@ end
                 AutoFiniteDiff(),
                 jd_utc
             )
-    
+
             f_ad, df_ad = value_and_derivative(
                 Const((x) -> Array(r_eci_to_eci(frames[1], x, frames[2], x, frames[3]))),
                 AutoEnzyme(),
@@ -391,7 +391,7 @@ end
 end
 
 @testset "Geodetic Geocentric State Automatic Differentiation" begin
-    
+
     ecef_pos = [7000e3; 0.0; 7000e3]
 
     f_fd, df_fd = value_and_jacobian(
@@ -459,7 +459,7 @@ end
     end
 
     geodetic_state = [deg2rad(45.0); deg2rad(0.0); 400.0]
-    
+
     f_fd, df_fd = value_and_jacobian(
         (x) -> geodetic_to_ecef(x),
         AutoFiniteDiff(),
@@ -481,13 +481,13 @@ end
     end
 
     geocentric_state = [deg2rad(45.0); 7000 * √2]
-    
+
     f_fd, df_fd = value_and_jacobian(
         (x) -> collect(geocentric_to_geodetic(x)),
         AutoFiniteDiff(),
         geocentric_state,
     )
-    
+
     for backend in _BACKENDS
         testset_name = "Geocentric to Geodetic " * string(backend[1])
         @testset "$testset_name" begin
@@ -503,7 +503,7 @@ end
     end
 
     geodetic_state = [deg2rad(45.0); 400.0]
-    
+
     f_fd, df_fd = value_and_jacobian(
         (x) -> collect(geodetic_to_geocentric(x)),
         AutoFiniteDiff(),
@@ -524,5 +524,3 @@ end
         end
     end
 end
-
-        

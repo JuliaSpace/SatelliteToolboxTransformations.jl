@@ -3,6 +3,7 @@
 # Tests related to automatic differentiation for the Time Conversions.
 #
 ############################################################################################
+
 @testset "Leap Second Automatic Differentiation" begin
 
     jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
@@ -80,7 +81,7 @@
                     AutoFiniteDiff(),
                     jd_utc
                 )
-        
+
                 f_ad, df_ad = value_and_derivative(
                     (x) -> func(x, ΔUT1),
                     backend[2],
@@ -146,7 +147,7 @@
                 AutoFiniteDiff(),
                 jd_utc
             )
-    
+
             f_ad, df_ad = value_and_derivative(
                 Const((x) -> func(x, ΔUT1)),
                 AutoEnzyme(),

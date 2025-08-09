@@ -183,7 +183,7 @@ function nutation_fk5(
     jd_tt::Number,
     n_max::Number = 106,
     nut_coefs_1980::Matrix = _IAU_1980_NUTATION_COEFFICIENTS;
-    verbose::Val{verbosity}=Val(false),
+    verbose::Val{verbosity} = Val(false),
 ) where {verbosity}
     # Check inputs.
     if n_max > 106

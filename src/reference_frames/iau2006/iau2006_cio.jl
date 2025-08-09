@@ -132,11 +132,7 @@ The TIRS and PEF (IAU-76/FK5) are virtually the same reference frame, but accord
 - **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
     Press, Hawthorn, CA, USA.
 """
-function r_tirs_to_itrf_iau2006(
-    jd_tt::Number,
-    x_p::Number,
-    y_p::Number
-)
+function r_tirs_to_itrf_iau2006(jd_tt::Number, x_p::Number, y_p::Number)
     return r_tirs_to_itrf_iau2006(DCM, jd_tt, x_p, y_p)
 end
 
