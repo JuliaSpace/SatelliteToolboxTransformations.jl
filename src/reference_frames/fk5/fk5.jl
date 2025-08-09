@@ -87,7 +87,7 @@ considering the PEF frame.
 """
 r_itrf_to_pef_fk5(x_p::Number, y_p::Number) = r_itrf_to_pef_fk5(DCM, x_p, y_p)
 
-function r_itrf_to_pef_fk5(T::Type, x_p::Number, y_p::Number)
+function r_itrf_to_pef_fk5(T::T_ROT, x_p::Number, y_p::Number)
     # Notice that `x_p` and `y_p` are displacements in X and Y directions and **not**
     # rotation angles. Hence, a displacement in X is a rotation in Y and a displacement in Y
     # is a rotation in X.
@@ -130,7 +130,7 @@ considering the PEF frame.
 """
 r_pef_to_itrf_fk5(x_p::Number, y_p::Number) = r_pef_to_itrf_fk5(DCM, x_p, y_p)
 
-function r_pef_to_itrf_fk5(T::Type, x_p::Number, y_p::Number)
+function r_pef_to_itrf_fk5(T::T_ROT, x_p::Number, y_p::Number)
     # Notice that `x_p` and `y_p` are displacements in X and Y directions and **not**
     # rotation angles. Hence, a displacement in X is a rotation in Y and a displacement in Y
     # is a rotation in X.
@@ -171,7 +171,7 @@ function r_pef_to_tod_fk5(jd_ut1::Number, jd_tt::Number, δΔψ_1980::Number = 0
     return r_pef_to_tod_fk5(DCM, jd_ut1, jd_tt, δΔψ_1980)
 end
 
-function r_pef_to_tod_fk5(T::Type, jd_ut1::Number, jd_tt::Number, δΔψ_1980::Number = 0)
+function r_pef_to_tod_fk5(T::T_ROT, jd_ut1::Number, jd_tt::Number, δΔψ_1980::Number = 0)
     # Compute the nutation in the Julian Day (Terrestrial Time) `jd_tt`.
     mϵ_1980, Δϵ_1980, Δψ_1980 = nutation_fk5(jd_tt)
 
@@ -276,7 +276,7 @@ function r_tod_to_mod_fk5(jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::N
     return r_tod_to_mod_fk5(DCM, jd_tt, δΔϵ_1980, δΔψ_1980)
 end
 
-function r_tod_to_mod_fk5(T::Type, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
+function r_tod_to_mod_fk5(T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
     # Compute the nutation in the Julian Day (Terrestrial Time) `jd_tt`.
     mϵ_1980, Δϵ_1980, Δψ_1980 = nutation_fk5(jd_tt)
 
@@ -350,7 +350,7 @@ reference frame.
 """
 r_mod_to_gcrf_fk5(jd_tt::Number) = r_mod_to_gcrf_fk5(DCM,jd_tt)
 
-function r_mod_to_gcrf_fk5(T::Type, jd_tt::Number)
+function r_mod_to_gcrf_fk5(T::T_ROT, jd_tt::Number)
     ζ, Θ, z = precession_fk5(jd_tt)
     return angle_to_rot(T, z, -Θ, ζ, :ZYZ)
 end
@@ -449,7 +449,7 @@ function r_itrf_to_gcrf_fk5(
 end
 
 function r_itrf_to_gcrf_fk5(
-    T::Type,
+    T::T_ROT,
     jd_ut1::Number,
     jd_tt::Number,
     x_p::Number,
@@ -568,7 +568,7 @@ function r_pef_to_mod_fk5(
 end
 
 function r_pef_to_mod_fk5(
-    T::Type,
+    T::T_ROT,
     jd_ut1::Number,
     jd_tt::Number,
     δΔϵ_1980::Number = 0,

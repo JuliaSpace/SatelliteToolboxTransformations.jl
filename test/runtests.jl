@@ -9,9 +9,6 @@ using SatelliteToolboxTransformations
 using Scratch
 using StaticArrays
 
-using DifferentiationInterface
-import FiniteDiff, ForwardDiff
-
 @testset "Earth Orientation Parameters" verbose = true begin
     cd("./eop")
     include("./eop/read.jl")
@@ -84,12 +81,47 @@ end
     include("./time.jl")
 end
 
-const _BACKENDS = (
-    ("ForwardDiff", AutoForwardDiff()),
-)
+if isempty(VERSION.prerelease)
+    # Add Mooncake and Enzyme to the project if not the nightly version
+    # Adding them via the Project.toml isn't working because it tries to compile them before reaching the gating
+    using Pkg
+    Pkg.add("DifferentiationInterface")
+    Pkg.add("Enzyme")
+    Pkg.add("FiniteDiff")
+    Pkg.add("ForwardDiff")
+    Pkg.add("Mooncake")
+    Pkg.add("PolyesterForwardDiff")
+    Pkg.add("Zygote")
 
-@testset "Automatic Differentiation" verbose = true begin
-    include("./differentiability/eop.jl")
-    include("./differentiability/reference_frames.jl")
-    include("./differentiability/time.jl")
+    Pkg.add("JET")
+    Pkg.add("AllocCheck")
+    Pkg.add("Aqua")
+
+    # Test with Mooncake and Enzyme along with the other backends
+    using DifferentiationInterface
+    using Enzyme, FiniteDiff, ForwardDiff, Mooncake, PolyesterForwardDiff, Zygote
+    const _BACKENDS = (
+        ("ForwardDiff", AutoForwardDiff()),
+        ("Enzyme", AutoEnzyme()),
+        ("Mooncake", AutoMooncake(;config=nothing)),
+        ("PolyesterForwardDiff", AutoPolyesterForwardDiff()),
+        ("Zygote", AutoZygote()),
+    )
+
+    @testset "Automatic Differentiation" verbose = true begin
+        include("./differentiability/eop.jl")
+        include("./differentiability/reference_frames.jl")
+        include("./differentiability/time.jl")
+    end
+
+    using JET
+    using AllocCheck
+    using Aqua
+
+    @testset "Performace Allocations and Type Stability" verbose = true begin
+        include("./performance.jl")
+    end
+else
+    @warn "Differentiation backends not guaranteed to work on julia-nightly, skipping tests"
+    @warn "Performance checks not guaranteed to work on julia-nightly, skipping tests"
 end

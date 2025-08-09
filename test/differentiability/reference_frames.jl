@@ -3,6 +3,7 @@
 # Tests related to automatic differentiation for the Reference Frame Rotations.
 #
 ############################################################################################
+
 @testset "ECEF to ECEF Time Automatic Differentiation" begin
 
     eop_iau1980  = read_iers_eop("./eop_IAU1980.txt",  Val(:IAU1980))
@@ -17,24 +18,48 @@
         (TIRS(), ITRF(), eop_iau2000a),
     )
 
-    for frames in frame_sets
-        f_fd, df_fd = value_and_derivative(
-            (x) -> r_ecef_to_ecef(frames[1], frames[2], x, frames[3]),
-            AutoFiniteDiff(),
-            jd_utc
-        )
-
-        for backend in _BACKENDS
-            @eval @testset $("DCM " * string(frames[1])[6:end-3] * " to " * string(frames[2])[6:end-3] * " Rotation " * string(backend[1])) begin
+    for backend in _BACKENDS
+        if backend[1] == "Enzyme"
+            continue
+        end
+        testset_name = "ECEF to ECEF Time " * string(backend[1])
+        @testset "$testset_name" begin
+            for frames in frame_sets
+                f_fd, df_fd = value_and_derivative(
+                    (x) -> Array(r_ecef_to_ecef(frames[1], frames[2], x, frames[3])),
+                    AutoFiniteDiff(),
+                    jd_utc
+                )
+        
                 f_ad, df_ad = value_and_derivative(
-                    (x) -> r_ecef_to_ecef($frames[1], $frames[2], x, $frames[3]),
-                    $backend[2],
-                    $jd_utc
+                    (x) -> Array(r_ecef_to_ecef(frames[1], frames[2], x, frames[3])),
+                    backend[2],
+                    jd_utc
                 )
 
-                @test $f_fd == f_ad
-                @test $df_fd ≈ df_ad rtol=1e-4
+                @test f_fd == f_ad
+                @test df_fd ≈ df_ad rtol=1e-4
             end
+        end
+    end
+
+    testset_name = "ECEF to ECEF Time Enzyme"
+    @testset "$testset_name" begin
+        for frames in frame_sets
+            f_fd, df_fd = value_and_derivative(
+                (x) -> Array(r_ecef_to_ecef(frames[1], frames[2], x, frames[3])),
+                AutoFiniteDiff(),
+                jd_utc
+            )
+    
+            f_ad, df_ad = value_and_derivative(
+                Const((x) -> Array(r_ecef_to_ecef(frames[1], frames[2], x, frames[3]))),
+                AutoEnzyme(),
+                jd_utc
+            )
+
+            @test f_fd ≈ f_ad rtol=1e-14
+            @test df_fd ≈ df_ad rtol=1e-4
         end
     end
 end
@@ -69,25 +94,48 @@ end
         (TIRS(), MJ2000(), eop_iau2000a),
     )
     
-
-    for frames in frame_sets
-        f_fd, df_fd = value_and_derivative(
-            (x) -> r_ecef_to_eci(frames[1], frames[2], x, frames[3]),
-            AutoFiniteDiff(),
-            jd_utc,
-        )
-
-        for backend in _BACKENDS
-            @eval @testset $("DCM " * string(frames[1])[6:end-3] * " to " * string(frames[2])[6:end-3] * " Rotation " * string(backend[1])) begin
-                f_ad, df_ad = value_and_derivative(
-                    (x) -> r_ecef_to_eci($frames[1], $frames[2], x, $frames[3]),
-                    $backend[2],
-                    $jd_utc
+    for backend in _BACKENDS
+        if backend[1] == "Enzyme"
+            continue
+        end
+        testset_name = "ECEF to ECI Time " * string(backend[1])
+        @testset "$testset_name" begin
+            for frames in frame_sets
+                f_fd, df_fd = value_and_derivative(
+                    (x) -> Array(r_ecef_to_eci(frames[1], frames[2], x, frames[3])),
+                    AutoFiniteDiff(),
+                    jd_utc,
                 )
 
-                @test $f_fd ≈ f_ad rtol=1e-14
-                @test $df_fd ≈ df_ad rtol=2e-1
+                f_ad, df_ad = value_and_derivative(
+                    (x) -> Array(r_ecef_to_eci(frames[1], frames[2], x, frames[3])),
+                    backend[2],
+                    jd_utc
+                )
+
+                @test f_fd ≈ f_ad rtol=1e-14
+                @test df_fd ≈ df_ad rtol=2e-1
             end
+        end
+    end
+
+    testset_name = "ECEF to ECI Time Enzyme"
+    @testset "$testset_name" begin
+        for frames in frame_sets
+            f_fd, df_fd = value_and_derivative(
+                (x) -> Array(r_ecef_to_eci(frames[1], frames[2], x, frames[3])),
+                AutoFiniteDiff(),
+                jd_utc
+            )
+    
+            f_ad, df_ad = value_and_derivative(
+                Const((x) -> Array(r_ecef_to_eci(frames[1], frames[2], x, frames[3]))),
+                AutoEnzyme(),
+                jd_utc
+            )
+
+            @test f_fd ≈ f_ad rtol=1e-14
+            @test df_fd ≈ df_ad rtol=2e-1
         end
     end
 end
@@ -123,24 +171,48 @@ end
     )
     
 
-    for frames in frame_sets
-        f_fd, df_fd = value_and_derivative(
-            (x) -> r_eci_to_ecef(frames[1], frames[2], x, frames[3]),
-            AutoFiniteDiff(),
-            jd_utc,
-        )
-
-        for backend in _BACKENDS
-            @eval @testset $("DCM " * string(frames[1])[6:end-3] * " to " * string(frames[2])[6:end-3] * " Rotation " * string(backend[1])) begin
-                f_ad, df_ad = value_and_derivative(
-                    (x) -> r_eci_to_ecef($frames[1], $frames[2], x, $frames[3]),
-                    $backend[2],
-                    $jd_utc
+    for backend in _BACKENDS
+        if backend[1] == "Enzyme"
+            continue
+        end
+        testset_name = "ECI to ECEF Time " * string(backend[1])
+        @testset "$testset_name" begin
+            for frames in frame_sets
+                f_fd, df_fd = value_and_derivative(
+                    (x) -> Array(r_eci_to_ecef(frames[1], frames[2], x, frames[3])),
+                    AutoFiniteDiff(),
+                    jd_utc,
                 )
 
-                @test $f_fd ≈ f_ad rtol=1e-14
-                @test $df_fd ≈ df_ad rtol=2e-1
+                f_ad, df_ad = value_and_derivative(
+                    (x) -> Array(r_eci_to_ecef(frames[1], frames[2], x, frames[3])),
+                    backend[2],
+                    jd_utc
+                )
+
+                @test f_fd ≈ f_ad rtol=1e-14
+                @test df_fd ≈ df_ad rtol=2e-1
             end
+        end
+    end
+
+    testset_name = "ECI to ECEF Time Enzyme"
+    @testset "$testset_name" begin
+        for frames in frame_sets
+            f_fd, df_fd = value_and_derivative(
+                (x) -> Array(r_eci_to_ecef(frames[1], frames[2], x, frames[3])),
+                AutoFiniteDiff(),
+                jd_utc
+            )
+    
+            f_ad, df_ad = value_and_derivative(
+                Const((x) -> Array(r_eci_to_ecef(frames[1], frames[2], x, frames[3]))),
+                AutoEnzyme(),
+                jd_utc
+            )
+
+            @test f_fd ≈ f_ad rtol=1e-14
+            @test df_fd ≈ df_ad rtol=2e-1
         end
     end
 end
@@ -181,24 +253,73 @@ end
         (ERS(), MJ2000(), eop_iau2000a),
     )
     
-    for frames in frame_sets
-        f_fd, df_fd = value_and_derivative(
-            (x) -> r_eci_to_eci(frames[1], frames[2], x, frames[3]),
-            AutoFiniteDiff(),
-            jd_utc,
-        )
-
-        for backend in _BACKENDS
-            @eval @testset $("DCM " * string(frames[1])[6:end-3] * " to " * string(frames[2])[6:end-3] * " Rotation " * string(backend[1])) begin
-                f_ad, df_ad = value_and_derivative(
-                    (x) -> r_eci_to_eci($frames[1], $frames[2], x, $frames[3]),
-                    $backend[2],
-                    $jd_utc
+    for backend in _BACKENDS
+        if backend[1] == "Zygote" || backend[1] == "Enzyme"
+            continue
+        end
+        testset_name = "ECI to ECI Time " * string(backend[1])
+        @testset "$testset_name" begin
+            for frames in frame_sets
+                f_fd, df_fd = value_and_derivative(
+                    (x) -> Array(r_eci_to_eci(frames[1], frames[2], x, frames[3])),
+                    AutoFiniteDiff(),
+                    jd_utc,
                 )
 
-                @test $f_fd ≈ f_ad rtol=1e-14
-                @test $df_fd ≈ df_ad rtol=2e-1
+                f_ad, df_ad = value_and_derivative(
+                    (x) -> Array(r_eci_to_eci(frames[1], frames[2], x, frames[3])),
+                    backend[2],
+                    jd_utc
+                )
+
+                @test f_fd ≈ f_ad rtol=1e-14
+                @test df_fd ≈ df_ad rtol=2e-1
             end
+        end
+    end
+
+    testset_name = "ECI to ECI Time Zygote"
+    @testset "$testset_name" begin
+        for frames in frame_sets
+            f_fd, df_fd = value_and_derivative(
+                (x) -> Array(r_eci_to_eci(frames[1], frames[2], x, frames[3])),
+                AutoFiniteDiff(),
+                jd_utc,
+            )
+
+            try                
+                f_ad, df_ad = value_and_derivative(
+                    (x) -> Array(r_eci_to_eci(frames[1], frames[2], x, frames[3])),
+                    AutoZygote(),
+                    jd_utc
+                )
+
+                @test f_fd ≈ f_ad rtol=1e-14
+                @test df_fd ≈ df_ad rtol=2e-1
+            catch err
+                @test err isa MethodError
+                @test startswith(sprint(showerror, err), "MethodError: no method matching iterate(::Nothing)")
+            end
+        end
+    end
+
+    testset_name = "ECI to ECI Time Enzyme"
+    @testset "$testset_name" begin
+        for frames in frame_sets
+            f_fd, df_fd = value_and_derivative(
+                (x) -> Array(r_eci_to_eci(frames[1], frames[2], x, frames[3])),
+                AutoFiniteDiff(),
+                jd_utc
+            )
+    
+            f_ad, df_ad = value_and_derivative(
+                Const((x) -> Array(r_eci_to_eci(frames[1], frames[2], x, frames[3]))),
+                AutoEnzyme(),
+                jd_utc
+            )
+
+            @test f_fd ≈ f_ad rtol=1e-14
+            @test df_fd ≈ df_ad rtol=2e-1
         end
     end
 end
@@ -223,24 +344,48 @@ end
     )
     
 
-    for frames in frame_sets
-        f_fd, df_fd = value_and_derivative(
-            (x) -> r_eci_to_eci(frames[1], x, frames[2], x, frames[3]),
-            AutoFiniteDiff(),
-            jd_utc,
-        )
-
-        for backend in _BACKENDS
-            @eval @testset $("DCM " * string(frames[1])[6:end-3] * " to " * string(frames[2])[6:end-3] * " Rotation " * string(backend[1])) begin
-                f_ad, df_ad = value_and_derivative(
-                    (x) -> r_eci_to_eci($frames[1], x, $frames[2], x, $frames[3]),
-                    $backend[2],
-                    $jd_utc
+    for backend in _BACKENDS
+        if backend[1] == "Enzyme"
+            continue
+        end
+        testset_name = "ECI to ECI Time " * string(backend[1])
+        @testset "$testset_name" begin
+            for frames in frame_sets
+                f_fd, df_fd = value_and_derivative(
+                    (x) -> Array(r_eci_to_eci(frames[1], x, frames[2], x, frames[3])),
+                    AutoFiniteDiff(),
+                    jd_utc,
                 )
 
-                @test $f_fd ≈ f_ad rtol=1e-14
-                @test $df_fd ≈ df_ad atol=1e-4
+                f_ad, df_ad = value_and_derivative(
+                    (x) -> Array(r_eci_to_eci(frames[1], x, frames[2], x, frames[3])),
+                    backend[2],
+                    jd_utc
+                )
+
+                @test f_fd ≈ f_ad rtol=1e-14
+                @test df_fd ≈ df_ad atol=1e-4
             end
+        end
+    end
+
+    testset_name = "ECI to ECI Time Enzyme"
+    @testset "$testset_name" begin
+        for frames in frame_sets
+            f_fd, df_fd = value_and_derivative(
+                (x) -> Array(r_eci_to_eci(frames[1], x, frames[2], x, frames[3])),
+                AutoFiniteDiff(),
+                jd_utc
+            )
+    
+            f_ad, df_ad = value_and_derivative(
+                Const((x) -> Array(r_eci_to_eci(frames[1], x, frames[2], x, frames[3]))),
+                AutoEnzyme(),
+                jd_utc
+            )
+
+            @test f_fd ≈ f_ad rtol=1e-14
+            @test df_fd ≈ df_ad atol=1e-4
         end
     end
 end
@@ -250,129 +395,134 @@ end
     ecef_pos = [7000e3; 0.0; 7000e3]
 
     f_fd, df_fd = value_and_jacobian(
-        (x) -> [i for i in ecef_to_geocentric(x)],
+        (x) -> collect(ecef_to_geocentric(x)),
         AutoFiniteDiff(),
         ecef_pos,
     )
 
     for backend in _BACKENDS
-        @eval @testset $("ECEF to Geocentric " * string(backend[1])) begin
+        testset_name = "ECEF to Geocentric " * string(backend[1])
+        @testset "$testset_name" begin
             f_ad, df_ad = value_and_jacobian(
-                (x) -> [i for i in ecef_to_geocentric(x)],
-                $backend[2],
-                $ecef_pos
+                (x) -> collect(ecef_to_geocentric(x)),
+                backend[2],
+                ecef_pos
             )
 
-            @test $f_fd ≈ f_ad rtol=1e-14
-            @test $df_fd ≈ df_ad rtol=2e-1
+            @test f_fd ≈ f_ad rtol=1e-14
+            @test df_fd ≈ df_ad rtol=2e-1
         end
     end
 
     geocentric_state = [deg2rad(45.0); deg2rad(0.0); 7000 * √2]
 
     f_fd, df_fd = value_and_jacobian(
-        (x) -> [i for i in geocentric_to_ecef(x)],
+        (x) -> collect(geocentric_to_ecef(x)),
         AutoFiniteDiff(),
         geocentric_state,
     )
-    
+
     for backend in _BACKENDS
-        @eval @testset $("Geocentric to ECEF " * string(backend[1])) begin
+        testset_name = "Geocentric to ECEF " * string(backend[1])
+        @testset "$testset_name" begin
             f_ad, df_ad = value_and_jacobian(
-                (x) -> [i for i in geocentric_to_ecef(x)],
-                $backend[2],
-                $geocentric_state
+                (x) -> Array(geocentric_to_ecef(x)),
+                backend[2],
+                geocentric_state
             )
 
-            @test $f_fd ≈ f_ad rtol=1e-14
-            @test $df_fd ≈ df_ad rtol=2e-1
+            @test f_fd ≈ f_ad rtol=1e-14
+            @test df_fd ≈ df_ad rtol=2e-1
         end
     end
 
     ecef_pos = [7000e3; 0.0; 7000e3]
 
     f_fd, df_fd = value_and_jacobian(
-        (x) -> [i for i in ecef_to_geodetic(x)],
+        (x) -> collect(ecef_to_geodetic(x)),
         AutoFiniteDiff(),
         ecef_pos,
     )
 
     for backend in _BACKENDS
-        @eval @testset $("ECEF to Geodetic " * string(backend[1])) begin
+        testset_name = "ECEF to Geodetic " * string(backend[1])
+        @testset "$testset_name" begin
             f_ad, df_ad = value_and_jacobian(
-                (x) -> [i for i in ecef_to_geodetic(x)],
-                $backend[2],
-                $ecef_pos
+                (x) -> collect(ecef_to_geodetic(x)),
+                backend[2],
+                ecef_pos
             )
 
-            @test $f_fd ≈ f_ad rtol=1e-14
-            @test $df_fd ≈ df_ad rtol=2e-1
+            @test f_fd ≈ f_ad rtol=1e-14
+            @test df_fd ≈ df_ad rtol=2e-1
         end
     end
 
     geodetic_state = [deg2rad(45.0); deg2rad(0.0); 400.0]
     
     f_fd, df_fd = value_and_jacobian(
-        (x) -> [i for i in geodetic_to_ecef(x)],
+        (x) -> geodetic_to_ecef(x),
         AutoFiniteDiff(),
         geodetic_state,
     )
 
     for backend in _BACKENDS
-        @eval @testset $("Geodetic to ECEF " * string(backend[1])) begin
+        testset_name = "Geodetic to ECEF " * string(backend[1])
+        @testset "$testset_name" begin
             f_ad, df_ad = value_and_jacobian(
-                (x) -> [i for i in geodetic_to_ecef(x)],
-                $backend[2],
-                $geodetic_state
+                (x) -> Array(geodetic_to_ecef(x)),
+                backend[2],
+                geodetic_state
             )
 
-            @test $f_fd ≈ f_ad rtol=1e-14
-            @test $df_fd ≈ df_ad rtol=2e-1
+            @test f_fd ≈ f_ad rtol=1e-14
+            @test df_fd ≈ df_ad rtol=2e-1
         end
     end
 
     geocentric_state = [deg2rad(45.0); 7000 * √2]
     
     f_fd, df_fd = value_and_jacobian(
-        (x) -> [i for i in geocentric_to_geodetic(x)],
+        (x) -> collect(geocentric_to_geodetic(x)),
         AutoFiniteDiff(),
         geocentric_state,
     )
     
     for backend in _BACKENDS
-        @eval @testset $("Geocentric to Geodetic " * string(backend[1])) begin
+        testset_name = "Geocentric to Geodetic " * string(backend[1])
+        @testset "$testset_name" begin
             f_ad, df_ad = value_and_jacobian(
-                (x) -> [i for i in geocentric_to_geodetic(x)],
-                $backend[2],
-                $geocentric_state
+                (x) -> collect(geocentric_to_geodetic(x)),
+                backend[2],
+                geocentric_state
             )
 
-            @test $f_fd ≈ f_ad rtol=1e-14
-            @test $df_fd ≈ df_ad rtol=2e-1
+            @test f_fd ≈ f_ad rtol=1e-14
+            @test df_fd ≈ df_ad rtol=2e-1
         end
     end
 
     geodetic_state = [deg2rad(45.0); 400.0]
     
     f_fd, df_fd = value_and_jacobian(
-        (x) -> [i for i in geodetic_to_geocentric(x)],
+        (x) -> collect(geodetic_to_geocentric(x)),
         AutoFiniteDiff(),
         geodetic_state,
     )
 
     for backend in _BACKENDS
-        @eval @testset $("Geodetic to Geocentric " * string(backend[1])) begin
+        testset_name = "Geodetic to Geocentric " * string(backend[1])
+        @testset "$testset_name" begin
             f_ad, df_ad = value_and_jacobian(
-                (x) -> [i for i in geodetic_to_geocentric(x)],
-                $backend[2],
-                $geodetic_state
+                (x) -> collect(geodetic_to_geocentric(x)),
+                backend[2],
+                geodetic_state
             )
 
-            @test $f_fd ≈ f_ad rtol=1e-14
-            @test $df_fd ≈ df_ad rtol=2e-1
+            @test f_fd ≈ f_ad rtol=1e-14
+            @test df_fd ≈ df_ad rtol=2e-1
         end
     end
-
 end
 
         

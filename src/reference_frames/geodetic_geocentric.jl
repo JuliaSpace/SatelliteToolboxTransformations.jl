@@ -24,12 +24,16 @@ export geocentric_to_geodetic, geodetic_to_geocentric
 
 """
     ecef_to_geocentric(r_e::AbstractVector{T}) -> NTuple{3, T}
+    ecef_to_geocentric(r_e::AbstractVector{T}) -> NTuple{3, T}
 
 Convert the vector `r_e` represented in the Earth-Centered, Earth-Fixed (ECEF) reference
 frame into geocentric coordinates (geocentric latitude, longitude, and distance from Earth's
 center).
 
 # Returns
+- `T`: Geocentric latitude [rad] ∈ [-π / 2, π / 2].
+- `T`: Longitude [rad] ∈ [-π , π].
+- `T`: Distance from Earth's center [m].
 - `T`: Geocentric latitude [rad] ∈ [-π / 2, π / 2].
 - `T`: Longitude [rad] ∈ [-π , π].
 - `T`: Distance from Earth's center [m].
@@ -69,7 +73,7 @@ function geocentric_to_ecef(lat::T1, lon::T2, r::T3) where {T1<:Number, T2<:Numb
     sin_lon, cos_lon = sincos(T(lon))
     sin_lat, cos_lat = sincos(T(lat))
 
-    r_ecef = SVector{3, T}(
+    r_ecef = SVector{3}(
         T(r) * cos_lat * cos_lon,
         T(r) * cos_lat * sin_lon,
         T(r) * sin_lat
@@ -89,7 +93,7 @@ Convert the geocentric coordinates (latitude `lat` [rad], longitude `lon` [rad],
 distance from Earth's center `r` [m]) into a Earth-Centered, Earth-Fixed vector [m].
 """
 function geocentric_to_ecef(geocentric_state::AbstractVector)
-    return geocentric_to_ecef(geocentric_state...)
+    return geocentric_to_ecef(geocentric_state[1], geocentric_state[2], geocentric_state[3])
 end
 
 """
@@ -214,7 +218,7 @@ function geodetic_to_ecef(
     ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
 ) where T<:Number
 
-    return geodetic_to_ecef(geodetic_state...; ellipsoid=ellipsoid)
+    return geodetic_to_ecef(geodetic_state[1], geodetic_state[2], geodetic_state[3]; ellipsoid=ellipsoid)
 
 end
 
@@ -319,7 +323,7 @@ function geocentric_to_geodetic(
     ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
 ) where T<:Number
 
-    return geocentric_to_geodetic(geocentric_state...; ellipsoid=ellipsoid)
+    return geocentric_to_geodetic(geocentric_state[1], geocentric_state[2]; ellipsoid=ellipsoid)
 
 end
 
@@ -393,5 +397,5 @@ function geodetic_to_geocentric(
     ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
 ) where T<:Number
 
-    return geodetic_to_geocentric(geodetic_state...; ellipsoid=ellipsoid)
+    return geodetic_to_geocentric(geodetic_state[1], geodetic_state[2]; ellipsoid=ellipsoid)
 end
