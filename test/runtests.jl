@@ -97,16 +97,28 @@ if isempty(VERSION.prerelease)
     Pkg.add("AllocCheck")
     Pkg.add("Aqua")
 
-    # Test with Mooncake and Enzyme along with the other backends
-    using DifferentiationInterface
-    using Enzyme, FiniteDiff, ForwardDiff, Mooncake, PolyesterForwardDiff, Zygote
-    const _BACKENDS = (
-        ("ForwardDiff", AutoForwardDiff()),
-        ("Enzyme", AutoEnzyme()),
-        ("Mooncake", AutoMooncake(;config=nothing)),
-        ("PolyesterForwardDiff", AutoPolyesterForwardDiff()),
-        ("Zygote", AutoZygote()),
-    )
+    if (VERSION.major == 1 && VERSION.minor < 12)
+        Pkg.add("Enzyme")
+        # Test with Mooncake and Enzyme along with the other backends
+        using DifferentiationInterface
+        using Enzyme, FiniteDiff, ForwardDiff, Mooncake, PolyesterForwardDiff, Zygote
+        const _BACKENDS = (
+            ("ForwardDiff", AutoForwardDiff()),
+            ("Enzyme", AutoEnzyme()),
+            ("Mooncake", AutoMooncake(;config=nothing)),
+            ("PolyesterForwardDiff", AutoPolyesterForwardDiff()),
+            ("Zygote", AutoZygote()),
+        )
+    else
+        @warn "Enzyme is not fully supported on Julia 1.12, skipping tests"
+        using FiniteDiff, ForwardDiff, Mooncake, PolyesterForwardDiff, Zygote
+        const _BACKENDS = (
+            ("ForwardDiff", AutoForwardDiff()),
+            ("Mooncake", AutoMooncake(;config=nothing)),
+            ("PolyesterForwardDiff", AutoPolyesterForwardDiff()),
+            ("Zygote", AutoZygote()),
+        )
+    end
 
     @testset "Automatic Differentiation" verbose = true begin
         include("./differentiability/eop.jl")
