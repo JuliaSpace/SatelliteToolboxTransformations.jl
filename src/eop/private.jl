@@ -14,11 +14,10 @@ function _create_iers_eop_interpolation(knots::AbstractVector, field::AbstractVe
     field_float::Vector{Float64} = Vector{Float64}(field[1:last_id])
 
     # Create the interpolation object.
-    interp = extrapolate(interpolate(
-        (knots[1:last_id],),
+    interp = DataInterpolations.LinearInterpolation(
         field_float,
-        Gridded(Linear())),
-        Flat()
+        knots[1:last_id],
+        extrapolation = DataInterpolations.ExtrapolationType.Constant
     )
 
     return interp
@@ -81,9 +80,9 @@ function _download_eop(
 end
 
 # Get the timestamp of an interpolation.
-function _itp_timespan(itp::AbstractInterpolation)
-    str = string(julian2datetime(first(first(itp.itp.knots)))) * " -- " *
-          string(julian2datetime(last(first(itp.itp.knots))))
+function _itp_timespan(itp::DataInterpolations.LinearInterpolation)
+    tstart, tend = extrema(itp.t)
+    str = string(julian2datetime(tstart)) * " -- " * string(julian2datetime(tend))
     return str
 end
 
