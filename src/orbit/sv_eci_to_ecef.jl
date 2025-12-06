@@ -199,35 +199,22 @@ end
 
 # == ECI to PEF (IAU-76/FK5) ===============================================================
 
+# GCRF to PEF requires EOP data.
 function sv_eci_to_ecef(
     sv::OrbitStateVector,
-    T_ECI::T_ECIs,
+    T_ECI::Val{:GCRF},
     T_ECEF::Val{:PEF},
     jd_utc::Number,
-    eop::Union{Nothing, EopIau1980} = nothing
+    eop::EopIau1980
 )
-    # Get the matrix that converts the ECI to the ECEF.
-    if eop === nothing
-        D = r_eci_to_ecef(DCM, T_ECI, T_ECEF, jd_utc)
-    else
-        D = r_eci_to_ecef(DCM, T_ECI, T_ECEF, jd_utc, eop)
-    end
+    D = r_eci_to_ecef(DCM, T_ECI, T_ECEF, jd_utc, eop)
 
-    # Since the ECI and ECEF frames have a relative velocity between them, then we must
-    # account from it when converting the velocity and acceleration. The angular velocity
-    # between those frames is computed using `we` and corrected by the length of day (LOD)
-    # parameter of the EOP data, if available.
-    ω  = EARTH_ANGULAR_SPEED * (1 - (eop !== nothing ? eop.lod(jd_utc) / 86400000 : 0))
+    ω  = EARTH_ANGULAR_SPEED * (1 - eop.lod(jd_utc) / 86400000)
     vω = SVector{3}(0, 0, ω)
 
-    # Compute the position in the ECEF frame.
     r_ecef = D * sv.r
-
-    # Compute the velocity in the ECEF frame.
     vω_x_r = vω × r_ecef
     v_ecef = D * sv.v - vω_x_r
-
-    # Compute the acceleration in the ECI frame.
     a_ecef = D * sv.a - vω × vω_x_r - 2vω × v_ecef
 
     return OrbitStateVector(sv.t, r_ecef, v_ecef, a_ecef)
@@ -235,7 +222,41 @@ end
 
 function sv_eci_to_ecef(
     sv::OrbitStateVector,
-    T_ECI::T_ECIs,
+    T_ECI::Val{:GCRF},
+    T_ECEF::Val{:PEF},
+    eop::EopIau1980
+)
+    return sv_eci_to_ecef(sv, T_ECI, T_ECEF, sv.t, eop)
+end
+
+# J2000/MOD/TOD/TEME to PEF does not require EOP data.
+function sv_eci_to_ecef(
+    sv::OrbitStateVector,
+    T_ECI::Union{Val{:J2000}, Val{:MOD}, Val{:TOD}, Val{:TEME}},
+    T_ECEF::Val{:PEF},
+    jd_utc::Number,
+    eop::Union{Nothing, EopIau1980} = nothing
+)
+    if eop === nothing
+        D = r_eci_to_ecef(DCM, T_ECI, T_ECEF, jd_utc)
+    else
+        D = r_eci_to_ecef(DCM, T_ECI, T_ECEF, jd_utc, eop)
+    end
+
+    ω  = EARTH_ANGULAR_SPEED * (1 - (eop !== nothing ? eop.lod(jd_utc) / 86400000 : 0))
+    vω = SVector{3}(0, 0, ω)
+
+    r_ecef = D * sv.r
+    vω_x_r = vω × r_ecef
+    v_ecef = D * sv.v - vω_x_r
+    a_ecef = D * sv.a - vω × vω_x_r - 2vω × v_ecef
+
+    return OrbitStateVector(sv.t, r_ecef, v_ecef, a_ecef)
+end
+
+function sv_eci_to_ecef(
+    sv::OrbitStateVector,
+    T_ECI::Union{Val{:J2000}, Val{:MOD}, Val{:TOD}, Val{:TEME}},
     T_ECEF::Val{:PEF},
     eop::Union{Nothing, EopIau1980} = nothing
 )
