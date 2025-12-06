@@ -197,12 +197,14 @@ function sv_eci_to_ecef(
     return sv_eci_to_ecef(sv, T_ECI, T_ECEF, sv.t, eop)
 end
 
+# == ECI to PEF (IAU-76/FK5) ===============================================================
+
 function sv_eci_to_ecef(
     sv::OrbitStateVector,
-    T_ECI::Union{T_ECIs, T_ECIs_IAU_2006},
-    T_ECEF::Union{Val{:PEF}, Val{:TIRS}},
+    T_ECI::T_ECIs,
+    T_ECEF::Val{:PEF},
     jd_utc::Number,
-    eop::Union{Nothing, EopIau1980, EopIau2000A} = nothing
+    eop::Union{Nothing, EopIau1980} = nothing
 )
     # Get the matrix that converts the ECI to the ECEF.
     if eop === nothing
@@ -233,9 +235,54 @@ end
 
 function sv_eci_to_ecef(
     sv::OrbitStateVector,
-    T_ECI::Union{T_ECIs, T_ECIs_IAU_2006},
-    T_ECEF::Union{Val{:PEF}, Val{:TIRS}},
-    eop::Union{Nothing, EopIau1980, EopIau2000A} = nothing
+    T_ECI::T_ECIs,
+    T_ECEF::Val{:PEF},
+    eop::Union{Nothing, EopIau1980} = nothing
+)
+    return sv_eci_to_ecef(sv, T_ECI, T_ECEF, sv.t, eop)
+end
+
+# == ECI to TIRS (IAU-2006/2010) ===========================================================
+
+function sv_eci_to_ecef(
+    sv::OrbitStateVector,
+    T_ECI::T_ECIs_IAU_2006,
+    T_ECEF::Val{:TIRS},
+    jd_utc::Number,
+    eop::Union{Nothing, EopIau2000A} = nothing
+)
+    # Get the matrix that converts the ECI to the ECEF.
+    if eop === nothing
+        D = r_eci_to_ecef(DCM, T_ECI, T_ECEF, jd_utc)
+    else
+        D = r_eci_to_ecef(DCM, T_ECI, T_ECEF, jd_utc, eop)
+    end
+
+    # Since the ECI and ECEF frames have a relative velocity between them, then we must
+    # account from it when converting the velocity and acceleration. The angular velocity
+    # between those frames is computed using `we` and corrected by the length of day (LOD)
+    # parameter of the EOP data, if available.
+    ω  = EARTH_ANGULAR_SPEED * (1 - (eop !== nothing ? eop.lod(jd_utc) / 86400000 : 0))
+    vω = SVector{3}(0, 0, ω)
+
+    # Compute the position in the ECEF frame.
+    r_ecef = D * sv.r
+
+    # Compute the velocity in the ECEF frame.
+    vω_x_r = vω × r_ecef
+    v_ecef = D * sv.v - vω_x_r
+
+    # Compute the acceleration in the ECI frame.
+    a_ecef = D * sv.a - vω × vω_x_r - 2vω × v_ecef
+
+    return OrbitStateVector(sv.t, r_ecef, v_ecef, a_ecef)
+end
+
+function sv_eci_to_ecef(
+    sv::OrbitStateVector,
+    T_ECI::T_ECIs_IAU_2006,
+    T_ECEF::Val{:TIRS},
+    eop::Union{Nothing, EopIau2000A} = nothing
 )
     return sv_eci_to_ecef(sv, T_ECI, T_ECEF, sv.t, eop)
 end
