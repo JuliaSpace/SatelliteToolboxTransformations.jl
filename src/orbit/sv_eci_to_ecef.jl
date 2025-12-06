@@ -197,12 +197,80 @@ function sv_eci_to_ecef(
     return sv_eci_to_ecef(sv, T_ECI, T_ECEF, sv.t, eop)
 end
 
+# == ECI to PEF (IAU-76/FK5) ===============================================================
+
+# GCRF to PEF requires EOP data.
 function sv_eci_to_ecef(
     sv::OrbitStateVector,
-    T_ECI::Union{T_ECIs, T_ECIs_IAU_2006},
-    T_ECEF::Union{Val{:PEF}, Val{:TIRS}},
+    T_ECI::Val{:GCRF},
+    T_ECEF::Val{:PEF},
     jd_utc::Number,
-    eop::Union{Nothing, EopIau1980, EopIau2000A} = nothing
+    eop::EopIau1980
+)
+    D = r_eci_to_ecef(DCM, T_ECI, T_ECEF, jd_utc, eop)
+
+    ω  = EARTH_ANGULAR_SPEED * (1 - eop.lod(jd_utc) / 86400000)
+    vω = SVector{3}(0, 0, ω)
+
+    r_ecef = D * sv.r
+    vω_x_r = vω × r_ecef
+    v_ecef = D * sv.v - vω_x_r
+    a_ecef = D * sv.a - vω × vω_x_r - 2vω × v_ecef
+
+    return OrbitStateVector(sv.t, r_ecef, v_ecef, a_ecef)
+end
+
+function sv_eci_to_ecef(
+    sv::OrbitStateVector,
+    T_ECI::Val{:GCRF},
+    T_ECEF::Val{:PEF},
+    eop::EopIau1980
+)
+    return sv_eci_to_ecef(sv, T_ECI, T_ECEF, sv.t, eop)
+end
+
+# J2000/MOD/TOD/TEME to PEF does not require EOP data.
+function sv_eci_to_ecef(
+    sv::OrbitStateVector,
+    T_ECI::Union{Val{:J2000}, Val{:MOD}, Val{:TOD}, Val{:TEME}},
+    T_ECEF::Val{:PEF},
+    jd_utc::Number,
+    eop::Union{Nothing, EopIau1980} = nothing
+)
+    if eop === nothing
+        D = r_eci_to_ecef(DCM, T_ECI, T_ECEF, jd_utc)
+    else
+        D = r_eci_to_ecef(DCM, T_ECI, T_ECEF, jd_utc, eop)
+    end
+
+    ω  = EARTH_ANGULAR_SPEED * (1 - (eop !== nothing ? eop.lod(jd_utc) / 86400000 : 0))
+    vω = SVector{3}(0, 0, ω)
+
+    r_ecef = D * sv.r
+    vω_x_r = vω × r_ecef
+    v_ecef = D * sv.v - vω_x_r
+    a_ecef = D * sv.a - vω × vω_x_r - 2vω × v_ecef
+
+    return OrbitStateVector(sv.t, r_ecef, v_ecef, a_ecef)
+end
+
+function sv_eci_to_ecef(
+    sv::OrbitStateVector,
+    T_ECI::Union{Val{:J2000}, Val{:MOD}, Val{:TOD}, Val{:TEME}},
+    T_ECEF::Val{:PEF},
+    eop::Union{Nothing, EopIau1980} = nothing
+)
+    return sv_eci_to_ecef(sv, T_ECI, T_ECEF, sv.t, eop)
+end
+
+# == ECI to TIRS (IAU-2006/2010) ===========================================================
+
+function sv_eci_to_ecef(
+    sv::OrbitStateVector,
+    T_ECI::T_ECIs_IAU_2006,
+    T_ECEF::Val{:TIRS},
+    jd_utc::Number,
+    eop::Union{Nothing, EopIau2000A} = nothing
 )
     # Get the matrix that converts the ECI to the ECEF.
     if eop === nothing
@@ -233,9 +301,9 @@ end
 
 function sv_eci_to_ecef(
     sv::OrbitStateVector,
-    T_ECI::Union{T_ECIs, T_ECIs_IAU_2006},
-    T_ECEF::Union{Val{:PEF}, Val{:TIRS}},
-    eop::Union{Nothing, EopIau1980, EopIau2000A} = nothing
+    T_ECI::T_ECIs_IAU_2006,
+    T_ECEF::Val{:TIRS},
+    eop::Union{Nothing, EopIau2000A} = nothing
 )
     return sv_eci_to_ecef(sv, T_ECI, T_ECEF, sv.t, eop)
 end

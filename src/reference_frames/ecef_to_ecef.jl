@@ -110,6 +110,22 @@ end
 #                                       IAU-76 / FK5                                       #
 ############################################################################################
 
+# == Identity Transformations ==============================================================
+
+function r_ecef_to_ecef(::Type{DCM}, ::Val{S}, ::Val{S}, ::Number, ::EopIau1980) where S
+    return DCM(1.0I)
+end
+
+function r_ecef_to_ecef(
+    ::Type{Quaternion},
+    ::Val{S},
+    ::Val{S},
+    ::Number,
+    ::EopIau1980
+) where S
+    return Quaternion(1.0, 0.0, 0.0, 0.0)
+end
+
 # == ITRF <=> PEF ==========================================================================
 
 function r_ecef_to_ecef(T::T_ROT, ::Val{:ITRF}, ::Val{:PEF}, jd_utc::Number, eop::EopIau1980)
@@ -138,6 +154,22 @@ end
 ############################################################################################
 #                                     IAU-2006 / 2010                                      #
 ############################################################################################
+
+# == Identity Transformations ==============================================================
+
+function r_ecef_to_ecef(::Type{DCM}, ::Val{S}, ::Val{S}, ::Number, ::EopIau2000A) where S
+    return DCM(1.0I)
+end
+
+function r_ecef_to_ecef(
+    ::Type{Quaternion},
+    ::Val{S},
+    ::Val{S},
+    ::Number,
+    ::EopIau2000A
+) where S
+    return Quaternion(1.0, 0.0, 0.0, 0.0)
+end
 
 # == ITRF <=> TIRS =========================================================================
 

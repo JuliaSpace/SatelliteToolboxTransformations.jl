@@ -16,7 +16,7 @@ end
     rep = JET.test_package(
         SatelliteToolboxTransformations;
         toplevel_logger = nothing,
-        target_modules = (@__MODULE__,)
+        target_modules = (SatelliteToolboxTransformations,)
     )
 end
 
