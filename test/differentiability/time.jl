@@ -50,11 +50,7 @@
     eop_iau1980  = read_iers_eop("./eop_IAU1980.txt",  Val(:IAU1980))
     eop_iau2000a = read_iers_eop("./eop_IAU2000A.txt", Val(:IAU2000A))
 
-    # DIFFRACTOR, ENZYME
     for backend in _BACKENDS
-        if backend[1] == "Enzyme"
-            continue
-        end
         testset_name = "Time Conversions UTC <=> UT1 " * string(backend[1])
         @testset "$testset_name" begin
             for func in test_functions
@@ -121,70 +117,6 @@
         end
     end
 
-    testset_name = "Time Conversions UTC <=> UT1 Enzyme"
-    @testset "$testset_name" begin
-        for func in test_functions
-            f_fd, df_fd = value_and_derivative(
-                (x) -> func(x, ΔUT1),
-                AutoFiniteDiff(),
-                jd_utc
-            )
-
-            f_fd2, df_fd2 = value_and_derivative(
-                (x) -> func(jd_utc, x),
-                AutoFiniteDiff(),
-                ΔUT1
-            )
-
-            f_fd3, df_fd3 = value_and_derivative(
-                (x) -> func(x, eop_iau1980),
-                AutoFiniteDiff(),
-                jd_utc
-            )
-
-            f_fd4, df_fd4 = value_and_derivative(
-                (x) -> func(x, eop_iau2000a),
-                AutoFiniteDiff(),
-                jd_utc
-            )
-
-            f_ad, df_ad = value_and_derivative(
-                Const((x) -> func(x, ΔUT1)),
-                AutoEnzyme(),
-                jd_utc
-            )
-
-            @test f_fd ≈ f_ad rtol=1e-10
-            @test df_fd ≈ df_ad atol=1e-4
-
-            f_ad2, df_ad2 = value_and_derivative(
-                Const((x) -> func(jd_utc, x)),
-                AutoEnzyme(),
-                ΔUT1
-            )
-
-            @test f_fd2 ≈ f_ad2 rtol=1e-10
-            @test df_fd2 ≈ df_ad2 atol=1e-4
-
-            f_ad3, df_ad3 = value_and_derivative(
-                Const((x) -> func(x, eop_iau1980)),
-                AutoEnzyme(),
-                jd_utc
-            )
-
-            @test f_fd3 ≈ f_ad3 rtol=1e-10
-            @test df_fd3 ≈ df_ad3 atol=1e-4
-
-            f_ad4, df_ad4 = value_and_derivative(
-                Const((x) -> func(x, eop_iau2000a)),
-                AutoEnzyme(),
-                jd_utc
-            )
-
-            @test f_fd4 ≈ f_ad4 rtol=1e-10
-            @test df_fd4 ≈ df_ad4 atol=1e-4
-        end
-    end
 
     test_functions = [jd_utc_to_tt, jd_tt_to_utc]
     jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009)
