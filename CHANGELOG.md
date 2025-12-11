@@ -1,6 +1,12 @@
 SatelliteToolboxTransformations.jl Changelog
 ============================================
 
+Version 1.2.0
+-------------
+
+- ![Enhancement][badge-enhancement] Data interpolations now use DataInterpolations.jl
+  instead of Interpolations.jl.  (PR [#14][gh-pr-14])
+
 Version 1.1.0
 -------------
 
@@ -99,3 +105,4 @@ Version 0.1.0
 [gh-pr-8]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/8
 [gh-pr-11]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/11
 [gh-pr-12]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/12
+[gh-pr-14]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/14
