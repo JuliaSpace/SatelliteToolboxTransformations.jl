@@ -91,7 +91,7 @@ if isempty(VERSION.prerelease)
     using AllocCheck
     using Aqua
 
-    @testset "Performance Allocations and Type Stability" verbose = true begin
+    @testset "Performance Tests" verbose = true begin
         include("./performance.jl")
     end
 else
