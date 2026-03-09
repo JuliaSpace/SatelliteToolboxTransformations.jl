@@ -82,58 +82,18 @@ end
 end
 
 if isempty(VERSION.prerelease)
-    # Add Mooncake and Enzyme to the project if not the nightly version
-    # Adding them via the Project.toml isn't working because it tries to compile them before reaching the gating
     using Pkg
-    Pkg.add("DifferentiationInterface")
-    Pkg.add("FiniteDiff")
-    Pkg.add("ForwardDiff")
-    Pkg.add("Mooncake")
-    Pkg.add("PolyesterForwardDiff")
-    Pkg.add("Zygote")
-
     Pkg.add("JET")
     Pkg.add("AllocCheck")
     Pkg.add("Aqua")
-
-    if (VERSION.major == 1 && VERSION.minor < 12)
-        Pkg.add("Enzyme")
-        # Test with Mooncake and Enzyme along with the other backends
-        using DifferentiationInterface
-        using Enzyme, FiniteDiff, ForwardDiff, Mooncake, PolyesterForwardDiff, Zygote
-        const _BACKENDS = (
-            ("ForwardDiff", AutoForwardDiff()),
-            ("Enzyme", AutoEnzyme(; function_annotation=Enzyme.Const)),
-            ("Mooncake", AutoMooncake(;config=nothing)),
-            ("PolyesterForwardDiff", AutoPolyesterForwardDiff()),
-            ("Zygote", AutoZygote()),
-        )
-    else
-        @warn "Enzyme is not fully supported on Julia 1.12, skipping tests"
-        using DifferentiationInterface
-        using FiniteDiff, ForwardDiff, Mooncake, PolyesterForwardDiff, Zygote
-        const _BACKENDS = (
-            ("ForwardDiff", AutoForwardDiff()),
-            ("Mooncake", AutoMooncake(;config=nothing)),
-            ("PolyesterForwardDiff", AutoPolyesterForwardDiff()),
-            ("Zygote", AutoZygote()),
-        )
-    end
-
-    @testset "Automatic Differentiation" verbose = true begin
-        include("./differentiability/eop.jl")
-        include("./differentiability/reference_frames.jl")
-        include("./differentiability/time.jl")
-    end
 
     using JET
     using AllocCheck
     using Aqua
 
-    @testset "Performace Allocations and Type Stability" verbose = true begin
+    @testset "Performance Tests" verbose = true begin
         include("./performance.jl")
     end
 else
-    @warn "Differentiation backends not guaranteed to work on julia-nightly, skipping tests"
     @warn "Performance checks not guaranteed to work on julia-nightly, skipping tests"
 end

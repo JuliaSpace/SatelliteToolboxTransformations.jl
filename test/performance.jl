@@ -12,12 +12,16 @@
     )
 end
 
-@testset "JET Testing" begin
-    rep = JET.test_package(
-        SatelliteToolboxTransformations;
-        toplevel_logger = nothing,
-        target_modules = (SatelliteToolboxTransformations,)
-    )
+if VERSION >= v"1.12"
+    @warn "JET.jl test skipped on Julia 1.12+ due to MethodTableView incompatibility"
+else
+    @testset "JET Testing" begin
+        rep = JET.test_package(
+            SatelliteToolboxTransformations;
+            toplevel_logger = nothing,
+            target_modules = (SatelliteToolboxTransformations,)
+        )
+    end
 end
 
 if Sys.isapple() && (VERSION.major == 1 && VERSION.minor >= 12)
