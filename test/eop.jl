@@ -22,8 +22,10 @@ using DataInterpolations
     @test eop.x isa DataInterpolations.AbstractInterpolation
     @test eop.Δut1_utc isa DataInterpolations.AbstractInterpolation
     @test eop.x.t === eop.x.interpolation.t
-    @test eop.Δut1_utc(leap - 0.5) ≈ -0.4 atol = 1e-12
-    @test eop.Δut1_utc(leap) ≈ 0.6 atol = 1e-12
+    value_before_leap = @inferred eop.Δut1_utc(leap - 0.5)
+    value_at_leap = @inferred eop.Δut1_utc(leap)
+    @test value_before_leap ≈ -0.4 atol = 1e-12
+    @test value_at_leap ≈ 0.6 atol = 1e-12
 end
 
 @testset "EOP celestial pole offsets use UTC lookup and TT polynomial epoch" begin

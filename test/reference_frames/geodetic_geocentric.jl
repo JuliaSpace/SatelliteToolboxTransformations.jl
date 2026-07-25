@@ -215,6 +215,32 @@ end
 
     @test_throws DomainError ecef_to_geodetic([0.0, 0.0, 0.0])
 
+    # Float32 coordinates are promoted with the default Float64 ellipsoid consistently
+    # in each of the explicit and closed-form branches.
+    for r in ([Float32(1), 0f0, 0f0],
+              [0f0, 0f0, Float32(R0 + 1000)],
+              [Float32(6524.834e3), Float32(6862.875e3), Float32(6448.296e3)])
+        ϕ_gd, λ_gd, h = ecef_to_geodetic(r)
+        @test typeof(ϕ_gd) === Float64
+        @test typeof(λ_gd) === Float64
+        @test typeof(h) === Float64
+    end
+
+    ϕ_gd, λ_gd, h = ecef_to_geodetic(Float32[1, 0, 0])
+    @test ϕ_gd == 0
+    @test λ_gd == 0
+    @test h ≈ 1 - WGS84_ELLIPSOID.a
+
+    ϕ_gd, λ_gd, h = ecef_to_geodetic(Float32[0, 0, R0 + 1000])
+    @test ϕ_gd ≈ π / 2
+    @test λ_gd == 0
+    @test h ≈ R0 + 1000 - WGS84_ELLIPSOID.b
+
+    ϕ_gd, λ_gd, h = ecef_to_geodetic(Float32[6524.834e3, 6862.875e3, 6448.296e3])
+    @test rad2deg(ϕ_gd) ≈ 34.352496 atol = 1e-4
+    @test rad2deg(λ_gd) ≈ 46.4464 atol = 1e-4
+    @test h / 1000 ≈ 5085.22 atol = 1e-2
+
     # Inside the inner evolute, the closed-form atan can select a polar branch on the
     # equator.  The equatorial convention must remain stable across that region.
     for p in (1.0, 0.5 * WGS84_ELLIPSOID.e² * WGS84_ELLIPSOID.a,

@@ -121,20 +121,22 @@ function ecef_to_geodetic(
     ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
 ) where {T<:Number}
 
-    # Auxiliary variables.
-    x = r_e[1]
-    y = r_e[2]
-    z = r_e[3]
+    # Promote the coordinates with the ellipsoid parameters before entering any branch.
+    # This keeps all returned values at the same promoted floating-point type.
+    RT = promote_type(eltype(r_e), typeof(ellipsoid.a))
+    x = RT(r_e[1])
+    y = RT(r_e[2])
+    z = RT(r_e[3])
 
     if x == 0 && y == 0 && z == 0
         throw(DomainError(r_e, "the ECEF origin has undefined geodetic coordinates"))
     end
 
     # Auxiliary variables.
-    a   = ellipsoid.a
-    b   = ellipsoid.b
-    e²  = ellipsoid.e²
-    el² = ellipsoid.el²
+    a   = RT(ellipsoid.a)
+    b   = RT(ellipsoid.b)
+    e²  = RT(ellipsoid.e²)
+    el² = RT(ellipsoid.el²)
     p   = hypot(x, y)
 
     # On the equator, atan(0, negative) in the closed-form estimate selects the wrong
@@ -142,13 +144,13 @@ function ecef_to_geodetic(
     # conventional equatorial solution is continuous in x and y, including signed zero
     # z, and its height is the signed distance from the equatorial surface.
     if z == 0
-        return copysign(zero(p), z), atan(y, x), p - a
+        return copysign(zero(RT), z), atan(y, x), p - a
     end
 
     # The pole is the only non-origin point for which longitude and the usual height
     # expression are singular.  Handle it explicitly before the closed-form estimate.
     if p == 0
-        lat = copysign(typeof(a)(π / 2), z)
+        lat = copysign(RT(π / 2), z)
         return lat, zero(lat), abs(z) - b
     end
 
@@ -173,8 +175,8 @@ function ecef_to_geodetic(
         f = p * sin_lat - z * cos_lat - e² * N * sin_lat * cos_lat
         dN = N * e² * sin_lat * cos_lat / denominator
         df = p * cos_lat + z * sin_lat - e² * (dN * sin_lat * cos_lat + N * (cos_lat^2 - sin_lat^2))
-        step = clamp(f / df, -typeof(lat)(π / 4), typeof(lat)(π / 4))
-        lat = clamp(lat - step, -typeof(lat)(π / 2), typeof(lat)(π / 2))
+        step = clamp(f / df, -RT(π / 4), RT(π / 4))
+        lat = clamp(lat - step, -RT(π / 2), RT(π / 2))
     end
 
     sin_lat, cos_lat = sincos(lat)
@@ -193,7 +195,7 @@ function ecef_to_geodetic(
 end
 
 """
-    geodetic_to_ecef(lat::Number, lon::Number, h::Number; ellipsoid::Ellipsoid{T} = wgs84_ellipsoid) where T<:Number -> SVector{3, T}
+    geodetic_to_ecef(lat::Number, lon::Number, h::Number; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> SVector{3, T}
 
 Convert the latitude `lat` [rad], longitude `lon` [rad], and altitude `h` \\[m] above the
 reference ellipsoid (defaults to WGS-84) into a vector represented on the Earth-Centered,
@@ -236,7 +238,7 @@ function geodetic_to_ecef(
 end
 
 """
-    geodetic_to_ecef(geodetic_state::AbstractVector; ellipsoid::Ellipsoid{T} = wgs84_ellipsoid) where T<:Number -> SVector{3, T}
+    geodetic_to_ecef(geodetic_state::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> SVector{3, T}
 
 Convert the latitude `lat` [rad], longitude `lon` [rad], and altitude `h` \\[m] above the
 reference ellipsoid (defaults to WGS-84) into a vector represented on the Earth-Centered,

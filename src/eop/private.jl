@@ -30,17 +30,20 @@ Base.propertynames(itp::_EopInterpolation, private::Bool = false) =
     propertynames(getfield(itp, :interpolation), private)
 
 function (itp::_EopInterpolation)(JD::Number)
-    itp.leap_safe || return itp.interpolation(JD)
+    leap_safe = getfield(itp, :leap_safe)
+    interpolation = getfield(itp, :interpolation)
+    leap_safe || return interpolation(JD)
 
-    if JD < itp.t[1]
-        return itp.first_value
-    elseif JD > itp.t[end]
-        return itp.last_value
+    t = getfield(itp, :t)
+    if JD < t[1]
+        return getfield(itp, :first_value)
+    elseif JD > t[end]
+        return getfield(itp, :last_value)
     end
 
     # Interpolate UT1-TAI, which is continuous at a UTC leap boundary, then
     # restore the UTC-dependent offset at the requested epoch.
-    return itp.interpolation(JD) + get_Δat(JD)
+    return interpolation(JD) + get_Δat(JD)
 end
 
 # Keep the EOP display code (which uses `itp.t`) working for the private wrapper.
