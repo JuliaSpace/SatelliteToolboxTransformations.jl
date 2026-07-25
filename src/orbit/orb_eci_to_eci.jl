@@ -44,6 +44,13 @@ The model that will be used to compute the rotation is automatically inferred gi
 selection of the origin and destination frames. **Notice that mixing IAU-76/FK5 and
 IAU-2006/2010 frames is not supported.**
 
+When the orbit is converted through an orbit state vector, the epoch direction cosine matrix
+(DCM) includes the polar-motion and precession/nutation orientation. The same epoch DCM is
+applied to `r`, `v`, and `a`, without `Ḋ` or `D̈` terms. Thus, the time derivatives of the polar
+motion and precession/nutation orientation, angular acceleration arising from changing length
+of day (LOD), and the corresponding kinematic terms are omitted. Axial Earth rotation and the
+associated Coriolis and centrifugal terms are retained where applicable.
+
 ## Supported ECI Reference Frames
 
 The supported ECI frames for both origin `ECIo` and destination `ECIf` are:

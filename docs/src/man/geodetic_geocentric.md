@@ -9,8 +9,8 @@ using SatelliteToolboxTransformations
 ```
 
 There are six functions that can help to convert between geodetic and geocentric
-representations. Notice that currently all Geodetic representations are based on the WGS84
-reference ellipsoid.
+representations. The functions use the WGS-84 reference ellipsoid by default and support a
+custom ellipsoid through the `ellipsoid` keyword argument.
 
 ## ECEF to Geocentric
 
@@ -62,7 +62,7 @@ We can convert a position vector represented in an Earth-Centered, Earth-Fixed f
 `r_e` to the Geodetic latitude, longitude, and altitude using the following function:
 
 ```julia
-ecef_to_geodetic(r_e::AbstractVector{T}) -> NTuple{3, float(T)}
+ecef_to_geodetic(r_e::AbstractVector{T}; ellipsoid = WGS84_ELLIPSOID) -> NTuple{3, float(T)}
 ```
 
 which returns a tuple with:
@@ -85,7 +85,7 @@ The Geodetic latitude `lat` [rad], longitude `lon` [rad], and altitude `h` [m] c
 converted to a vector represented in an ECEF reference frame by the following function:
 
 ```julia
-geodetic_to_ecef(lat::Number, lon::Number, h::Number) -> SVector{3}
+geodetic_to_ecef(lat::Number, lon::Number, h::Number; ellipsoid = WGS84_ELLIPSOID) -> SVector{3}
 ```
 
 which returns a 3x1 vector.
@@ -100,16 +100,16 @@ geodetic_to_ecef(deg2rad(-22), deg2rad(-45), 0)
 
 Given a Geocentric latitude `ϕ_gc` [rad] and distance from the center of Earth `r` [m], one
 can obtain the Geodetic coordinates (Geodetic latitude and altitude above the reference
-ellipsoid - WGS84) using the following function:
+ellipsoid (WGS-84 by default) using the following function:
 
 ```julia
-geocentric_to_geodetic(ϕ_gc::Number, r::Number) -> Number, Number
+geocentric_to_geodetic(ϕ_gc::Number, r::Number; ellipsoid = WGS84_ELLIPSOID) -> Number, Number
 ```
 
-in which returns a tuple with two values:
+which returns a tuple with two values:
 
 - The Geodetic latitude [rad]; and
-- The altitude above the reference ellipsoid (WGS-84) [m].
+- The altitude above the reference ellipsoid [m].
 
 !!! note
 
@@ -128,7 +128,7 @@ one can obtain the Geocentric coordinates (Geocentric latitude and position from
 of Earth) using the following function:
 
 ```julia
-geodetic_to_geocentric(ϕ_gd::Number, h::Number) -> Number, Number
+geodetic_to_geocentric(ϕ_gd::Number, h::Number; ellipsoid = WGS84_ELLIPSOID) -> Number, Number
 ```
 
 which returns a tuple with two values:

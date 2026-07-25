@@ -1,4 +1,4 @@
-# ECEF and Local frames
+# ECEF and Local Frames
 
 ```@meta
 CurrentModule = SatelliteToolboxTransformations
@@ -9,7 +9,7 @@ using SatelliteToolboxTransformations
 ```
 
 There are two functions that can be used to convert a vector between the Earth-Centered,
-Earth-Fixed (ECEF) reference frame and a local reference frame.  Currently, only the NED
+Earth-Fixed (ECEF) reference frame and a local reference frame. Currently, only the NED
 local frame is supported. This frame is defined as follows at the observer position:
 
 - The X axis points toward the North;

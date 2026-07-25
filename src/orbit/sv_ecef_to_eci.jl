@@ -42,6 +42,14 @@ The model that will be used to compute the rotation is automatically inferred gi
 selection of the origin and destination frames. **Notice that mixing IAU-76/FK5 and
 IAU-2006/2010 frames is not supported.**
 
+The epoch direction cosine matrix (DCM) includes the polar-motion and
+precession/nutation orientation. For state vectors, the velocity and acceleration conversion
+retains the axial Earth-rotation Coriolis and centrifugal terms, but omits the time derivatives
+of the polar motion and precession/nutation orientation, angular acceleration arising from
+changing length of day (LOD), and the corresponding kinematic terms. Consequently, the
+converted acceleration is consistent with this approximation, rather than being the exact
+derivative of the complete time-dependent frame rotation.
+
 ## Supported ECEF Reference Frames
 
 The ECEF frame is selected by the parameter `ECEF`. The possible values are:

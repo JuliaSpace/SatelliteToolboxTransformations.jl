@@ -13,6 +13,14 @@ using SatelliteToolboxTransformations
 We provide a set of functions to transform an `OrbitStateVector` between any frame described
 in [Transformations Between ECEF and ECI Reference Frames](@ref).
 
+!!! note
+
+    The transformation applies the frame orientation at the specified epoch. However, it omits
+    the time derivatives of polar motion, precession, and nutation, as well as the angular
+    acceleration due to variations in the length of day and the associated velocity and
+    acceleration kinematic terms. Therefore, transformed velocities, and especially
+    accelerations, are approximate.
+
 ### From ECI to ECI
 
 The functions
@@ -75,7 +83,7 @@ The specification about the origin and destination frames, as well as the requir
 the EOP data, are the same as described for the [`r_eci_to_ecef`](@ref) function.
 
 The following example shows how we can convert a state vector from the J2000 reference frame
-reference frame to PEF (True of Date) reference frame:
+to the PEF (Pseudo-Earth Fixed) reference frame:
 
 ```@repl transformation_orbit
 jd_ut1 = date_to_jd(2004, 4, 6, 7, 51, 28.386009) - 0.4399619 / 86400
@@ -111,7 +119,7 @@ The specification about the origin and destination frames, as well as the requir
 the EOP data, are the same as described for the [`r_ecef_to_eci`](@ref) function.
 
 The following example shows how we can convert a state vector from the PEF reference frame
-reference frame to J2000 reference frame:
+to the J2000 reference frame:
 
 ```@repl transformation_orbit
 jd_ut1 = date_to_jd(2004, 4, 6, 7, 51, 28.386009) - 0.4399619 / 86400
@@ -143,7 +151,7 @@ The specification about the origin and destination frames, as well as the requir
 the EOP data, are the same as described for the [`r_ecef_to_ecef`](@ref) function.
 
 The following example shows how we can convert a state vector from the ITRF reference frame
-reference frame to PEF reference frame:
+to the PEF reference frame:
 
 ```@repl transformation_orbit
 eop_iau1980 = fetch_iers_eop()
@@ -175,14 +183,14 @@ the epoch of this frame. On the other hand, if the origin and destination frame 
 *of date* frame[^1], e.g. TOD => MOD, the second signature must be used in which the Julian
 Day `jd_utco` [UTC] is the epoch of the origin frame and the Julian Day `jd_utcf` [UTC] is
 the epoch of the destination frame. If the epochs are not provided, the algorithm will use
-the epoch of the orbit state vector `sv` (`sv.t`). The algorithm might also require the
+the epoch of the orbit representation `orb` (`orb.t`). The algorithm might also require the
 Earth Orientation Parameters (EOP) `eop` depending on the source and destination frames.
 
 The specification about the origin and destination frames, as well as the requirements for
 the EOP data, are the same as described for the [`r_eci_to_eci`](@ref) function.
 
 The following example shows how we can convert Keplerian elements from the TOD reference
-frame reference frame to J2000 reference frame:
+frame to the J2000 reference frame:
 
 ```@repl transformation_orbit
 orb_tod = KeplerianElements(

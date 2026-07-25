@@ -16,11 +16,11 @@ described later on.
 | Reference  | Type |            Coordinate frame name             |
 |------------|------|----------------------------------------------|
 | `ITRF()`   | ECEF | International terrestrial reference frame    |
-| `PEF()`    | ECEF | Pseudo-earth fixed reference frame           |
+| `PEF()`    | ECEF | Pseudo-Earth Fixed reference frame           |
 | `TIRS()`   | ECEF | Terrestrial intermediate reference system    |
-| `ERS()`    | ECEF | Earth reference system                       |
+| `ERS()`    | ECI  | Earth reference system                       |
 | `MOD()`    | ECI  | Mean-of-date reference frame                 |
-| `TOD()`    | ECI  | True-of-data reference frame                 |
+| `TOD()`    | ECI  | True-of-date reference frame                 |
 | `GCRF()`   | ECI  | Geocentric celestial reference frame (GCRF)  |
 | `J2000()`  | ECI  | J2000 reference frame                        |
 | `TEME()`   | ECI  | True equator, mean equinox reference frame   |
@@ -45,7 +45,7 @@ described later on.
 
 ## Earth Orientation Parameters (EOP)
 
-Some conversions here requires additional data related to the Earth orientation.  This
+Some conversions here require additional data related to the Earth orientation.  This
 information is provided by [IERS](https://www.iers.org) (International Earth Rotation and
 Reference Systems Service). This package has the capability to automatically download and
 parse the IERS EOP (Earth Orientation Parameters).
@@ -118,7 +118,7 @@ frame[^1], e.g. `TOD => MOD`, the second signature must be used in which the Jul
 `jd_utco` [UTC] is the epoch of the origin frame and the Julian Day `jd_utcf` [UTC] is the
 epoch of the destination frame. The rotation description that will be used is given by `T`,
 which can be `DCM` or `Quaternion`. If `T` is omitted, then it defaults to `DCM`. The EOP
-data `eop_data`, as described in section [Earth Orientation Parameters (EOP)](@ref), is
+data `eop`, as described in section [Earth Orientation Parameters (EOP)](@ref), is
 required in some conversions, as described in the following table.
 
 [^1]: TEME is an *of date* frame.
@@ -168,7 +168,7 @@ be available, reducing the precision.
 Hence, the date does not modify it. However, this signature was kept to avoid complications
 in the API.
 
-`³`: In this case, the terms that corrects the nutation in obliquity and in longitude due to
+`³`: In this case, the terms that correct the nutation in obliquity and in longitude due to
 the free core nutation will not be available, reducing the precision.
 
 !!! note
@@ -203,7 +203,7 @@ r_eci_to_eci(DCM, GCRF(), J2000(), date_to_jd(1986, 6, 19, 21, 35, 0), eop_iau19
 
 ## ECEF to ECI
 
-One ECEF frame can be convert to one ECI frame using the following function:
+One ECEF frame can be converted to one ECI frame using the following function:
 
 ```julia
 r_ecef_to_eci([T, ]ECEF, ECI, jd_utc::Number[, eop]) -> T
@@ -211,7 +211,7 @@ r_ecef_to_eci([T, ]ECEF, ECI, jd_utc::Number[, eop]) -> T
 
 where it will compute the rotation from the `ECEF` frame to the `ECI` frame at the Julian
 Day [UTC] `jd_utc`. The rotation description that will be used is given by `T`, which can be
-`DCM` or `Quaternion`. If it is omitted, then it defaults to `DCM`. The EOP data `eop_data`,
+`DCM` or `Quaternion`. If it is omitted, then it defaults to `DCM`. The EOP data `eop`,
 as described in section [Earth Orientation Parameters (EOP)](@ref), is required in some
 conversions, as described in the following table.
 
@@ -246,7 +246,7 @@ Notice that, if EOP Data is provided, UT1 will be accurately computed.
 effects of the Celestial Intermediate Pole (CIP) position with respect to the GCRF will not
 be available, reducing the precision.
 
-`³`: In this case, the terms that corrects the nutation in obliquity and in longitude due to
+`³`: In this case, the terms that correct the nutation in obliquity and in longitude due to
 the free core nutation will not be available, reducing the precision.
 
 !!! note
@@ -281,8 +281,8 @@ One ECI frame can be converted to one ECEF frame using the following function:
 r_eci_to_ecef([T, ]ECI, ECEF, jd_utc::Number[, eop]) -> T
 ```
 
-which has the same characteristics of the function [`r_ecef_to_eci`](@ref) described in
-Section [ECEF to ECI](@ref), but with the inputs `ECI` and `ECEF` swapped.
+which has the same characteristics as the function [`r_ecef_to_eci`](@ref) described in
+the section [ECEF to ECI](@ref), but with the inputs `ECI` and `ECEF` swapped.
 
 !!! note
 

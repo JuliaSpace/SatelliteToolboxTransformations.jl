@@ -208,3 +208,49 @@ end
     @test sv_gcrf.v[2] ≈ +0.7905364950  atol = 8e-7
     @test sv_gcrf.v[3] ≈ +5.5337557240  atol = 8e-7
 end
+
+############################################################################################
+#                       Approximate state-vector kinematics                                #
+############################################################################################
+
+@testset "State-vector position, velocity, and acceleration round trip" begin
+    jd_utc = date_to_jd(2024, 4, 19)
+    r_pef = [7.0e6, 7.5e6, 7.6e6]
+    v_pef = [5.0e3, 6.0e3, 7.0e3]
+    a_pef = [-1.2, 0.8, 2.1]
+    sv_pef = OrbitStateVector(jd_utc, r_pef, v_pef, a_pef)
+
+    sv_j2000 = sv_ecef_to_eci(sv_pef, PEF(), J2000())
+    sv_round_trip = sv_eci_to_ecef(sv_j2000, J2000(), PEF())
+
+    @test sv_round_trip.t === jd_utc
+    @test sv_round_trip.r ≈ r_pef rtol = 1e-13
+    @test sv_round_trip.v ≈ v_pef rtol = 1e-13
+    @test sv_round_trip.a ≈ a_pef rtol = 1e-13
+end
+
+@testset "State-vector finite-difference consistency" begin
+    jd_utc = date_to_jd(2024, 4, 19)
+    r₀ = [7.0e6, 7.5e6, 7.6e6]
+    v₀ = [5.0e3, 6.0e3, 7.0e3]
+    a₀ = [-1.2, 0.8, 2.1]
+    h = 1.0
+
+    # A locally quadratic trajectory in PEF provides independent finite differences. The
+    # tolerances allow for the explicitly documented omitted derivatives of the full frame
+    # rotation while checking the retained axial-rotation terms.
+    function transformed_position(dt)
+        r = r₀ + dt * v₀ + (dt^2 / 2) * a₀
+        sv = OrbitStateVector(jd_utc + dt / 86400, r, v₀ + dt * a₀, a₀)
+        return sv_ecef_to_eci(sv, PEF(), J2000(), jd_utc + dt / 86400).r
+    end
+
+    sv₀ = sv_ecef_to_eci(OrbitStateVector(jd_utc, r₀, v₀, a₀), PEF(), J2000())
+    r⁻ = transformed_position(-h)
+    r⁺ = transformed_position(+h)
+    v_fd = (r⁺ - r⁻) / (2h)
+    a_fd = (r⁺ - 2sv₀.r + r⁻) / h^2
+
+    @test v_fd ≈ sv₀.v atol = 1e-2
+    @test a_fd ≈ sv₀.a atol = 1e-4
+end
