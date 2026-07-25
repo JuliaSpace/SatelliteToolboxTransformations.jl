@@ -181,13 +181,15 @@ function r_ecef_to_ecef(
     eop::EopIau2000A
 )
     arcsec_to_rad = π / 648000
+    jd_tt = jd_utc_to_tt(jd_utc)
 
     # Get the EOP data related to the desired epoch.
+    # EOP values are tabulated against UTC, whereas the IAU-2006 routines use TT.
     x_p = eop.x(jd_utc) * arcsec_to_rad
     y_p = eop.y(jd_utc) * arcsec_to_rad
 
     # Return the rotation.
-    return r_itrf_to_tirs_iau2006(T, jd_utc, x_p, y_p)
+    return r_itrf_to_tirs_iau2006(T, jd_tt, x_p, y_p)
 end
 
 function r_ecef_to_ecef(

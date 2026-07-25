@@ -324,8 +324,6 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:PEF}, ::Val{:GCRF}, jd_utc::Number, eop:
     jd_tt  = jd_utc_to_tt(jd_utc)
 
     # Get the EOP data related to the desired epoch.
-    x_p      = eop.x(jd_utc) * arcsec_to_rad
-    y_p      = eop.y(jd_utc) * arcsec_to_rad
     δΔϵ_1980 = eop.δΔϵ(jd_utc) * milliarcsec_to_rad
     δΔψ_1980 = eop.δΔψ(jd_utc) * milliarcsec_to_rad
 
@@ -373,8 +371,6 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:PEF}, ::Val{:MOD}, jd_utc::Number, eop::
     jd_tt  = jd_utc_to_tt(jd_utc)
 
     # Get the EOP data related to the desired epoch.
-    x_p      = eop.x(jd_utc) * arcsec_to_rad
-    y_p      = eop.y(jd_utc) * arcsec_to_rad
     δΔϵ_1980 = eop.δΔϵ(jd_utc) * milliarcsec_to_rad
     δΔψ_1980 = eop.δΔψ(jd_utc) * milliarcsec_to_rad
 
@@ -402,8 +398,6 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:PEF}, ::Val{:TOD}, jd_utc::Number, eop::
     jd_tt  = jd_utc_to_tt(jd_utc)
 
     # Get the EOP data related to the desired epoch.
-    x_p      = eop.x(jd_utc) * arcsec_to_rad
-    y_p      = eop.y(jd_utc) * arcsec_to_rad
     δΔψ_1980 = eop.δΔψ(jd_utc) * milliarcsec_to_rad
 
     # Compute the rotation.

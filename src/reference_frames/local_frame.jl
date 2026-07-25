@@ -47,8 +47,16 @@ function ecef_to_ned(
     # Convert the input vector to the right type.
     r_ecef_T = @SVector T[r_ecef[0 + begin], r_ecef[1 + begin], r_ecef[2 + begin]]
 
-    # Create the matrix that rotates the ECEF into NED.
-    D_ned_ecef = angle_to_dcm(T(lon), -T(lat + π / 2), T(0), :ZYX)
+    # Create the matrix that rotates the ECEF into NED. This is the direct form
+    # of angle_to_dcm(lon, -(lat + π / 2), 0, :ZYX), avoiding the general
+    # Euler-angle construction.
+    sin_lat, cos_lat = sincos(T(lat))
+    sin_lon, cos_lon = sincos(T(lon))
+    D_ned_ecef = @SMatrix [
+        -sin_lat * cos_lon  -sin_lat * sin_lon   cos_lat
+        -sin_lon             cos_lon             zero(T)
+        -cos_lat * cos_lon  -cos_lat * sin_lon  -sin_lat
+    ]
 
     # Check if we need to translate the vector considering NED origins.
     if !translate
@@ -105,8 +113,16 @@ function ned_to_ecef(
     # Convert the input vector to the right type.
     r_ned_T = @SVector T[r_ned[0 + begin], r_ned[1 + begin], r_ned[2 + begin]]
 
-    # Create the matrix that rotates the NED into ECEF.
-    D_ecef_ned = angle_to_dcm(T(0), T(lat + π/2), -T(lon), :XYZ)
+    # Create the matrix that rotates the NED into ECEF. This is the transpose
+    # of the direct ECEF-to-NED matrix (and the direct form of the equivalent
+    # angle_to_dcm construction).
+    sin_lat, cos_lat = sincos(T(lat))
+    sin_lon, cos_lon = sincos(T(lon))
+    D_ecef_ned = @SMatrix [
+        -sin_lat * cos_lon  -sin_lon             -cos_lat * cos_lon
+        -sin_lat * sin_lon   cos_lon             -cos_lat * sin_lon
+         cos_lat             zero(T)             -sin_lat
+    ]
 
     # Now we can compute the vector in ECEF.
     r_ecef = D_ecef_ned * r_ned_T

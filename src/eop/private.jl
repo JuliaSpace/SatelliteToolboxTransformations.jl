@@ -7,14 +7,14 @@
 # An interpolation of UT1-UTC which removes the leap-second discontinuity before
 # interpolation.  The values outside the data span retain the usual constant
 # extrapolation semantics of the EOP reader.
-struct _EopInterpolation{T,I,V<:AbstractVector{T}} <:
+struct _EopInterpolation{T,I,V<:AbstractVector{T},W<:AbstractVector{T}} <:
     DataInterpolations.AbstractInterpolation{T}
     interpolation::I
     t::V
     first_value::T
     last_value::T
     leap_safe::Bool
-    values::V
+    values::W
 end
 
 # Preserve the native interpolation fields (in particular `.u`) for the
@@ -59,22 +59,31 @@ function _create_iers_eop_interpolation(
     last_id = findlast(!isempty, field)
     last_id === nothing && (last_id = length(field))
 
-    # Convert the field to a `Vector{Float64}`.
-    field_float::Vector{Float64} = Vector{Float64}(field[1:last_id])
+    # Convert the field to a `Vector{Float64}`.  Construct the shortened
+    # vector directly from a view so the intermediate slice is not copied.
+    field_float::Vector{Float64} = if field isa Vector{Float64} && last_id == length(field)
+        field
+    else
+        Vector{Float64}(@view field[1:last_id])
+    end
+
+    # Keep one knot array for both the interpolation and its wrapper.  Using a
+    # view here is important for fields with trailing missing values.
+    knots_view = @view knots[1:last_id]
 
     # Create the interpolation object.  UT1-UTC is discontinuous in UTC at a
     # leap second, so interpolate UT1-TAI instead of interpolating the raw
     # field across that boundary.
-    interp_field = leap_safe ? field_float .- get_Δat.(knots[1:last_id]) : field_float
+    interp_field = leap_safe ? field_float .- get_Δat.(knots_view) : field_float
     interp = DataInterpolations.LinearInterpolation(
         interp_field,
-        knots[1:last_id],
+        knots_view,
         extrapolation = DataInterpolations.ExtrapolationType.Constant
     )
 
     return _EopInterpolation(
         interp,
-        knots[1:last_id],
+        interp.t,
         field_float[1],
         field_float[end],
         leap_safe,

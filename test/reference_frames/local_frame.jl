@@ -42,3 +42,28 @@
     @test B_ecef[3] ≈ B_ecef_exp[3]
 end
 
+@testset "ECEF/NED direct rotation equivalence and round trips" begin
+    for (lat, lon) in ((-1.1, -2.4), (0.0, 0.0), (0.5, 0.44), (1.1, 2.4))
+        r_ecef = SVector(1.2, -3.4, 5.6)
+        r_ned = SVector(-7.8, 9.0, -1.2)
+
+        # Keep the previous Euler construction as an independent reference.
+        d_ned_ecef = angle_to_dcm(lon, -(lat + π / 2), 0.0, :ZYX)
+        d_ecef_ned = angle_to_dcm(0.0, lat + π / 2, -lon, :XYZ)
+
+        @test ecef_to_ned(r_ecef, lat, lon, 0.0) ≈ d_ned_ecef * r_ecef
+        @test ned_to_ecef(r_ned, lat, lon, 0.0) ≈ d_ecef_ned * r_ned
+        @test ned_to_ecef(ecef_to_ned(r_ecef, lat, lon, 0.0), lat, lon, 0.0) ≈ r_ecef
+        @test ecef_to_ned(ned_to_ecef(r_ned, lat, lon, 0.0), lat, lon, 0.0) ≈ r_ned
+    end
+end
+
+@testset "ECEF/NED rotation allocations" begin
+    r = SVector(1.0, 2.0, 3.0)
+    # Warm up compilation before measuring the steady-state allocation count.
+    ecef_to_ned(r, 0.5, 0.44, 0.0)
+    ned_to_ecef(r, 0.5, 0.44, 0.0)
+
+    @test @allocated(ecef_to_ned(r, 0.5, 0.44, 0.0)) == 0
+    @test @allocated(ned_to_ecef(r, 0.5, 0.44, 0.0)) == 0
+end

@@ -222,4 +222,19 @@ end
     @test v_itrf[1] ≈ -3.225636520  atol = 1e-7
     @test v_itrf[2] ≈ -2.872451450  atol = 1e-7
     @test v_itrf[3] ≈ +5.531924446  atol = 1e-7
+
+    # IAU-2006 polynomial arguments are TT, while the EOP lookup remains in UTC.
+    jd_tt = jd_utc_to_tt(jd_utc)
+    arcsec_to_rad = π / 648000
+    x_p = eop_iau2000a.x(jd_utc) * arcsec_to_rad
+    y_p = eop_iau2000a.y(jd_utc) * arcsec_to_rad
+    expected = SatelliteToolboxTransformations.r_itrf_to_tirs_iau2006(
+        DCM, jd_tt, x_p, y_p
+    )
+    wrong_epoch = SatelliteToolboxTransformations.r_itrf_to_tirs_iau2006(
+        DCM, jd_utc, x_p, y_p
+    )
+
+    @test D_tirs_itrf ≈ expected
+    @test norm(D_tirs_itrf - wrong_epoch) > 1e-19
 end

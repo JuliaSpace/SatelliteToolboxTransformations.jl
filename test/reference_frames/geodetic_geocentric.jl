@@ -14,6 +14,8 @@
 # -- Function: ecef_to_geocentric ----------------------------------------------------------
 
 @testset "Function ecef_to_geocentric" begin
+    @test_throws DomainError ecef_to_geocentric([0.0, 0.0, 0.0])
+
     for T in (Float64, Float32)
         R₀ = T(7000e3)
 
@@ -211,6 +213,36 @@ end
 @testset "Function ecef_to_geodetic" begin
     R0 = 6378137.0
 
+    @test_throws DomainError ecef_to_geodetic([0.0, 0.0, 0.0])
+
+    # Inside the inner evolute, the closed-form atan can select a polar branch on the
+    # equator.  The equatorial convention must remain stable across that region.
+    for p in (1.0, 0.5 * WGS84_ELLIPSOID.e² * WGS84_ELLIPSOID.a,
+              2.0 * WGS84_ELLIPSOID.e² * WGS84_ELLIPSOID.a)
+        for z in (0.0, -0.0)
+            ϕ_gd, λ_gd, h = ecef_to_geodetic([p, 0.0, z])
+            @test ϕ_gd == z
+            @test λ_gd == 0
+            @test h ≈ p - WGS84_ELLIPSOID.a
+        end
+    end
+
+    # The same branch is continuous through the equator in longitude.
+    ϕ₊, λ₊, h₊ = ecef_to_geodetic([1.0, 1.0, 0.0])
+    ϕ₋, λ₋, h₋ = ecef_to_geodetic([-1.0, -1.0, -0.0])
+    @test ϕ₊ == ϕ₋ == 0
+    @test λ₊ ≈ π / 4
+    @test λ₋ ≈ -3π / 4
+    @test h₊ ≈ h₋ ≈ hypot(1.0, 1.0) - WGS84_ELLIPSOID.a
+
+    # The polar limit has a defined latitude and height, but no longitude.
+    for Z in (R0 + 1000, -(R0 + 1000))
+        ϕ_gd, λ_gd, h = ecef_to_geodetic([0.0, 0.0, Z])
+        @test ϕ_gd ≈ copysign(π / 2, Z)
+        @test λ_gd == 0
+        @test h ≈ abs(Z) - WGS84_ELLIPSOID.b
+    end
+
     # == Scenario 01 =======================================================================
 
     r = [6524.834e3, 6862.875e3, 6448.296e3]
@@ -238,6 +270,24 @@ end
     @test rad2deg(ϕ_gd) ≈ -90
     @test rad2deg(λ_gd) ≈ 0
     @test h             ≈ -Z - WGS84_ELLIPSOID.b
+
+    # Round trips representative of LEO and GEO should retain both latitude and
+    # altitude after conversion through ECEF.
+    for (lat, lon, h) in ((deg2rad(51.6), deg2rad(-73.2), 400e3),
+                          (deg2rad(-12.5), deg2rad(141.0), 35_786e3))
+        r_ecef = geodetic_to_ecef(lat, lon, h)
+        lat′, lon′, h′ = ecef_to_geodetic(r_ecef)
+        @test lat′ ≈ lat atol = 2e-14
+        @test lon′ ≈ lon atol = 2e-14
+        @test h′ ≈ h atol = 1e-6
+    end
+
+    # Below-ellipsoid positions are valid and must retain their signed height.
+    lat, lon, h = deg2rad(35), deg2rad(20), -6.0e6
+    lat′, lon′, h′ = ecef_to_geodetic(geodetic_to_ecef(lat, lon, h))
+    @test lat′ ≈ lat atol = 2e-14
+    @test lon′ ≈ lon atol = 2e-14
+    @test h′ ≈ h atol = 1e-6
 end
 
 ############################################################################################

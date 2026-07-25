@@ -44,13 +44,13 @@ function ecef_to_geocentric(r_e::AbstractVector)
     x  = r_e[1]
     y  = r_e[2]
     z  = r_e[3]
-    x² = x^2
-    y² = y^2
-    z² = z^2
+    if x == 0 && y == 0 && z == 0
+        throw(DomainError(r_e, "the ECEF origin has undefined latitude and longitude"))
+    end
 
-    lat = atan(z, √(x² + y²))
+    lat = atan(z, hypot(x, y))
     lon = atan(y, x)
-    r   = √(x² + y² + z²)
+    r   = hypot(hypot(x, y), z)
 
     return lat, lon, r
 end
@@ -126,12 +126,32 @@ function ecef_to_geodetic(
     y = r_e[2]
     z = r_e[3]
 
+    if x == 0 && y == 0 && z == 0
+        throw(DomainError(r_e, "the ECEF origin has undefined geodetic coordinates"))
+    end
+
     # Auxiliary variables.
     a   = ellipsoid.a
     b   = ellipsoid.b
     e²  = ellipsoid.e²
     el² = ellipsoid.el²
-    p   = √(x^2 + y^2)
+    p   = hypot(x, y)
+
+    # On the equator, atan(0, negative) in the closed-form estimate selects the wrong
+    # branch for points inside the inner evolute (for example, [1, 0, 0]).  The
+    # conventional equatorial solution is continuous in x and y, including signed zero
+    # z, and its height is the signed distance from the equatorial surface.
+    if z == 0
+        return copysign(zero(p), z), atan(y, x), p - a
+    end
+
+    # The pole is the only non-origin point for which longitude and the usual height
+    # expression are singular.  Handle it explicitly before the closed-form estimate.
+    if p == 0
+        lat = copysign(typeof(a)(π / 2), z)
+        return lat, zero(lat), abs(z) - b
+    end
+
     θ   = atan(z * a, p * b)
 
     sin_θ, cos_θ = sincos(θ)
@@ -139,6 +159,23 @@ function ecef_to_geodetic(
     # Compute Geodetic.
     lon = atan(y, x)
     lat = atan(z + el² * b * sin_θ^3, p -  e² * a * cos_θ^3)
+
+    # Refine Bowring's closed-form estimate with a few bounded Newton steps.  Solving
+    #
+    #   p sin(lat) - z cos(lat) - e² N sin(lat) cos(lat) = 0
+    #
+    # avoids the loss of latitude accuracy that becomes noticeable for high-altitude
+    # points, while retaining the excellent behavior of the closed-form starting value.
+    for _ in 1:3
+        sin_lat, cos_lat = sincos(lat)
+        denominator = 1 - e² * sin_lat^2
+        N = a / √(denominator)
+        f = p * sin_lat - z * cos_lat - e² * N * sin_lat * cos_lat
+        dN = N * e² * sin_lat * cos_lat / denominator
+        df = p * cos_lat + z * sin_lat - e² * (dN * sin_lat * cos_lat + N * (cos_lat^2 - sin_lat^2))
+        step = clamp(f / df, -typeof(lat)(π / 4), typeof(lat)(π / 4))
+        lat = clamp(lat - step, -typeof(lat)(π / 2), typeof(lat)(π / 2))
+    end
 
     sin_lat, cos_lat = sincos(lat)
 
