@@ -4,10 +4,22 @@
 #
 ############################################################################################
 
-# An interpolation of UT1-UTC which removes the leap-second discontinuity before
-# interpolation.  The values outside the data span retain the usual constant
-# extrapolation semantics of the EOP reader.
-struct _EopInterpolation{T,I,V<:AbstractVector{T},W<:AbstractVector{T}} <:
+"""
+    EopInterpolation{T, I, V, W} <: DataInterpolations.AbstractInterpolation{T}
+
+Interpolation wrapper for EOP data, optionally removing the leap-second
+discontinuity before interpolation.
+
+# Fields
+
+- `interpolation::I`: Wrapped interpolation object.
+- `t::V`: Interpolation knots.
+- `first_value::T`: First value used for lower extrapolation.
+- `last_value::T`: Last value used for upper extrapolation.
+- `leap_safe::Bool`: Whether the wrapped data is adjusted for leap seconds.
+- `values::W`: Original data values, exposed as the `u` property.
+"""
+struct EopInterpolation{T,I,V<:AbstractVector{T},W<:AbstractVector{T}} <:
     DataInterpolations.AbstractInterpolation{T}
     interpolation::I
     t::V
@@ -17,19 +29,49 @@ struct _EopInterpolation{T,I,V<:AbstractVector{T},W<:AbstractVector{T}} <:
     values::W
 end
 
-# Preserve the native interpolation fields (in particular `.u`) for the
-# wrapped interpolation as well.
-function Base.getproperty(itp::_EopInterpolation, name::Symbol)
+"""
+    Base.getproperty(itp::EopInterpolation, name::Symbol)::Any
+
+Get a field of an EOP interpolation or delegate an unknown property to the
+wrapped interpolation.
+
+# Arguments
+
+- `itp`: EOP interpolation wrapper.
+- `name`: Property name to retrieve.
+"""
+function Base.getproperty(itp::EopInterpolation, name::Symbol)::Any
     name == :u && return getfield(itp, :values)
     name in (:interpolation, :t, :first_value, :last_value, :leap_safe, :values) &&
         return getfield(itp, name)
     return getproperty(getfield(itp, :interpolation), name)
 end
 
-Base.propertynames(itp::_EopInterpolation, private::Bool = false) =
+"""
+    Base.propertynames(itp::EopInterpolation, private::Bool = false)::Any
+
+Return the property names supported by the wrapped interpolation.
+
+# Arguments
+
+- `itp`: EOP interpolation wrapper.
+- `private`: Whether private properties should be included.
+"""
+Base.propertynames(itp::EopInterpolation, private::Bool = false)::Any =
     propertynames(getfield(itp, :interpolation), private)
 
-function (itp::_EopInterpolation)(JD::Number)
+"""
+    (itp::EopInterpolation)(JD::Number)::T
+
+Evaluate an EOP interpolation, preserving constant extrapolation and applying
+the UTC leap-second offset when the interpolation is leap-safe.
+
+# Arguments
+
+- `itp`: EOP interpolation wrapper.
+- `JD`: Julian date at which to evaluate the interpolation.
+"""
+function (itp::EopInterpolation)(JD::Number)
     leap_safe = getfield(itp, :leap_safe)
     interpolation = getfield(itp, :interpolation)
     leap_safe || return interpolation(JD)
@@ -47,12 +89,35 @@ function (itp::_EopInterpolation)(JD::Number)
 end
 
 # Keep the EOP display code (which uses `itp.t`) working for the private wrapper.
-_itp_timespan(itp::_EopInterpolation) = begin
+"""
+    _itp_timespan(itp::EopInterpolation)::String
+
+Format the knot span of an EOP interpolation for display.
+
+# Arguments
+
+- `itp`: EOP interpolation wrapper.
+"""
+_itp_timespan(itp::EopInterpolation)::String = begin
     tstart, tend = extrema(itp.t)
     string(julian2datetime(tstart)) * " -- " * string(julian2datetime(tend))
 end
 
-# Create the interpolation object for the `knots` and `field` from IERS.
+"""
+    _create_iers_eop_interpolation(knots::AbstractVector, field::AbstractVector;
+                                   leap_safe::Bool = false)::EopInterpolation
+
+Create an EOP interpolation from IERS knots and field values.
+
+# Arguments
+
+- `knots`: Julian-date interpolation knots.
+- `field`: EOP field values, possibly with trailing missing values.
+
+# Keywords
+
+- `leap_safe`: Adjust UT1-UTC values around leap seconds when `true`.
+"""
 function _create_iers_eop_interpolation(
     knots::AbstractVector,
     field::AbstractVector;
@@ -62,7 +127,7 @@ function _create_iers_eop_interpolation(
     last_id = findlast(!isempty, field)
     last_id === nothing && (last_id = length(field))
 
-    # Convert the field to a `Vector{Float64}`.  Construct the shortened
+    # Convert the field to a `Vector{Float64}`. Construct the shortened
     # vector directly from a view so the intermediate slice is not copied.
     field_float::Vector{Float64} = if field isa Vector{Float64} && last_id == length(field)
         field
@@ -70,11 +135,11 @@ function _create_iers_eop_interpolation(
         Vector{Float64}(@view field[1:last_id])
     end
 
-    # Keep one knot array for both the interpolation and its wrapper.  Using a
+    # Keep one knot array for both the interpolation and its wrapper. Using a
     # view here is important for fields with trailing missing values.
     knots_view = @view knots[1:last_id]
 
-    # Create the interpolation object.  UT1-UTC is discontinuous in UTC at a
+    # Create the interpolation object. UT1-UTC is discontinuous in UTC at a
     # leap second, so interpolate UT1-TAI instead of interpolating the raw
     # field across that boundary.
     interp_field = leap_safe ? field_float .- get_Δat.(knots_view) : field_float
@@ -84,7 +149,7 @@ function _create_iers_eop_interpolation(
         extrapolation = DataInterpolations.ExtrapolationType.Constant
     )
 
-    return _EopInterpolation(
+    return EopInterpolation(
         interp,
         interp.t,
         field_float[1],
@@ -94,8 +159,23 @@ function _create_iers_eop_interpolation(
     )
 end
 
-# Function to download the EOP from `url` into `filename`, if necessary. It uses a scratch
-# space `key` to store the files.
+"""
+    _download_eop(url::String, key::String, filename::String;
+                  force_download::Bool = false)::String
+
+Download an EOP file into the scratch space when it is missing, stale, or
+explicitly requested.
+
+# Arguments
+
+- `url`: URL of the EOP file.
+- `key`: Scratch-space key.
+- `filename`: Cached filename.
+
+# Keywords
+
+- `force_download`: Download even when a current cached file exists.
+"""
 function _download_eop(
     url::String,
     key::String,
@@ -128,7 +208,8 @@ function _download_eop(
             if now() >= timestamp + Day(7)
                 download_eop = true
             else
-                @debug "We found an EOP file that is less than 7 days old (timestamp = $timestamp). Hence, we will use it."
+                @debug "We found an EOP file that is less than 7 days old " *
+                    "(timestamp = $timestamp). Hence, we will use it."
             end
         catch
             # If any error occurred, we will download the data again.
@@ -150,16 +231,31 @@ function _download_eop(
     return eop_file
 end
 
-# Get the timestamp of an interpolation.
-function _itp_timespan(itp::DataInterpolations.LinearInterpolation)
+"""
+    _itp_timespan(itp::DataInterpolations.LinearInterpolation)::String
+
+Format the knot span of a linear interpolation for display.
+
+# Arguments
+
+- `itp`: Linear interpolation object.
+"""
+function _itp_timespan(itp::DataInterpolations.LinearInterpolation)::String
     tstart, tend = extrema(itp.t)
     str = string(julian2datetime(tstart)) * " -- " * string(julian2datetime(tend))
     return str
 end
 
-# Parse the IERS EOP IAU 1980 data in the matrix `eop`, which must have been obtained from
-# the file `finals.all.csv`.
-function _parse_iers_eop_iau_1980(eop::Matrix)
+"""
+    _parse_iers_eop_iau_1980(eop::Matrix)::EopIau1980
+
+Parse IERS IAU 1980 EOP data from a `finals.all.csv` matrix.
+
+# Arguments
+
+- `eop`: Matrix containing the IERS EOP columns.
+"""
+function _parse_iers_eop_iau_1980(eop::Matrix)::EopIau1980
     # Create the EOP Data structure by creating the interpolations.
     #
     # The interpolation will be linear between two points in the grid. The extrapolation
@@ -199,9 +295,16 @@ function _parse_iers_eop_iau_1980(eop::Matrix)
     end
 end
 
-# Parse the IERS EOP IAU 2000A data in the matrix `eop`, which must have been obtained from
-# the file `finals2000A.all.csv`.
-function _parse_iers_eop_iau_2000A(eop::Matrix)
+"""
+    _parse_iers_eop_iau_2000A(eop::Matrix)::EopIau2000A
+
+Parse IERS IAU 2000A EOP data from a `finals2000A.all.csv` matrix.
+
+# Arguments
+
+- `eop`: Matrix containing the IERS EOP columns.
+"""
+function _parse_iers_eop_iau_2000A(eop::Matrix)::EopIau2000A
     # Create the EOP Data structure by creating the interpolations.
     #
     # The interpolation will be linear between two points in the grid. The extrapolation

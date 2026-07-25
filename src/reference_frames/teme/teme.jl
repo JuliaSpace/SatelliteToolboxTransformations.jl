@@ -11,8 +11,8 @@
 #
 # As mentioned in [1](p. 233), there is not an official definition of the TEME frame. Hence,
 # in this package, it is considered the definition presented in [1](p. 233) in which the
-# complete form of the Equation of Equinoxes is used.  This seems to be the case when
-# comparing the values shown in Table 3-6 [1](p.  232).
+# complete form of the Equation of Equinoxes is used. This seems to be the case when
+# comparing the values shown in Table 3-6 [1](p. 232).
 #
 ############################################################################################
 
@@ -28,7 +28,7 @@ export r_teme_to_pef,  r_pef_to_teme
 
 Compute the rotation that aligns the True Equator Mean Equinox (TEME) frame with the True of
 Date (TOD) frame at the Julian Day `jd_tt` [Terrestrial Time]. This algorithm uses the
-IAU-76/FK5 theory and TEME definition in **[1]**(p. 233).  Notice that one can provide
+IAU-76/FK5 theory and TEME definition in **[1]**(p. 233). Notice that one can provide
 corrections for the nutation in obliquity (`δΔϵ_1980`) [rad] and in longitude (`δΔψ_1980`)
 [rad] that are usually obtained from IERS EOP Data (see [`fetch_iers_eop`](@ref)).
 
@@ -78,8 +78,8 @@ end
     r_tod_to_teme([T, ]jd_tt::Number[, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0]) -> T
 
 Compute the rotation that aligns the True of Date (TOD) frame with the True Equator Mean
-Equinox (TEME) frame at the Julian Day `jd_tt` [Terrestrial Time].  This algorithm uses the
-IAU-76/FK5 theory and TEME definition in **[1]**(p.  233). Notice that one can provide
+Equinox (TEME) frame at the Julian Day `jd_tt` [Terrestrial Time]. This algorithm uses the
+IAU-76/FK5 theory and TEME definition in **[1]**(p. 233). Notice that one can provide
 corrections for the nutation in obliquity (`δΔϵ_1980`) [rad] and in longitude (`δΔψ_1980`)
 [rad] that are usually obtained from IERS EOP Data (see [`fetch_iers_eop`](@ref)).
 
@@ -111,7 +111,7 @@ end
 
 Compute the rotation that aligns the True Equator Mean Equinox (TEME) frame with the Mean of
 Date (MOD) frame at the Julian Day `jd_tt` [Terrestrial Time]. This algorithm uses the
-IAU-76/FK5 theory and TEME definition in **[1]**(p. 233).  Notice that one can provide
+IAU-76/FK5 theory and TEME definition in **[1]**(p. 233). Notice that one can provide
 corrections for the nutation in obliquity (`δΔϵ_1980`) [rad] and in longitude (`δΔψ_1980`)
 [rad] that are usually obtained from IERS EOP Data (see [`fetch_iers_eop`](@ref)).
 
@@ -174,10 +174,10 @@ end
     r_mod_to_teme([T, ]jd_tt::Number[, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0]) -> T
 
 Compute the rotation that aligns the Mean of Date (MOD) frame with the True Equator Mean
-Equinox (TEME) frame at the Julian Day `jd_tt` [Terrestrial Time].  This algorithm uses the
-IAU-76/FK5 theory and TEME definition in **[1]**(p.  233). Notice that one can provide
+Equinox (TEME) frame at the Julian Day `jd_tt` [Terrestrial Time]. This algorithm uses the
+IAU-76/FK5 theory and TEME definition in **[1]**(p. 233). Notice that one can provide
 corrections for the nutation in obliquity (`δΔϵ_1980`) [rad] and in longitude (`δΔψ_1980`)
-[rad] that are usually obtained from IERS EOP Data (see [`fetch_iers_eop`](@ref)).  .
+[rad] that are usually obtained from IERS EOP Data (see [`fetch_iers_eop`](@ref)). .
 
 The rotation type is described by the optional variable `T`. If it is `DCM`, then a DCM will
 be returned. Otherwise, if it is `Quaternion`, then a Quaternion will be returned. In case
@@ -250,7 +250,7 @@ end
 
 Compute the rotation that aligns the GCRF frame with the True Equator Mean Equinox (TEME)
 frame at the Julian Day `jd_tt` [Terrestrial Time]. This algorithm uses the IAU-76/FK5
-theory and TEME definition in **[1]**(p. 233).  Notice that one can provide corrections for
+theory and TEME definition in **[1]**(p. 233). Notice that one can provide corrections for
 the nutation in obliquity (`δΔϵ_1980`) [rad] and in longitude (`δΔψ_1980`) [rad] that are
 usually obtained from IERS EOP Data (see [`fetch_iers_eop`](@ref)).
 
@@ -286,8 +286,8 @@ end
     r_teme_to_pef([T, ]jd_tt::Number) -> T
 
 Compute the rotation that aligns the True Equator Mean Equinox (TEME) frame with the
-Pseudo-Earth Fixed (PEF) frame at the Julian Day `jd_tt` [Terrestrial Time].  This algorithm
-uses the IAU-76/FK5 theory and TEME definition in **[1]**(p.  233).
+Pseudo-Earth Fixed (PEF) frame at the Julian Day `jd_tt` [Terrestrial Time]. This algorithm
+uses the IAU-76/FK5 theory and TEME definition in **[1]**(p. 233).
 
 The rotation type is described by the optional variable `T`. If it is `DCM`, then a DCM will
 be returned. Otherwise, if it is `Quaternion`, then a Quaternion will be returned. In case

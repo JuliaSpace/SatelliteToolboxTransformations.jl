@@ -144,7 +144,7 @@ end
     r_ers_to_mod_iau2006([T, ]jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_2000::Number = 0) -> T
 
 Compute the rotation that aligns the Earth Reference System (ERS) with the Mean of Date
-(MOD) reference frame at Julian day `jd_tt` [Terrestrial Time].  This algorithm uses the
+(MOD) reference frame at Julian day `jd_tt` [Terrestrial Time]. This algorithm uses the
 IAU-2006 theory.
 
 Notice that one can provide corrections for the nutation in obliquity (`δΔϵ_2000`) and in
@@ -235,7 +235,7 @@ the reason why it is internally called `MJ2000`. According to **[1]**:
 
 > The mean equinox of J2000.0 to be considered is not the “rotational dynamical mean equinox
 > of J2000.0” as used in the past, but the “inertial dynamical mean equinox of J2000.0” to
-> which the recent numerical or analytical solutions refer.  The latter is associated with
+> which the recent numerical or analytical solutions refer. The latter is associated with
 > the ecliptic in the inertial sense, which is the plane perpendicular to the angular
 > momentum vector of the orbital motion of the Earth-Moon barycenter as computed from the
 > velocity of the barycenter relative to an inertial system. The rotational equinox is
@@ -270,7 +270,7 @@ end
     r_mj2000_to_mod_iau2006([T, ]jd_tt::Number) -> T
 
 Compute the rotation that aligns the J2000 mean equatorial frame with the Mean of Date (MOD)
-reference frame with the at Julian day `jd_tt` [Terrestrial Time].  This algorithm uses the
+reference frame with the at Julian day `jd_tt` [Terrestrial Time]. This algorithm uses the
 IAU-2006 theory.
 
 The rotation type is described by the optional variable `T`. If it is `DCM`, then a DCM will
@@ -288,7 +288,7 @@ the reason why it is internally called `MJ2000`. According to **[1]**:
 
 > The mean equinox of J2000.0 to be considered is not the “rotational dynamical mean equinox
 > of J2000.0” as used in the past, but the “inertial dynamical mean equinox of J2000.0” to
-> which the recent numerical or analytical solutions refer.  The latter is associated with
+> which the recent numerical or analytical solutions refer. The latter is associated with
 > the ecliptic in the inertial sense, which is the plane perpendicular to the angular
 > momentum vector of the orbital motion of the Earth-Moon barycenter as computed from the
 > velocity of the barycenter relative to an inertial system. The rotational equinox is
@@ -356,7 +356,7 @@ end
     r_gcrf_to_mj2000_iau2006([T, ]jd_tt::Number = 0) -> T
 
 Compute the rotation that aligns the Geocentric Celestial Reference Frame (GCRF) with the
-J2000 mean equatorial frame. This algorithm uses the IAU-2006 theory.  Notice that this
+J2000 mean equatorial frame. This algorithm uses the IAU-2006 theory. Notice that this
 rotation is just a bias matrix that does not depend on the date. However, this function
 receives the argument `jd_tt` just to keep the API compatibility.
 
@@ -400,7 +400,7 @@ the Mean of Date (MOD) reference frame at the Julian Day `jd_ut1` [UT1] and `jd_
 
 Notice that one can provide corrections for the nutation in obliquity (`δΔϵ_2000`) and in
 longitude (`δΔψ_2000`) [rad] that are usually obtained from IERS EOP Data (see
-[`fetch_iers_eop`](@ref) and [`compute_δΔϵ_δΔψ`](@ref)).  This corrections are related to
+[`fetch_iers_eop`](@ref) and [`compute_δΔϵ_δΔψ`](@ref)). This corrections are related to
 Free Core Nutation (FCN) that models the effect of a liquid Earth core.
 
 The rotation type is described by the optional variable `T`. If it is `DCM`, then a DCM will
@@ -467,7 +467,7 @@ Intermediate Reference System (TIRS) at the Julian Day `jd_ut1` [UT1] and `jd_tt
 
 Notice that one can provide corrections for the nutation in obliquity (`δΔϵ_2000`) and in
 longitude (`δΔψ_2000`) [rad] that are usually obtained from IERS EOP Data (see
-[`fetch_iers_eop`](@ref) and [`compute_δΔϵ_δΔψ`](@ref)).  This corrections are related to
+[`fetch_iers_eop`](@ref) and [`compute_δΔϵ_δΔψ`](@ref)). This corrections are related to
 Free Core Nutation (FCN) that models the effect of a liquid Earth core.
 
 The rotation type is described by the optional variable `T`. If it is `DCM`, then a DCM will

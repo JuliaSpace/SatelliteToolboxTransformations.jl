@@ -36,7 +36,7 @@ described later on.
 !!! warning
 
     In all the functions that will be presented here, it is not possible to mix frames
-    between the IAU-76/FK5 and IAU-2006/2010 models in the same call.  Hence, if it is
+    between the IAU-76/FK5 and IAU-2006/2010 models in the same call. Hence, if it is
     required to compute the rotation between frames in different models, then the
     recommended approach is to first compute the rotation from the origin frame to the ITRF
     or GCRF, and then compute the rotation from the ITRF or GCRF to the destination frame.
@@ -45,7 +45,7 @@ described later on.
 
 ## Earth Orientation Parameters (EOP)
 
-Some conversions here require additional data related to the Earth orientation.  This
+Some conversions here require additional data related to the Earth orientation. This
 information is provided by [IERS](https://www.iers.org) (International Earth Rotation and
 Reference Systems Service). This package has the capability to automatically download and
 parse the IERS EOP (Earth Orientation Parameters).
@@ -174,7 +174,7 @@ the free core nutation will not be available, reducing the precision.
 !!! note
 
     In this function, if EOP corrections are not provided, then MOD and TOD frames will be
-    computed considering the original IAU-76/FK5 theory.  Otherwise, the corrected frame
+    computed considering the original IAU-76/FK5 theory. Otherwise, the corrected frame
     will be used.
 
 ```@repl ecef_eci
@@ -252,7 +252,7 @@ the free core nutation will not be available, reducing the precision.
 !!! note
 
     In this function, if EOP corrections are not provided, then MOD and TOD frames will be
-    computed considering the original IAU-76/FK5 theory.  Otherwise, the corrected frame
+    computed considering the original IAU-76/FK5 theory. Otherwise, the corrected frame
     will be used.
 
 ```@repl ecef_eci

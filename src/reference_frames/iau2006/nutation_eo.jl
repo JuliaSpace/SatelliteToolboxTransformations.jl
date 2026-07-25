@@ -5,7 +5,7 @@
 #
 ## References ##############################################################################
 #
-# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
 #     Press, Hawthorn, CA, USA.
 #
 # [2] ftp://tai.bipm.org/iers/conv2010/chapter5/tab5.2e.txt

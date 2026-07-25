@@ -4,7 +4,7 @@
 #
 ## References ##############################################################################
 #
-# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
 #     Press, Hawthorn, CA, USA.
 #
 # [2] Vallado, D. A (06-Feb-2018). Consolidated Errata of Fundamentals of Astrodynamics and
@@ -160,7 +160,7 @@ const _IAU_1980_NUTATION_COEFFICIENTS = [
 
 Compute the nutation parameters at the Julian Day `jd_tt` [Terrestrial Time] using the 1980
 IAU Theory of Nutation. The coefficients are `nut_coefs_1980` that must be a matrix in which
-each line has the following syntax **[1]**(p.  1043):
+each line has the following syntax **[1]**(p. 1043):
 
     an1  an2  an3  an4  an5  Ai  Bi  Ci  Di
 

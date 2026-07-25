@@ -4,7 +4,7 @@
 #
 ## References ##############################################################################
 #
-# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
 #     Press, Hawthorn, CA, USA.
 #
 # [2] ESA Navipedia: http://www.navipedia.net/
@@ -14,7 +14,7 @@
 # [4] ISO TC 20/SC 14 N (2011). Geomagnetic Reference Models.
 #
 # [5] Borkowski, K. M (1987). Transformation of geocentric to geodetic coordinates without
-#     approximations. Astrophysics and Space Science, vol.  139, pp. 1-4.
+#     approximations. Astrophysics and Space Science, vol. 139, pp. 1-4.
 #
 ############################################################################################
 
@@ -140,7 +140,7 @@ function ecef_to_geodetic(
     p   = hypot(x, y)
 
     # On the equator, atan(0, negative) in the closed-form estimate selects the wrong
-    # branch for points inside the inner evolute (for example, [1, 0, 0]).  The
+    # branch for points inside the inner evolute (for example, [1, 0, 0]). The
     # conventional equatorial solution is continuous in x and y, including signed zero
     # z, and its height is the signed distance from the equatorial surface.
     if z == 0
@@ -148,7 +148,7 @@ function ecef_to_geodetic(
     end
 
     # The pole is the only non-origin point for which longitude and the usual height
-    # expression are singular.  Handle it explicitly before the closed-form estimate.
+    # expression are singular. Handle it explicitly before the closed-form estimate.
     if p == 0
         lat = copysign(RT(π / 2), z)
         return lat, zero(lat), abs(z) - b
@@ -162,7 +162,7 @@ function ecef_to_geodetic(
     lon = atan(y, x)
     lat = atan(z + el² * b * sin_θ^3, p -  e² * a * cos_θ^3)
 
-    # Refine Bowring's closed-form estimate with a few bounded Newton steps.  Solving
+    # Refine Bowring's closed-form estimate with a few bounded Newton steps. Solving
     #
     #   p sin(lat) - z cos(lat) - e² N sin(lat) cos(lat) = 0
     #
@@ -265,7 +265,7 @@ end
     geocentric_to_geodetic(ϕ_gc::Number, r::Number; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> T, T
 
 Compute the geodetic latitude and altitude above the reference ellipsoid (defaults to
-WGS-84) from the geocentric latitude `ϕ_gc` (-π/2, π/2) [rad] and radius `r` [m].  Notice
+WGS-84) from the geocentric latitude `ϕ_gc` (-π/2, π/2) [rad] and radius `r` [m]. Notice
 that the longitude is the same in both geocentric and geodetic coordinates.
 
 !!! info
@@ -280,7 +280,7 @@ that the longitude is the same in both geocentric and geodetic coordinates.
 # References
 
 - **[1]** Borkowski, K. M (1987). Transformation of geocentric to geodetic coordinates
-    without approximations. Astrophysics and Space Science, vol.  139, pp. 1-4.
+    without approximations. Astrophysics and Space Science, vol. 139, pp. 1-4.
 """
 function geocentric_to_geodetic(
     ϕ_gc::Number,
@@ -338,7 +338,7 @@ end
     geocentric_to_geodetic(geocentric_state::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> T, T
 
 Compute the geodetic latitude and altitude above the reference ellipsoid (defaults to
-WGS-84) from the geocentric latitude `ϕ_gc` (-π/2, π/2) [rad] and radius `r` [m].  Notice
+WGS-84) from the geocentric latitude `ϕ_gc` (-π/2, π/2) [rad] and radius `r` [m]. Notice
 that the longitude is the same in both geocentric and geodetic coordinates.
 
 !!! info
@@ -355,7 +355,7 @@ that the longitude is the same in both geocentric and geodetic coordinates.
 # References
 
 - **[1]** Borkowski, K. M (1987). Transformation of geocentric to geodetic coordinates
-    without approximations. Astrophysics and Space Science, vol.  139, pp. 1-4.
+    without approximations. Astrophysics and Space Science, vol. 139, pp. 1-4.
 """
 function geocentric_to_geodetic(
     geocentric_state::AbstractVector;
@@ -370,7 +370,7 @@ end
     geodetic_to_geocentric(ϕ_gd::Number, h::Number; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> T, T
 
 Compute the geocentric latitude and radius from the geodetic latitude `ϕ_gd` (-π/2, π/2)
-[rad] and height above the reference ellipsoid `h` \\[m] (defaults to WGS-84).  Notice that
+[rad] and height above the reference ellipsoid `h` \\[m] (defaults to WGS-84). Notice that
 the longitude is the same in both geocentric and geodetic coordinates.
 
 !!! info
@@ -413,7 +413,7 @@ end
     geodetic_to_geocentric(geodetic_state::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> T, T
 
 Compute the geocentric latitude and radius from the geodetic latitude `ϕ_gd` (-π/2, π/2)
-[rad] and height above the reference ellipsoid `h` \\[m] (defaults to WGS-84).  Notice that
+[rad] and height above the reference ellipsoid `h` \\[m] (defaults to WGS-84). Notice that
 the longitude is the same in both geocentric and geodetic coordinates.
 
 !!! info

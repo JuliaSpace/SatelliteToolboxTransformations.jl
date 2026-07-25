@@ -4,7 +4,7 @@
 #
 ## References ##############################################################################
 #
-# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
 #     Press, Hawthorn, CA, USA.
 #
 # [2] Vallado, D. A (06-Feb-2018). Consolidated Errata of Fundamentals of Astrodynamics and
@@ -34,7 +34,7 @@ nutation **[1]**(p. 214).
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
+- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
 """
 function cio_iau2006(jd_tt::Number)

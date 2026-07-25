@@ -4,7 +4,7 @@
 #
 ## References ##############################################################################
 #
-# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
 #     Press, Hawthorn, CA, USA.
 #
 ############################################################################################
@@ -21,7 +21,7 @@ The returned values are in [rad].
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
+- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
 """
 function luni_solar_args_iau2006(jd_tt::Number)
@@ -103,7 +103,7 @@ The returned values are in [rad].
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.  Microcosm
+- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
 """
 function planetary_args_iau2006(jd_tt::Number)

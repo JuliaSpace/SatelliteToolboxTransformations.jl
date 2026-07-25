@@ -106,7 +106,7 @@ jd_ut1_to_utc(JD_UT1::Number, ΔUT1::Number) = JD_UT1 - ΔUT1 / 86400
     jd_utc_to_ut1(JD_UTC::Number, eop::Union{EopIau1980, EopIau2000A}) -> Float64
 
 Convert the Julian Day in UTC `JD_UTC` to the Julian Day in UT1 using the accumulated
-difference given by the EOP Data `eop` (see [`fetch_iers_eop`](@ref)).  Notice that the
+difference given by the EOP Data `eop` (see [`fetch_iers_eop`](@ref)). Notice that the
 accumulated difference will be interpolated.
 """
 function jd_utc_to_ut1(JD_UTC::Number, eop::Union{EopIau1980, EopIau2000A})
@@ -117,13 +117,13 @@ end
     jd_utc_to_ut1(JD_UTC::Number, eop::Union{EopIau1980, EopIau2000A}) -> Float64
 
 Convert the Julian Day in UT1 `JD_UT1` to the Julian Day in UTC using the accumulated
-difference given by the EOP Data `eop` (see [`fetch_iers_eop`](@ref)).  Notice that the
+difference given by the EOP Data `eop` (see [`fetch_iers_eop`](@ref)). Notice that the
 accumulated difference will be interpolated and the inverse is solved iteratively; the
 result is therefore valid when the EOP interpolation varies with UTC.
 """
 function jd_ut1_to_utc(JD_UT1::Number, eop::Union{EopIau1980, EopIau2000A})
     # ΔUT1 is tabulated as a function of UTC, so evaluating it at JD_UT1 is
-    # not a valid inverse.  Fixed-point iteration is sufficient because the
+    # not a valid inverse. Fixed-point iteration is sufficient because the
     # correction changes by only milliseconds over an EOP sample interval.
     JD_UTC = JD_UT1
     for _ = 1:5
@@ -160,7 +160,7 @@ a fixed value of 10 will be used, leading to wrong computations.**
 jd_tt_to_utc(JD_TT::Number, ΔAT::Number) = JD_TT - (ΔAT + 32.184) / 86400
 
 function jd_tt_to_utc(JD_TT::Number)
-    # ΔAT is a function of UTC, not TT.  Iterate so that a TT value close to
+    # ΔAT is a function of UTC, not TT. Iterate so that a TT value close to
     # a leap boundary selects the offset on the correct side of that boundary.
     JD_UTC = JD_TT - (get_Δat(JD_TT) + 32.184) / 86400
     for _ = 1:3

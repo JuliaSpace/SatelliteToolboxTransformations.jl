@@ -4,12 +4,33 @@
 #
 ############################################################################################
 
-function show(io::IO, eop::EopIau1980)
+"""
+    show(io::IO, eop::EopIau1980)::Nothing
+
+Show the compact type name for an IAU 1980 EOP object.
+
+# Arguments
+
+- `io`: Output stream.
+- `eop`: IAU 1980 EOP object.
+"""
+function show(io::IO, eop::EopIau1980)::Nothing
     print(io, "EopIau1980")
     return nothing
 end
 
-function show(io::IO, mime::MIME"text/plain", eop::EopIau1980)
+"""
+    show(io::IO, mime::MIME"text/plain", eop::EopIau1980)::Nothing
+
+Show an IAU 1980 EOP object with its data timespans.
+
+# Arguments
+
+- `io`: Output stream.
+- `mime`: Requested MIME type.
+- `eop`: IAU 1980 EOP object.
+"""
+function show(io::IO, mime::MIME"text/plain", eop::EopIau1980)::Nothing
     # Check if IO has support for colors.
     color = get(io, :color, false)::Bool
 
@@ -30,12 +51,33 @@ function show(io::IO, mime::MIME"text/plain", eop::EopIau1980)
     return nothing
 end
 
-function show(io::IO, eop::EopIau2000A)
+"""
+    show(io::IO, eop::EopIau2000A)::Nothing
+
+Show the compact type name for an IAU 2000A EOP object.
+
+# Arguments
+
+- `io`: Output stream.
+- `eop`: IAU 2000A EOP object.
+"""
+function show(io::IO, eop::EopIau2000A)::Nothing
     print(io, "EopIau2000A")
     return nothing
 end
 
-function show(io::IO, mime::MIME"text/plain", eop::EopIau2000A)
+"""
+    show(io::IO, mime::MIME"text/plain", eop::EopIau2000A)::Nothing
+
+Show an IAU 2000A EOP object with its data timespans.
+
+# Arguments
+
+- `io`: Output stream.
+- `mime`: Requested MIME type.
+- `eop`: IAU 2000A EOP object.
+"""
+function show(io::IO, mime::MIME"text/plain", eop::EopIau2000A)::Nothing
     # Check if IO has support for colors.
     color = get(io, :color, false)::Bool
 
