@@ -12,8 +12,11 @@ using StaticArrays
 @testset "Earth Orientation Parameters" verbose = true begin
     cd("./eop")
     include("./eop/read.jl")
-    include("./eop/fetch.jl")
+    if get(ENV, "SATELLITETOOLBOX_RUN_NETWORK_TESTS", "false") == "true"
+        include("./eop/fetch.jl")
+    end
     include("./eop/show.jl")
+    include("./eop.jl")
     cd("..")
 end
 
@@ -82,11 +85,6 @@ end
 end
 
 if isempty(VERSION.prerelease)
-    using Pkg
-    Pkg.add("JET")
-    Pkg.add("AllocCheck")
-    Pkg.add("Aqua")
-
     using JET
     using AllocCheck
     using Aqua

@@ -137,7 +137,7 @@ else
             @test length(
                 check_allocs(
                     x -> begin
-                        r_ecef_to_eci(frame_set[1], frame_set[2], x, frame_set[3])
+                        r_eci_to_ecef(frame_set[1], frame_set[2], x, frame_set[3])
                     end,
                     (Float64,)
                 )
@@ -185,7 +185,7 @@ else
             @test length(
                 check_allocs(
                     x -> begin
-                        r_ecef_to_eci(frame_set[1], frame_set[2], x, frame_set[3])
+                        r_eci_to_eci(frame_set[1], frame_set[2], x, frame_set[3])
                     end,
                     (Float64,)
                 )
@@ -194,7 +194,7 @@ else
 
     end
 
-    @testset "ECI to ECI Allocations" begin
+    @testset "ECI to ECI Allocations (different epochs)" begin
 
         eop_iau1980  = read_iers_eop("./eop_IAU1980.txt",  Val(:IAU1980))
         eop_iau2000a = read_iers_eop("./eop_IAU2000A.txt", Val(:IAU2000A))
@@ -217,7 +217,7 @@ else
             @test length(
                 check_allocs(
                     x -> begin
-                        r_ecef_to_eci(frame_set[1], frame_set[2], x, frame_set[3])
+                        r_eci_to_eci(frame_set[1], x, frame_set[2], x, frame_set[3])
                     end,
                     (Float64,)
                 )

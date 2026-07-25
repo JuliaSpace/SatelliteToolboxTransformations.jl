@@ -110,6 +110,13 @@
     @test v_tirs[1] ≈ -3.2256327470  atol = 1e-9
     @test v_tirs[2] ≈ -2.8724425110  atol = 1e-9
     @test v_tirs[3] ≈ +5.5319312880  atol = 1e-9
+
+    # The default-DCM wrappers must forward the FCN correction to the typed overload.
+    δΔΨ_2000 = 1e-6
+    @test r_tirs_to_ers_iau2006(JD_UT1, JD_TT, δΔΨ_2000) ≈
+          r_tirs_to_ers_iau2006(DCM, JD_UT1, JD_TT, δΔΨ_2000)
+    @test r_ers_to_tirs_iau2006(JD_UT1, JD_TT, δΔΨ_2000) ≈
+          r_ers_to_tirs_iau2006(DCM, JD_UT1, JD_TT, δΔΨ_2000)
 end
 
 # -- Functions r_ers_to_mod_iau2006 and r_mod_to_ers_iau2006 -------------------------------

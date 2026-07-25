@@ -9,6 +9,14 @@
 #
 ############################################################################################
 
+struct OffsetCoefficientMatrix{T} <: AbstractMatrix{T}
+    data::Matrix{T}
+end
+
+Base.size(matrix::OffsetCoefficientMatrix) = size(matrix.data)
+Base.axes(matrix::OffsetCoefficientMatrix) = (2:(size(matrix.data, 1) + 1), axes(matrix.data, 2))
+Base.getindex(matrix::OffsetCoefficientMatrix, row, column) = matrix.data[row - 1, column]
+
 # == File: ./src/reference_frames/fk5/nutation.jl ==========================================
 
 # -- Function nutation_fk5 -----------------------------------------------------------------
@@ -97,4 +105,16 @@
         ),
         nutation_fk5(JD_TT, 0; verbose = Val(true))
     )) == (mϵ_1980, Δϵ_1980, Δψ_1980)
+
+    # Custom tables must be large enough for the requested bounded loop, and n_max is
+    # intentionally an integer API parameter.
+    custom_coefs = ones(4, 9)
+    @test nutation_fk5(JD_TT, 4, custom_coefs) isa NTuple{3, Float64}
+    @test_throws ArgumentError nutation_fk5(JD_TT, 5, custom_coefs)
+    @test_throws ArgumentError nutation_fk5(JD_TT, 4, ones(4, 8))
+    @test_throws MethodError nutation_fk5(JD_TT, 4.0, custom_coefs)
+
+    # Offset-indexed coefficient tables must be rejected before the @inbounds loop.
+    offset_coefs = OffsetCoefficientMatrix(ones(4, 9))
+    @test_throws ArgumentError nutation_fk5(JD_TT, 4, offset_coefs)
 end

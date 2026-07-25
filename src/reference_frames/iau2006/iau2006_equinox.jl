@@ -81,7 +81,7 @@ which consist of obtaining the Earth Rotation Angle (ERA) and subtracting the re
 Equation of Origins (EO).
 """
 function r_tirs_to_ers_iau2006(jd_ut1::Number, jd_tt::Number, δΔΨ_2000::Number = 0)
-    return r_tirs_to_ers_iau2006(DCM, jd_ut1, jd_tt)
+    return r_tirs_to_ers_iau2006(DCM, jd_ut1, jd_tt, δΔΨ_2000)
 end
 
 function r_tirs_to_ers_iau2006(T::T_ROT, jd_ut1::Number, jd_tt::Number, δΔΨ_2000::Number = 0)
@@ -131,7 +131,7 @@ which consist of obtaining the Earth Rotation Angle (ERA) and subtracting the re
 Equation of Origins (EO).
 """
 function r_ers_to_tirs_iau2006(jd_ut1::Number, jd_tt::Number, δΔΨ_2000::Number = 0)
-    return r_ers_to_tirs_iau2006(DCM, jd_ut1, jd_tt)
+    return r_ers_to_tirs_iau2006(DCM, jd_ut1, jd_tt, δΔΨ_2000)
 end
 
 function r_ers_to_tirs_iau2006(T::T_ROT, jd_ut1::Number, jd_tt::Number, δΔΨ_2000::Number = 0)

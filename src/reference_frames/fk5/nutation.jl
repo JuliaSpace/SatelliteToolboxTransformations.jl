@@ -156,7 +156,7 @@ const _IAU_1980_NUTATION_COEFFICIENTS = [
 ############################################################################################
 
 """
-    nutation_fk5(jd_tt::Number, n_max::Number = 106, nut_coefs_1980::Matrix = _IAU_1980_NUTATION_COEFFICIENTS)
+    nutation_fk5(jd_tt::Number, n_max::Integer = 106, nut_coefs_1980::AbstractMatrix = _IAU_1980_NUTATION_COEFFICIENTS)
 
 Compute the nutation parameters at the Julian Day `jd_tt` [Terrestrial Time] using the 1980
 IAU Theory of Nutation. The coefficients are `nut_coefs_1980` that must be a matrix in which
@@ -181,8 +181,8 @@ when computing the nutation. If `n_max` is omitted, the it defaults to 106.
 """
 function nutation_fk5(
     jd_tt::Number,
-    n_max::Number = 106,
-    nut_coefs_1980::Matrix = _IAU_1980_NUTATION_COEFFICIENTS;
+    n_max::Integer = 106,
+    nut_coefs_1980::AbstractMatrix = _IAU_1980_NUTATION_COEFFICIENTS;
     verbose::Val{verbosity} = Val(false),
 ) where {verbosity}
     # Check inputs.
@@ -193,6 +193,17 @@ function nutation_fk5(
         verbosity && @warn("n_max must greater than 0. The default value will be used (106).")
         n_max = 106
     end
+
+    # Validate the user-provided table before the bounded loop below. In particular, a
+    # custom table may contain fewer than the 106 standard terms or fewer than nine columns.
+    n_rows, n_cols = size(nut_coefs_1980)
+    n_max > n_rows && throw(ArgumentError(
+        "nut_coefs_1980 must have at least n_max rows (got $n_rows, n_max = $n_max)."
+    ))
+    n_cols < 9 && throw(ArgumentError(
+        "nut_coefs_1980 must have at least 9 columns (got $n_cols)."
+    ))
+    Base.require_one_based_indexing(nut_coefs_1980)
 
     # Compute the Julian Centuries from `jd_tt`.
     t_tt = (jd_tt - JD_J2000) / 36525

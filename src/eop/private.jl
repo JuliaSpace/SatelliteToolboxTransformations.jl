@@ -4,8 +4,57 @@
 #
 ############################################################################################
 
+# An interpolation of UT1-UTC which removes the leap-second discontinuity before
+# interpolation.  The values outside the data span retain the usual constant
+# extrapolation semantics of the EOP reader.
+struct _EopInterpolation{T,I,V<:AbstractVector{T}} <:
+    DataInterpolations.AbstractInterpolation{T}
+    interpolation::I
+    t::V
+    first_value::T
+    last_value::T
+    leap_safe::Bool
+    values::V
+end
+
+# Preserve the native interpolation fields (in particular `.u`) for the
+# wrapped interpolation as well.
+function Base.getproperty(itp::_EopInterpolation, name::Symbol)
+    name == :u && return getfield(itp, :values)
+    name in (:interpolation, :t, :first_value, :last_value, :leap_safe, :values) &&
+        return getfield(itp, name)
+    return getproperty(getfield(itp, :interpolation), name)
+end
+
+Base.propertynames(itp::_EopInterpolation, private::Bool = false) =
+    propertynames(getfield(itp, :interpolation), private)
+
+function (itp::_EopInterpolation)(JD::Number)
+    itp.leap_safe || return itp.interpolation(JD)
+
+    if JD < itp.t[1]
+        return itp.first_value
+    elseif JD > itp.t[end]
+        return itp.last_value
+    end
+
+    # Interpolate UT1-TAI, which is continuous at a UTC leap boundary, then
+    # restore the UTC-dependent offset at the requested epoch.
+    return itp.interpolation(JD) + get_Δat(JD)
+end
+
+# Keep the EOP display code (which uses `itp.t`) working for the private wrapper.
+_itp_timespan(itp::_EopInterpolation) = begin
+    tstart, tend = extrema(itp.t)
+    string(julian2datetime(tstart)) * " -- " * string(julian2datetime(tend))
+end
+
 # Create the interpolation object for the `knots` and `field` from IERS.
-function _create_iers_eop_interpolation(knots::AbstractVector, field::AbstractVector)
+function _create_iers_eop_interpolation(
+    knots::AbstractVector,
+    field::AbstractVector;
+    leap_safe::Bool = false
+)
     # Obtain the last available index of the field.
     last_id = findlast(!isempty, field)
     last_id === nothing && (last_id = length(field))
@@ -13,14 +62,24 @@ function _create_iers_eop_interpolation(knots::AbstractVector, field::AbstractVe
     # Convert the field to a `Vector{Float64}`.
     field_float::Vector{Float64} = Vector{Float64}(field[1:last_id])
 
-    # Create the interpolation object.
+    # Create the interpolation object.  UT1-UTC is discontinuous in UTC at a
+    # leap second, so interpolate UT1-TAI instead of interpolating the raw
+    # field across that boundary.
+    interp_field = leap_safe ? field_float .- get_Δat.(knots[1:last_id]) : field_float
     interp = DataInterpolations.LinearInterpolation(
-        field_float,
+        interp_field,
         knots[1:last_id],
         extrapolation = DataInterpolations.ExtrapolationType.Constant
     )
 
-    return interp
+    return _EopInterpolation(
+        interp,
+        knots[1:last_id],
+        field_float[1],
+        field_float[end],
+        leap_safe,
+        field_float
+    )
 end
 
 # Function to download the EOP from `url` into `filename`, if necessary. It uses a scratch
@@ -99,7 +158,7 @@ function _parse_iers_eop_iau_1980(eop::Matrix)
         return EopIau1980(
             _create_iers_eop_interpolation(knots, eop[:, 6]),
             _create_iers_eop_interpolation(knots, eop[:, 8]),
-            _create_iers_eop_interpolation(knots, eop[:, 15]),
+            _create_iers_eop_interpolation(knots, eop[:, 15]; leap_safe = true),
             _create_iers_eop_interpolation(knots, eop[:, 17]),
             _create_iers_eop_interpolation(knots, eop[:, 20]),
             _create_iers_eop_interpolation(knots, eop[:, 22]),
@@ -114,7 +173,7 @@ function _parse_iers_eop_iau_1980(eop::Matrix)
         return EopIau1980(
             _create_iers_eop_interpolation(knots, eop[:, 6]),
             _create_iers_eop_interpolation(knots, eop[:, 8]),
-            _create_iers_eop_interpolation(knots, eop[:, 11]),
+            _create_iers_eop_interpolation(knots, eop[:, 11]; leap_safe = true),
             _create_iers_eop_interpolation(knots, eop[:, 13]),
             _create_iers_eop_interpolation(knots, eop[:, 16]),
             _create_iers_eop_interpolation(knots, eop[:, 18]),
@@ -141,7 +200,7 @@ function _parse_iers_eop_iau_2000A(eop::Matrix)
         EopIau2000A(
             _create_iers_eop_interpolation(knots, eop[:, 6]),
             _create_iers_eop_interpolation(knots, eop[:, 8]),
-            _create_iers_eop_interpolation(knots, eop[:, 15]),
+            _create_iers_eop_interpolation(knots, eop[:, 15]; leap_safe = true),
             _create_iers_eop_interpolation(knots, eop[:, 17]),
             _create_iers_eop_interpolation(knots, eop[:, 24]),
             _create_iers_eop_interpolation(knots, eop[:, 26]),
@@ -156,7 +215,7 @@ function _parse_iers_eop_iau_2000A(eop::Matrix)
         EopIau2000A(
             _create_iers_eop_interpolation(knots, eop[:, 6]),
             _create_iers_eop_interpolation(knots, eop[:, 8]),
-            _create_iers_eop_interpolation(knots, eop[:, 11]),
+            _create_iers_eop_interpolation(knots, eop[:, 11]; leap_safe = true),
             _create_iers_eop_interpolation(knots, eop[:, 13]),
             _create_iers_eop_interpolation(knots, eop[:, 20]),
             _create_iers_eop_interpolation(knots, eop[:, 22]),

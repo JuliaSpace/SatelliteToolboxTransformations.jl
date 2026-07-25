@@ -29,6 +29,7 @@
 
     expected = "EopIau1980"
     result = sprint(print, eop_iau1980)
+    @test result == expected
 
     # == EOP for IAU-2006 / 2010A theory ===================================================
 
@@ -50,4 +51,5 @@
 
     expected = "EopIau2000A"
     result = sprint(print, eop_iau2000a)
+    @test result == expected
 end

@@ -175,7 +175,7 @@ end
     # transformation tests.
 
     eop_iau1980  = read_iers_eop("eop_IAU1980.txt")
-    eop_iau2000a = read_iers_eop("eop_IAU1980.txt")
+    eop_iau2000a = read_iers_eop("eop_IAU2000A.txt", Val(:IAU2000A))
 
     # -- jd_utc_to_ut1 ---------------------------------------------------------------------
 
@@ -229,6 +229,24 @@ end
     @test hour   == 10+6
     @test minute == 43
     @test second  ≈ 0.0000 atol = 1e-4
+end
+
+@testset "Leap-safe EOP interpolation and inverse" begin
+    # A one-second UTC discontinuity must not be smeared over the day.  The
+    # synthetic values model a continuous UT1-TAI quantity across 2017-01-01.
+    leap = date_to_jd(2017, 1, 1)
+    knots = [leap - 1.0, leap]
+    values = [-0.4, 0.6]
+    itp = SatelliteToolboxTransformations._create_iers_eop_interpolation(
+        knots, values; leap_safe = true
+    )
+    @test itp(leap - 0.5) ≈ -0.4 atol = 1e-12
+    @test itp(leap) ≈ 0.6 atol = 1e-12
+
+    eop = EopIau1980(itp, itp, itp, itp, itp, itp, itp, itp, itp, itp, itp, itp)
+    utc = leap - 0.25
+    ut1 = jd_utc_to_ut1(utc, eop)
+    @test jd_ut1_to_utc(ut1, eop) ≈ utc atol = 1e-12
 end
 
 # -- Functions jd_tt_to_utc and jd_utc_to_tt -----------------------------------------------
@@ -326,4 +344,11 @@ end
     @test hour   == 07
     @test minute == 51
     @test second  ≈ 28.386009 atol = 1e-4
+
+    # The offset used for the inverse must be selected from UTC, including at
+    # a leap boundary (2017-01-01, when ΔAT changed from 36 s to 37 s).
+    leap = date_to_jd(2017, 1, 1)
+    for utc in (leap - 0.5 / 86400, leap + 0.5 / 86400)
+        @test jd_tt_to_utc(jd_utc_to_tt(utc)) ≈ utc atol = 2e-11
+    end
 end
