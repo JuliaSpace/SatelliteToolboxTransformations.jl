@@ -7,10 +7,15 @@
 export compute_δΔϵ_δΔψ
 
 """
-    compute_δΔϵ_δΔψ(eop_iau2000a::EopIau2000A, JD_UTC::Number) -> (Float64, Float64)
+    compute_δΔϵ_δΔψ(eop_iau2000a::EopIau2000A, JD_UTC::Number[, JD_TT::Number]) -> (Float64, Float64)
 
 Compute the celestial pole offsets in obliquity (`δΔϵ_2000`) and longitude (`δΔΨ_2000`)
 given the IERS EOP IAU 2000A `eop_iau2000a` at the UTC Julian date `JD_UTC`.
+
+The celestial pole offsets are tabulated against UTC, whereas the precession polynomials are
+functions of TT. If the caller already computed the Julian date in TT, it can pass it as
+`JD_TT` to avoid recomputing it here. Otherwise, it is obtained from `JD_UTC` using
+[`jd_utc_to_tt`](@ref).
 
 The EOP celestial pole offsets (`δx` and `δy`) and the returned corrections are in
 milliarcseconds. The returned corrections have not yet been converted to radians; callers
@@ -29,6 +34,10 @@ The algorithm was obtained from **[1]**(eq. 5.25) and **[2]**(`DPSIDEPS2000_DXDY
 - **[2]**: ftp://hpiers.obspm.fr/eop-pc/models/uai2000.package
 """
 function compute_δΔϵ_δΔψ(eop_iau2000a::EopIau2000A, JD_UTC::Number)
+    return compute_δΔϵ_δΔψ(eop_iau2000a, JD_UTC, jd_utc_to_tt(JD_UTC))
+end
+
+function compute_δΔϵ_δΔψ(eop_iau2000a::EopIau2000A, JD_UTC::Number, JD_TT::Number)
     # Constants.
     d2r = π / 180
     a2d = 1 / 3600
@@ -40,7 +49,6 @@ function compute_δΔϵ_δΔψ(eop_iau2000a::EopIau2000A, JD_UTC::Number)
     δy = eop_iau2000a.δy(JD_UTC)
 
     # The precession polynomials, however, are functions of TT.
-    JD_TT = jd_utc_to_tt(JD_UTC)
     T_TT = (JD_TT - JD_J2000) / 36525
 
     # Luni-solar precession [rad].

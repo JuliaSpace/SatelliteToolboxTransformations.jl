@@ -715,7 +715,7 @@ function r_eci_to_eci(T::T_ROT, ::Val{:ERS}, ::Val{:GCRF}, jd_utc::Number, eop::
     jd_tt = jd_utc_to_tt(jd_utc)
 
     # Obtain the correction of the nutation in obliquity and longitude.
-    δΔϵ_2000, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc)
+    δΔϵ_2000, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc, jd_tt)
     δΔϵ_2000 *= milliarcsec_to_rad
     δΔΨ_2000 *= milliarcsec_to_rad
 
@@ -783,7 +783,7 @@ function r_eci_to_eci(T::T_ROT, ::Val{:ERS}, ::Val{:MJ2000}, jd_utc::Number, eop
     jd_tt = jd_utc_to_tt(jd_utc)
 
     # Obtain the correction of the nutation in obliquity and longitude.
-    δΔϵ_2000, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc)
+    δΔϵ_2000, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc, jd_tt)
     δΔϵ_2000 *= milliarcsec_to_rad
     δΔΨ_2000 *= milliarcsec_to_rad
 

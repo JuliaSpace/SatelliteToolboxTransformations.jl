@@ -562,7 +562,7 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:ITRF}, ::Val{:ERS}, jd_utc::Number, eop:
     y_p = eop.y(jd_utc) * arcsec_to_rad
 
     # Obtain the correction of the nutation in longitude.
-    ~, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc)
+    ~, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc, jd_tt)
     δΔΨ_2000 *= milliarcsec_to_rad
 
     # Compute the rotation.
@@ -587,7 +587,7 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:ITRF}, ::Val{:MOD06}, jd_utc::Number, eo
     y_p = eop.y(jd_utc) * arcsec_to_rad
 
     # Obtain the correction of the nutation in obliquity and longitude.
-    δΔϵ_2000, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc)
+    δΔϵ_2000, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc, jd_tt)
     δΔϵ_2000 *= milliarcsec_to_rad
     δΔΨ_2000 *= milliarcsec_to_rad
 
@@ -613,7 +613,7 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:ITRF}, ::Val{:MJ2000}, jd_utc::Number, e
     y_p = eop.y(jd_utc) * arcsec_to_rad
 
     # Obtain the correction of the nutation in obliquity and longitude.
-    δΔϵ_2000, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc)
+    δΔϵ_2000, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc, jd_tt)
     δΔϵ_2000 *= milliarcsec_to_rad
     δΔΨ_2000 *= milliarcsec_to_rad
 
@@ -638,7 +638,7 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:TIRS}, ::Val{:ERS}, jd_utc::Number, eop:
     jd_tt  = jd_utc_to_tt(jd_utc)
 
     # Obtain the correction of the nutation in longitude.
-    ~, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc)
+    ~, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc, jd_tt)
     δΔΨ_2000 *= milliarcsec_to_rad
 
     # Compute the rotation.
@@ -664,7 +664,7 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:TIRS}, ::Val{:MOD06}, jd_utc::Number, eo
     jd_tt  = jd_utc_to_tt(jd_utc)
 
     # Obtain the correction of the nutation in obliquity and longitude.
-    δΔϵ_2000, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc)
+    δΔϵ_2000, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc, jd_tt)
     δΔϵ_2000 *= milliarcsec_to_rad
     δΔΨ_2000 *= milliarcsec_to_rad
 
@@ -691,7 +691,7 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:TIRS}, ::Val{:MJ2000}, jd_utc::Number, e
     jd_tt  = jd_utc_to_tt(jd_utc)
 
     # Obtain the correction of the nutation in obliquity and longitude.
-    δΔϵ_2000, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc)
+    δΔϵ_2000, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc, jd_tt)
     δΔϵ_2000 *= milliarcsec_to_rad
     δΔΨ_2000 *= milliarcsec_to_rad
 
