@@ -45,7 +45,7 @@ function mean_obliquity_iau2006(jd_tt::Number)
 
     # == Mean Obliquity of the Ecliptic ====================================================
 
-    # Compute the mean obliquity of the ecliptic [s].
+    # Compute the mean obliquity of the ecliptic [arcsec].
 
     # NOTE: This equation is wrong in [1](p. 216, eq. 3-68)!
     # The one used here was obtained in [3].

@@ -179,7 +179,7 @@ function r_pef_to_tod_fk5(T::T_ROT, jd_ut1::Number, jd_tt::Number, δΔψ_1980::
     Δψ_1980 += δΔψ_1980
 
     # Evaluate the Delaunay parameters associated with the Moon in the interval
-    # [0,2π]°.
+    # [0, 360]°.
     #
     # The parameters here were updated as stated in the errata [2].
     t_tt = (jd_tt - JD_J2000) / 36525
@@ -348,7 +348,7 @@ Notice that if the conversion `TOD => MOD` is performed **without** considering 
 corrections, then the GCRF obtained by this rotation is what is usually called the J2000
 reference frame.
 """
-r_mod_to_gcrf_fk5(jd_tt::Number) = r_mod_to_gcrf_fk5(DCM,jd_tt)
+r_mod_to_gcrf_fk5(jd_tt::Number) = r_mod_to_gcrf_fk5(DCM, jd_tt)
 
 function r_mod_to_gcrf_fk5(T::T_ROT, jd_tt::Number)
     ζ, Θ, z = precession_fk5(jd_tt)
@@ -379,7 +379,7 @@ Notice that if the conversion `MOD => TOD` is performed **without** considering 
 corrections, then the GCRF in this rotation is what is usually called the J2000 reference
 frame.
 """
-r_gcrf_to_mod_fk5(jd_tt::Number) = r_gcrf_to_mod_fk5(DCM,jd_tt)
+r_gcrf_to_mod_fk5(jd_tt::Number) = r_gcrf_to_mod_fk5(DCM, jd_tt)
 
 r_gcrf_to_mod_fk5(T::T_ROT, jd_tt::Number) = inv_rotation(r_mod_to_gcrf_fk5(T, jd_tt))
 
@@ -390,7 +390,7 @@ r_gcrf_to_mod_fk5(T::T_ROT, jd_tt::Number) = inv_rotation(r_mod_to_gcrf_fk5(T, j
 # The functions with multiple rotations must be added only in two cases:
 #
 #   - ITRF <=> GCRF (Full rotation between ECI and ECEF).
-#   - When the it will decrease the computational burden compared to calling the functions
+#   - When it will decrease the computational burden compared to calling the functions
 #     with the single rotations.
 #
 
@@ -556,7 +556,7 @@ this parameter is omitted, then it falls back to `DCM`.
 
 # Returns
 
-- `T`: The rotation that aligns the PEF frame with the TOD frame.
+- `T`: The rotation that aligns the PEF frame with the MOD frame.
 """
 function r_pef_to_mod_fk5(
     jd_ut1::Number,
@@ -588,7 +588,7 @@ function r_pef_to_mod_fk5(
     # Compute the obliquity.
     ϵ_1980 = mϵ_1980 + Δϵ_1980
 
-    # Evaluate the Delaunay parameters associated with the Moon in the interval [0, 2π]°.
+    # Evaluate the Delaunay parameters associated with the Moon in the interval [0, 360]°.
     #
     # The parameters here were updated as stated in the errata [2].
     t_tt = (jd_tt - JD_J2000) / 36525

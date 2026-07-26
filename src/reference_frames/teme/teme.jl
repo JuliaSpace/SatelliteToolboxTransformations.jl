@@ -57,7 +57,7 @@ function r_teme_to_tod(T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_
     Δϵ_1980 += δΔϵ_1980
     Δψ_1980 += δΔψ_1980
 
-    # Evaluate the Delaunay parameters associated with the Moon in the interval [0, 2π]°.
+    # Evaluate the Delaunay parameters associated with the Moon in the interval [0, 360]°.
     #
     # The parameters here were updated as stated in the errata [2].
     t_tt = (jd_tt - JD_J2000) / 36525
@@ -147,7 +147,7 @@ function r_teme_to_mod(T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_
     # Compute the obliquity.
     ϵ_1980 = mϵ_1980 + Δϵ_1980
 
-    # Evaluate the Delaunay parameters associated with the Moon in the interval [0, 2π]°.
+    # Evaluate the Delaunay parameters associated with the Moon in the interval [0, 360]°.
     #
     # The parameters here were updated as stated in the errata [2].
     t_tt = (jd_tt - JD_J2000) / 36525
@@ -283,11 +283,11 @@ end
 # == TEME <=> PEF ==========================================================================
 
 """
-    r_teme_to_pef([T, ]jd_tt::Number) -> T
+    r_teme_to_pef([T, ]jd_ut1::Number) -> T
 
 Compute the rotation that aligns the True Equator Mean Equinox (TEME) frame with the
-Pseudo-Earth Fixed (PEF) frame at the Julian Day `jd_tt` [Terrestrial Time]. This algorithm
-uses the IAU-76/FK5 theory and TEME definition in **[1]**(p. 233).
+Pseudo-Earth Fixed (PEF) frame at the Julian Day `jd_ut1` [UT1]. This algorithm uses the
+IAU-76/FK5 theory and TEME definition in **[1]**(p. 233).
 
 The rotation type is described by the optional variable `T`. If it is `DCM`, then a DCM will
 be returned. Otherwise, if it is `Quaternion`, then a Quaternion will be returned. In case
@@ -313,11 +313,11 @@ function r_teme_to_pef(T::T_ROT, jd_ut1::Number)
 end
 
 """
-    r_pef_to_teme([T, ]jd_tt::Number) -> T
+    r_pef_to_teme([T, ]jd_ut1::Number) -> T
 
 Compute the rotation that aligns the Pseudo-Earth Fixed (PEF) frame with the True Equator
-Mean Equinox (TEME) frame at the Julian Day `jd_tt` [Terrestrial Time]. This algorithm uses
-the IAU-76/FK5 theory and TEME definition in **[1]**(p. 233).
+Mean Equinox (TEME) frame at the Julian Day `jd_ut1` [UT1]. This algorithm uses the
+IAU-76/FK5 theory and TEME definition in **[1]**(p. 233).
 
 The rotation type is described by the optional variable `T`. If it is `DCM`, then a DCM will
 be returned. Otherwise, if it is `Quaternion`, then a Quaternion will be returned. In case

@@ -105,11 +105,11 @@ Earth orientation parameters for the model IAU 1980.
 
 !!! note
 
-    Each field will be an `AbstractInterpolation` indexed by the Julian Day. Hence, if one
+    Each field will be an `AbstractInterpolation` evaluated at the Julian Day. Hence, if one
     wants to obtain, for example, the X component of the polar motion with respect to the
     crust at 19 June 2018, the following can be used:
 
-        x[DateTime(2018, 6, 19, 0, 0, 0) |> datetime2julian]
+        eop.x(datetime2julian(DateTime(2018, 6, 19, 0, 0, 0)))
 
 # Fields
 
@@ -143,11 +143,11 @@ Earth orientation parameters for the model IAU 2000A.
 
 !!! note
 
-    Each field will be an `AbstractInterpolation` indexed by the Julian Day. Hence, if one
-    want to obtain, for example, the X component of the polar motion with respect to the
+    Each field will be an `AbstractInterpolation` evaluated at the Julian Day. Hence, if one
+    wants to obtain, for example, the X component of the polar motion with respect to the
     crust at 19 June 2018, the following can be used:
 
-        x[DateTime(2018, 6, 19, 0, 0, 0) |> datetime2julian]
+        eop.x(datetime2julian(DateTime(2018, 6, 19, 0, 0, 0)))
 
 # Fields
 

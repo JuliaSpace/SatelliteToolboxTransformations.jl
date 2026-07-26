@@ -166,13 +166,13 @@ each line has the following syntax **[1]**(p. 1043):
 
 where the units of `Ai` and `Ci` are [0.0001"] and the units of `Bi` and `Di` are
 [0.0001"/JC]. The user can also specify the number of coefficients `n_max` that will be used
-when computing the nutation. If `n_max` is omitted, the it defaults to 106.
+when computing the nutation. If `n_max` is omitted, it defaults to 106.
 
 # Returns
 
-- `Float64`: The mean obliquity of the ecliptic [rad].
-- `Float64`: The nutation in obliquity of the ecliptic [rad].
-- `Float64`: The nutation in longitude [rad].
+- `Number`: The mean obliquity of the ecliptic [rad].
+- `Number`: The nutation in obliquity of the ecliptic [rad].
+- `Number`: The nutation in longitude [rad].
 
 # References
 
@@ -217,13 +217,13 @@ function nutation_fk5(
     # Compute the mean obliquity of the ecliptic [°].
     mϵ_1980 = @evalpoly(t_tt, 23.439291, -0.0130042, -1.64e-7, +5.04e-7)
 
-    # Reduce to the interval [0, 2π]°.
+    # Reduce to the interval [0, 360]°.
     mϵ_1980 = mod(mϵ_1980, 360) * d2r
 
     # == Delaunay Parameters of the Sun and Moon ===========================================
 
     # Evaluate the Delaunay parameters associated with the Moon and the Sun
-    # in the interval [0,2π]°.
+    # in the interval [0, 360]°.
     #
     # The parameters here were updated as stated in the errata [2].
     r = 360

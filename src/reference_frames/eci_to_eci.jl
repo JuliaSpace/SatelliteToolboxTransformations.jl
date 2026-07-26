@@ -67,7 +67,7 @@ The supported ECI frames for both origin `ECIo` and destination `ECIf` are:
 - `MOD()`: ECI will be selected as the Mean of Date (MOD).
 - `J2000()`: ECI will be selected as the J2000 reference frame.
 - `GCRF()`: ECI will be selected as the Geocentric Celestial Reference Frame (GCRF).
-- `CIRS()`: ECEF will be selected as the Celestial Intermediate Reference System (CIRS).
+- `CIRS()`: ECI will be selected as the Celestial Intermediate Reference System (CIRS).
 - `ERS()`: ECI will be selected as the Earth Reference System (ERS).
 - `MOD06()`: ECI will be selected as the Mean of Date (MOD) according to the definition in
     IAU-2006/2010 theory.
@@ -119,10 +119,10 @@ selected frames.
 | IAU-2006/2010 Equinox-based | `MJ2000` | `ERS`    | Not required³ | First              |
 | IAU-2006/2010 Equinox-based | `MOD06`  | `GCRF`   | Not required  | First              |
 | IAU-2006/2010 Equinox-based | `MOD06`  | `MJ2000` | Not required  | First              |
-| IAU-2006/2010 Equinox-based | `MOD06`  | `ERS`    | Not required³ | First              |
+| IAU-2006/2010 Equinox-based | `MOD06`  | `ERS`    | Not required³ | Second             |
 | IAU-2006/2010 Equinox-based | `ERS`    | `GCRF`   | Not required³ | First              |
 | IAU-2006/2010 Equinox-based | `ERS`    | `MJ2000` | Not required³ | First              |
-| IAU-2006/2010 Equinox-based | `ERS`    | `MOD06`  | Not required³ | First              |
+| IAU-2006/2010 Equinox-based | `ERS`    | `MOD06`  | Not required³ | Second             |
 
 `¹`: In this case, the terms that account for the free-core nutation and time dependent
 effects of the Celestial Intermediate Pole (CIP) position with respect to the GCRF will not
@@ -263,12 +263,12 @@ function r_eci_to_eci(
     return r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc)
 end
 
- function r_eci_to_eci(
+function r_eci_to_eci(
     T_ECIo::Val{:CIRS},
     jd_utco::Number,
     T_ECIf::Val{:CIRS},
     jd_utcf::Number
- )
+)
     return r_eci_to_eci(DCM, T_ECIo, jd_utco, T_ECIf, jd_utcf)
 end
 
@@ -508,21 +508,25 @@ end
 function r_eci_to_eci(
     T::T_ROT,
     T_ECIo::Val{:J2000},
-    T_ECEFf::Val{:TEME},
+    T_ECIf::Val{:TEME},
     jd_utc::Number,
     eop::EopIau1980
 )
-    return r_eci_to_eci(T, T_ECIo, T_ECEFf, jd_utc)
+    # The J2000 <=> TEME conversion does not depend on EOP data. `eop` is accepted here only
+    # so that the frame pair can be used with the same signature as its neighbors.
+    return r_eci_to_eci(T, T_ECIo, T_ECIf, jd_utc)
 end
 
 function r_eci_to_eci(
     T::T_ROT,
     T_ECIo::Val{:TEME},
-    T_ECEFf::Val{:J2000},
+    T_ECIf::Val{:J2000},
     jd_utc::Number,
     eop::EopIau1980
 )
-    return r_eci_to_eci(T, T_ECIo, T_ECEFf, jd_utc)
+    # The TEME <=> J2000 conversion does not depend on EOP data. `eop` is accepted here only
+    # so that the frame pair can be used with the same signature as its neighbors.
+    return r_eci_to_eci(T, T_ECIo, T_ECIf, jd_utc)
 end
 
 function r_eci_to_eci(T::T_ROT, ::Val{:J2000}, ::Val{:TEME}, jd_utc::Number)
@@ -838,7 +842,7 @@ function r_eci_to_eci(
     # In this case, we convert origin to GCRF and then convert back to the destination. This
     # is necessary because the user may want to change the epoch. Notice that, differently
     # from IAU-76/FK5, we can convert to GCRF without using EOP data with minor degradation
-    # in precsion.
+    # in precision.
     r_gcrf_ecio = r_eci_to_eci(T, T_ECIo,      Val(:GCRF), jd_utco)
     r_ecif_gcrf = r_eci_to_eci(T, Val(:GCRF), T_ECIf,      jd_utcf)
 

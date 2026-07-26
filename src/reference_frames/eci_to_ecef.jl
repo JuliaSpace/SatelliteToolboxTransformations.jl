@@ -57,7 +57,7 @@ The ECI frame is selected by the parameter `ECI`. The possible values are:
 - `MOD()`: ECI will be selected as the Mean of Date (MOD).
 - `J2000()`: ECI will be selected as the J2000 reference frame.
 - `GCRF()`: ECI will be selected as the Geocentric Celestial Reference Frame (GCRF).
-- `CIRS()`: ECEF will be selected as the Celestial Intermediate Reference System (CIRS).
+- `CIRS()`: ECI will be selected as the Celestial Intermediate Reference System (CIRS).
 - `ERS()`: ECI will be selected as the Earth Reference System (ERS).
 - `MOD06()`: ECI will be selected as the Mean of Date (MOD) according to the definition in
     IAU-2006/2010 theory.

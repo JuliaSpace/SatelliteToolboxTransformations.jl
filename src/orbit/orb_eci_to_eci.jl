@@ -60,7 +60,7 @@ The supported ECI frames for both origin `ECIo` and destination `ECIf` are:
 - `MOD()`: ECI will be selected as the Mean of Date (MOD).
 - `J2000()`: ECI will be selected as the J2000 reference frame.
 - `GCRF()`: ECI will be selected as the Geocentric Celestial Reference Frame (GCRF).
-- `CIRS()`: ECEF will be selected as the Celestial Intermediate Reference System (CIRS).
+- `CIRS()`: ECI will be selected as the Celestial Intermediate Reference System (CIRS).
 - `ERS()`: ECI will be selected as the Earth Reference System (ERS).
 - `MOD06()`: ECI will be selected as the Mean of Date (MOD) according to the definition in
     IAU-2006/2010 theory.
@@ -112,10 +112,10 @@ selected frames.
 | IAU-2006/2010 Equinox-based | `MJ2000` | `ERS`    | Not required³ | First              |
 | IAU-2006/2010 Equinox-based | `MOD06`  | `GCRF`   | Not required  | First              |
 | IAU-2006/2010 Equinox-based | `MOD06`  | `MJ2000` | Not required  | First              |
-| IAU-2006/2010 Equinox-based | `MOD06`  | `ERS`    | Not required³ | First              |
+| IAU-2006/2010 Equinox-based | `MOD06`  | `ERS`    | Not required³ | Second             |
 | IAU-2006/2010 Equinox-based | `ERS`    | `GCRF`   | Not required³ | First              |
 | IAU-2006/2010 Equinox-based | `ERS`    | `MJ2000` | Not required³ | First              |
-| IAU-2006/2010 Equinox-based | `ERS`    | `MOD06`  | Not required³ | First              |
+| IAU-2006/2010 Equinox-based | `ERS`    | `MOD06`  | Not required³ | Second             |
 
 `¹`: In this case, the terms that account for the free-core nutation and time dependent
 effects of the Celestial Intermediate Pole (CIP) position with respect to the GCRF will not

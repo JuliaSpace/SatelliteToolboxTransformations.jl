@@ -330,7 +330,7 @@ this parameter is omitted, then it falls back to `DCM`.
 
 # Returns
 
-- `T`: The rotation that aligns the MJ2000 frame with the MOD frame.
+- `T`: The rotation that aligns the MJ2000 frame with the GCRF frame.
 
 # References
 
@@ -371,7 +371,7 @@ this parameter is omitted, then it falls back to `DCM`.
 
 # Returns
 
-- `T`: The rotation that aligns the MJ2000 frame with the MOD frame.
+- `T`: The rotation that aligns the GCRF frame with the MJ2000 frame.
 
 # References
 
@@ -388,7 +388,7 @@ end
 #                                    Multiple Rotations                                    #
 ############################################################################################
 
-# The functions with multiple rotations must be added here only when the it will decrease
+# The functions with multiple rotations must be added here only when it will decrease
 # the computational burden compared to calling the functions with the single rotations.
 
 """
@@ -416,7 +416,7 @@ this parameter is omitted, then it falls back to `DCM`.
 
 # Returns
 
-- `T`: The rotation that aligns the TIRS frame with the ERS frame.
+- `T`: The rotation that aligns the TIRS frame with the MOD frame.
 """
 function r_tirs_to_mod_iau2006(
     jd_ut1::Number,
@@ -482,7 +482,7 @@ this parameter is omitted, then it falls back to `DCM`.
 
 # Returns
 
-- `T`: The rotation that aligns the TIRS frame with the ERS frame.
+- `T`: The rotation that aligns the MOD frame with the TIRS frame.
 """
 function r_mod_to_tirs_iau2006(
     jd_ut1::Number,
