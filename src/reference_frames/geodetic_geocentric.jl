@@ -192,11 +192,14 @@ function ecef_to_geodetic(
 end
 
 """
-    geodetic_to_ecef(lat::Number, lon::Number, h::Number; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> SVector{3, T}
+    geodetic_to_ecef(lat::Number, lon::Number, h::Number; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> SVector{3, RT}
 
 Convert the latitude `lat` [rad], longitude `lon` [rad], and altitude `h` \\[m] above the
 reference ellipsoid (defaults to WGS-84) into a vector represented on the Earth-Centered,
 Earth-Fixed (ECEF) reference frame.
+
+The returned element type `RT` is the promotion of the types of `lat`, `lon`, `h`, and the
+ellipsoid parameter `T`.
 
 !!! info
 
@@ -215,22 +218,24 @@ function geodetic_to_ecef(
 
     RT = promote_type(LT, LT2, HT, T)
 
-    # Auxiliary variables.
+    # Auxiliary variables. Everything is promoted to `RT` up front so that the returned
+    # element type is `RT` regardless of the ellipsoid's own parameter type.
     sin_lat, cos_lat = sincos(RT(lat))
     sin_lon, cos_lon = sincos(RT(lon))
 
-    a  = ellipsoid.a
-    b  = ellipsoid.b
-    e² = ellipsoid.e²
+    a  = RT(ellipsoid.a)
+    b  = RT(ellipsoid.b)
+    e² = RT(ellipsoid.e²)
+    hr = RT(h)
 
     # Radius of curvature [m].
     N = a / √(1 - e² * sin_lat^2)
 
     # Compute the position in ECEF frame.
-    return SVector(
-        (            N + RT(h)) * cos_lat * cos_lon,
-        (            N + RT(h)) * cos_lat * sin_lon,
-        ((b / a)^2 * N + RT(h)) * sin_lat
+    return SVector{3, RT}(
+        (            N + hr) * cos_lat * cos_lon,
+        (            N + hr) * cos_lat * sin_lon,
+        ((b / a)^2 * N + hr) * sin_lat
     )
 end
 
