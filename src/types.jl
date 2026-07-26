@@ -5,6 +5,7 @@
 ############################################################################################
 
 export T_ECEFs, T_ECIs, T_ECIs_of_date, T_ECEFs_IAU_2006, T_ECIs_IAU_2006
+export T_ECIs_IAU_2006_CIO, T_ECIs_IAU_2006_Equinox
 export T_ECIs_IAU_2006_Equinox_of_date, T_ROT
 export ITRF, PEF, TOD, MOD, GCRF, J2000, TEME, CIRS, TIRS, ERS, MOD06, MJ2000
 export EopIau1980, EopIau2000A
@@ -18,14 +19,14 @@ export EopIau1980, EopIau2000A
 
 Union of all Earth-Centered Earth-Fixed (ECEF) frames supported by the IAU-76/FK5 theory.
 """
-T_ECEFs = Union{Val{:ITRF}, Val{:PEF}}
+const T_ECEFs = Union{Val{:ITRF}, Val{:PEF}}
 
 """
     T_ECIs
 
 Union of all Earth-Centered Inertial (ECI) frames supported by the IAU-76/FK5 theory.
 """
-T_ECIs = Union{Val{:GCRF}, Val{:J2000}, Val{:TOD}, Val{:MOD}, Val{:TEME}}
+const T_ECIs = Union{Val{:GCRF}, Val{:J2000}, Val{:TOD}, Val{:MOD}, Val{:TEME}}
 
 """
     T_ECIs_of_date
@@ -33,14 +34,14 @@ T_ECIs = Union{Val{:GCRF}, Val{:J2000}, Val{:TOD}, Val{:MOD}, Val{:TEME}}
 Union of all *of date* Earth-Centered Inertial (ECI) frames supported by the IAU-76/FK5
 theory.
 """
-T_ECIs_of_date = Union{Val{:TOD}, Val{:MOD}, Val{:TEME}}
+const T_ECIs_of_date = Union{Val{:TOD}, Val{:MOD}, Val{:TEME}}
 
 """
     T_ECEFs_IAU_2006
 
 Union of all Earth-Centered Earth-Fixed (ECEF) frames supported by IAU-2006/2010 theory.
 """
-T_ECEFs_IAU_2006 = Union{Val{:ITRF}, Val{:TIRS}}
+const T_ECEFs_IAU_2006 = Union{Val{:ITRF}, Val{:TIRS}}
 
 """
     T_ECIs_IAU_2006_CIO
@@ -48,7 +49,7 @@ T_ECEFs_IAU_2006 = Union{Val{:ITRF}, Val{:TIRS}}
 Union of all Earth-Centered Inertial (ECI) frames supported by CIO-based IAU-2006/2010
 theory.
 """
-T_ECIs_IAU_2006_CIO = Union{Val{:GCRF}, Val{:CIRS}}
+const T_ECIs_IAU_2006_CIO = Union{Val{:GCRF}, Val{:CIRS}}
 
 """
     T_ECIs_IAU_2006_Equinox
@@ -56,14 +57,14 @@ T_ECIs_IAU_2006_CIO = Union{Val{:GCRF}, Val{:CIRS}}
 Union of all Earth-Centered Inertial (ECI) frames supported by Equinox-based IAU-2006/2010
 theory.
 """
-T_ECIs_IAU_2006_Equinox = Union{Val{:GCRF}, Val{:MJ2000}, Val{:MOD06}, Val{:ERS}}
+const T_ECIs_IAU_2006_Equinox = Union{Val{:GCRF}, Val{:MJ2000}, Val{:MOD06}, Val{:ERS}}
 
 """
     T_ECIs_IAU_2006
 
 Union of all Earth-Centered Inertial (ECI) frames supported by IAU-2006/2010 theory.
 """
-T_ECIs_IAU_2006 = Union{T_ECIs_IAU_2006_CIO, T_ECIs_IAU_2006_Equinox}
+const T_ECIs_IAU_2006 = Union{T_ECIs_IAU_2006_CIO, T_ECIs_IAU_2006_Equinox}
 
 """
     T_ECIs_IAU_2006_Equinox_of_date
@@ -71,14 +72,14 @@ T_ECIs_IAU_2006 = Union{T_ECIs_IAU_2006_CIO, T_ECIs_IAU_2006_Equinox}
 Union of all *of date* Earth-Centered Inertial (ECI) frames supported by the equinox-based
 IAU-2006/2010 theory.
 """
-T_ECIs_IAU_2006_Equinox_of_date = Union{Val{:MOD06}, Val{:ERS}}
+const T_ECIs_IAU_2006_Equinox_of_date = Union{Val{:MOD06}, Val{:ERS}}
 
 """
     T_ROT
 
 Union of all supported rotation descriptions.
 """
-T_ROT = Union{Type{DCM}, Type{Quaternion}}
+const T_ROT = Union{Type{DCM}, Type{Quaternion}}
 
 # Auxiliary functions to define the reference frames.
 @inline ITRF()   = Val(:ITRF)
