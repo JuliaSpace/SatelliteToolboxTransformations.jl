@@ -104,6 +104,78 @@ _itp_timespan(itp::EopInterpolation)::String = begin
 end
 
 """
+    _iers_eop_available(v) -> Bool
+
+Return `true` if the EOP field entry `v` holds an actual measurement.
+
+The IERS CSV files leave the fields that are not available empty. [`_read_iers_eop_csv`](@ref)
+represents those as `NaN`, whereas a matrix assembled by other means (for instance, by
+`DelimitedFiles.readdlm`) represents them as empty strings. Both spellings are accepted here.
+"""
+_iers_eop_available(v::Real) = !isnan(v)
+_iers_eop_available(v) = !isempty(v)
+
+# Delimiter used by the IERS EOP files in CSV format.
+const _IERS_EOP_DELIMITER = ';'
+
+"""
+    _read_iers_eop_csv(filename::AbstractString) -> Matrix{Float64}
+
+Read the IERS EOP file `filename` in CSV format and return its data rows as a
+`Matrix{Float64}`, discarding the header.
+
+Fields that are empty, and the textual `Type` columns, are returned as `NaN` so that
+[`_iers_eop_available`](@ref) reports them as unavailable.
+
+!!! note
+
+    This replaces `DelimitedFiles.readdlm`, which cannot infer a concrete element type for
+    these files because of their empty trailing fields and therefore returns a `Matrix{Any}`.
+    For the ~20,000-row `finals.all.csv` that meant boxing roughly 740,000 elements, at a cost
+    of about 100 MiB of transient allocation per call.
+"""
+function _read_iers_eop_csv(filename::AbstractString)
+    lines = readlines(filename)
+
+    length(lines) < 2 && throw(ArgumentError(
+        "The IERS EOP file must contain a header and at least one data row."
+    ))
+
+    # The header fixes the number of columns.
+    num_cols = count(==(_IERS_EOP_DELIMITER), first(lines)) + 1
+    num_rows = length(lines) - 1
+
+    eop = fill(NaN, num_rows, num_cols)
+
+    @inbounds for i in 1:num_rows
+        line = lines[i + 1]
+        isempty(line) && continue
+
+        col = 1
+        first_id = firstindex(line)
+
+        while col ≤ num_cols
+            delimiter_id = findnext(==(_IERS_EOP_DELIMITER), line, first_id)
+            last_id = delimiter_id === nothing ? lastindex(line) : prevind(line, delimiter_id)
+
+            # An empty field is left as `NaN`, and so is a field that does not hold a number,
+            # which is the case of the `Type` columns.
+            if last_id ≥ first_id
+                v = tryparse(Float64, SubString(line, first_id, last_id))
+                v !== nothing && (eop[i, col] = v)
+            end
+
+            delimiter_id === nothing && break
+
+            first_id = nextind(line, delimiter_id)
+            col += 1
+        end
+    end
+
+    return eop
+end
+
+"""
     _create_iers_eop_interpolation(knots::AbstractVector, field::AbstractVector;
                                    leap_safe::Bool = false)::EopInterpolation
 
@@ -124,8 +196,7 @@ function _create_iers_eop_interpolation(
     leap_safe::Bool = false
 )
     # Obtain the last available index of the field.
-    last_id = findlast(!isempty, field)
-    last_id === nothing && (last_id = length(field))
+    last_id = something(findlast(_iers_eop_available, field), length(field))
 
     # Convert the field to a `Vector{Float64}`. Construct the shortened
     # vector directly from a view so the intermediate slice is not copied.
@@ -134,6 +205,14 @@ function _create_iers_eop_interpolation(
     else
         Vector{Float64}(@view field[1:last_id])
     end
+
+    # Only *trailing* gaps are trimmed above. A gap in the middle of the field would silently
+    # poison the interpolation with `NaN`, so reject it with a descriptive message instead.
+    gap_id = findfirst(isnan, field_float)
+    gap_id === nothing || throw(ArgumentError(
+        "The EOP field has a missing value at index $gap_id, which is not at its end. " *
+        "The IERS file is likely corrupted or truncated."
+    ))
 
     # Keep one knot array for both the interpolation and its wrapper. Using a
     # view here is important for fields with trailing missing values.
@@ -260,37 +339,37 @@ function _parse_iers_eop_iau_1980(eop::Matrix)::EopIau1980
     #
     # The interpolation will be linear between two points in the grid. The extrapolation
     # will be flat, considering the nearest point.
-    knots::Vector{Float64} = Vector{Float64}(eop[:, 1] .+ 2400000.5)
+    knots::Vector{Float64} = Vector{Float64}(@view(eop[:, 1]) .+ 2400000.5)
 
     if size(eop)[2] == 37
         return EopIau1980(
-            _create_iers_eop_interpolation(knots, eop[:, 6]),
-            _create_iers_eop_interpolation(knots, eop[:, 8]),
-            _create_iers_eop_interpolation(knots, eop[:, 15]; leap_safe = true),
-            _create_iers_eop_interpolation(knots, eop[:, 17]),
-            _create_iers_eop_interpolation(knots, eop[:, 20]),
-            _create_iers_eop_interpolation(knots, eop[:, 22]),
-            _create_iers_eop_interpolation(knots, eop[:, 7]),
-            _create_iers_eop_interpolation(knots, eop[:, 9]),
-            _create_iers_eop_interpolation(knots, eop[:, 16]),
-            _create_iers_eop_interpolation(knots, eop[:, 18]),
-            _create_iers_eop_interpolation(knots, eop[:, 21]),
-            _create_iers_eop_interpolation(knots, eop[:, 23]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 6]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 8]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 15]; leap_safe = true),
+            _create_iers_eop_interpolation(knots, @view eop[:, 17]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 20]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 22]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 7]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 9]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 16]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 18]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 21]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 23]),
         )
     else
         return EopIau1980(
-            _create_iers_eop_interpolation(knots, eop[:, 6]),
-            _create_iers_eop_interpolation(knots, eop[:, 8]),
-            _create_iers_eop_interpolation(knots, eop[:, 11]; leap_safe = true),
-            _create_iers_eop_interpolation(knots, eop[:, 13]),
-            _create_iers_eop_interpolation(knots, eop[:, 16]),
-            _create_iers_eop_interpolation(knots, eop[:, 18]),
-            _create_iers_eop_interpolation(knots, eop[:, 7]),
-            _create_iers_eop_interpolation(knots, eop[:, 9]),
-            _create_iers_eop_interpolation(knots, eop[:, 12]),
-            _create_iers_eop_interpolation(knots, eop[:, 14]),
-            _create_iers_eop_interpolation(knots, eop[:, 17]),
-            _create_iers_eop_interpolation(knots, eop[:, 19]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 6]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 8]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 11]; leap_safe = true),
+            _create_iers_eop_interpolation(knots, @view eop[:, 13]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 16]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 18]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 7]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 9]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 12]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 14]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 17]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 19]),
         )
     end
 end
@@ -309,37 +388,37 @@ function _parse_iers_eop_iau_2000A(eop::Matrix)::EopIau2000A
     #
     # The interpolation will be linear between two points in the grid. The extrapolation
     # will be flat, considering the nearest point.
-    knots::Vector{Float64} = Vector{Float64}(eop[:, 1] .+ 2400000.5)
+    knots::Vector{Float64} = Vector{Float64}(@view(eop[:, 1]) .+ 2400000.5)
 
     if size(eop)[2] == 37
         EopIau2000A(
-            _create_iers_eop_interpolation(knots, eop[:, 6]),
-            _create_iers_eop_interpolation(knots, eop[:, 8]),
-            _create_iers_eop_interpolation(knots, eop[:, 15]; leap_safe = true),
-            _create_iers_eop_interpolation(knots, eop[:, 17]),
-            _create_iers_eop_interpolation(knots, eop[:, 24]),
-            _create_iers_eop_interpolation(knots, eop[:, 26]),
-            _create_iers_eop_interpolation(knots, eop[:, 7]),
-            _create_iers_eop_interpolation(knots, eop[:, 9]),
-            _create_iers_eop_interpolation(knots, eop[:, 16]),
-            _create_iers_eop_interpolation(knots, eop[:, 18]),
-            _create_iers_eop_interpolation(knots, eop[:, 25]),
-            _create_iers_eop_interpolation(knots, eop[:, 27]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 6]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 8]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 15]; leap_safe = true),
+            _create_iers_eop_interpolation(knots, @view eop[:, 17]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 24]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 26]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 7]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 9]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 16]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 18]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 25]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 27]),
         )
     else
         EopIau2000A(
-            _create_iers_eop_interpolation(knots, eop[:, 6]),
-            _create_iers_eop_interpolation(knots, eop[:, 8]),
-            _create_iers_eop_interpolation(knots, eop[:, 11]; leap_safe = true),
-            _create_iers_eop_interpolation(knots, eop[:, 13]),
-            _create_iers_eop_interpolation(knots, eop[:, 20]),
-            _create_iers_eop_interpolation(knots, eop[:, 22]),
-            _create_iers_eop_interpolation(knots, eop[:, 7]),
-            _create_iers_eop_interpolation(knots, eop[:, 9]),
-            _create_iers_eop_interpolation(knots, eop[:, 12]),
-            _create_iers_eop_interpolation(knots, eop[:, 14]),
-            _create_iers_eop_interpolation(knots, eop[:, 21]),
-            _create_iers_eop_interpolation(knots, eop[:, 23]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 6]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 8]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 11]; leap_safe = true),
+            _create_iers_eop_interpolation(knots, @view eop[:, 13]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 20]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 22]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 7]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 9]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 12]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 14]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 21]),
+            _create_iers_eop_interpolation(knots, @view eop[:, 23]),
         )
     end
 end

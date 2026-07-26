@@ -36,11 +36,9 @@ the model IAU 1980 (`data_type = Val(:IAU1980)`), which is the default, or to th
 read_iers_eop(filename::String) = read_iers_eop(filename, Val(:IAU1980))
 
 function read_iers_eop(filename::String, ::Val{:IAU1980})
-    eop, ~ = readdlm(filename, ';'; header = true)
-    return _parse_iers_eop_iau_1980(eop)
+    return _parse_iers_eop_iau_1980(_read_iers_eop_csv(filename))
 end
 
 function read_iers_eop(filename::String, ::Val{:IAU2000A})
-    eop, ~ = readdlm(filename, ';'; header = true)
-    return _parse_iers_eop_iau_2000A(eop)
+    return _parse_iers_eop_iau_2000A(_read_iers_eop_csv(filename))
 end

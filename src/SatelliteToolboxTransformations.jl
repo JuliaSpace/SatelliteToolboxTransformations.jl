@@ -2,7 +2,6 @@ module SatelliteToolboxTransformations
 
 using Crayons
 using Dates
-using DelimitedFiles
 using Downloads: download
 using DataInterpolations
 using LinearAlgebra
