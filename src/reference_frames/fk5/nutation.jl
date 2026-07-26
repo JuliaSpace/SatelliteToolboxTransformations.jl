@@ -276,8 +276,15 @@ function nutation_fk5(
     # == Nutation in Longitude and Obliquity ===============================================
 
     # Compute the nutation in the longitude and in obliquity.
-    ΔΨ_1980 = 0.0
-    Δϵ_1980 = 0.0
+    #
+    # NOTE: The accumulators must be initialized with the type that results from the
+    # arithmetic inside the loop, and not with a hardcoded `0.0`. Otherwise, they would
+    # change type on the first iteration whenever `jd_tt` or the coefficient table is not
+    # `Float64` (e.g. `Float32`, `ForwardDiff.Dual`, or `Measurement`), which makes the
+    # accumulators inferred as a union and boxes them inside this 106-term loop.
+    NT = typeof(zero(eltype(nut_coefs_1980)) * zero(t_tt) * zero(M_m))
+    ΔΨ_1980 = zero(NT)
+    Δϵ_1980 = zero(NT)
 
     @inbounds for i in 1:n_max
         # Unpack values.
