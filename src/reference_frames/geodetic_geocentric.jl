@@ -308,7 +308,12 @@ function geocentric_to_geodetic(
 
     if D ≥ 0
         aux = √D
-        v = (aux - Q)^T(1 / 3) - (Q + aux)^T(1 / 3)
+
+        # NOTE: `cbrt` must be used here instead of `^(1 / 3)`. When `P < 0` we have
+        # `√D ≤ |Q|`, so exactly one of `aux - Q` and `Q + aux` is negative, and raising a
+        # negative real to a fractional power throws a `DomainError`. `cbrt` is defined for
+        # negative arguments and is also faster.
+        v = cbrt(aux - Q) - cbrt(Q + aux)
     else
         aux = √(-P)
         v = 2 * aux * cos(acos(Q / (P * aux)) / 3)
