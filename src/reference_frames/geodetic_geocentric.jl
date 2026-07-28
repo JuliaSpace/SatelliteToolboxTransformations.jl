@@ -264,11 +264,14 @@ function geodetic_to_ecef(
 end
 
 """
-    geocentric_to_geodetic(ϕ_gc::Number, r::Number; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> T, T
+    geocentric_to_geodetic(ϕ_gc::Number, r::Number; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> NTuple{2, NT}
 
 Compute the geodetic latitude and altitude above the reference ellipsoid (defaults to
 WGS-84) from the geocentric latitude `ϕ_gc` (-π/2, π/2) [rad] and radius `r` [m]. Notice
 that the longitude is the same in both geocentric and geodetic coordinates.
+
+The returned element type `NT` is the promotion of the types of `ϕ_gc`, `r`, and the
+ellipsoid parameter `T`, converted to a float.
 
 !!! info
 
@@ -276,8 +279,8 @@ that the longitude is the same in both geocentric and geodetic coordinates.
 
 # Returns
 
-- `T`: Geodetic latitude [rad].
-- `T`: Altitude above the reference ellipsoid (defaults to WGS-84) [m].
+- `NT`: Geodetic latitude [rad].
+- `NT`: Altitude above the reference ellipsoid (defaults to WGS-84) [m].
 
 # References
 
@@ -285,15 +288,20 @@ that the longitude is the same in both geocentric and geodetic coordinates.
     without approximations. Astrophysics and Space Science, vol. 139, pp. 1-4.
 """
 function geocentric_to_geodetic(
-    ϕ_gc::Number,
-    r::Number;
+    ϕ_gc::PT,
+    r::RT;
     ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
-) where T<:Number
-    # Obtain the `z` component and the equatorial component `re`.
-    sin_ϕ_gc, cos_ϕ_gc = sincos(ϕ_gc)
+) where {PT<:Number, RT<:Number, T<:Number}
+    # Promote the coordinates with the ellipsoid parameters before entering any branch. This
+    # keeps all the returned values at the same promoted floating-point type.
+    NT = float(promote_type(PT, RT, T))
 
-    re = r * cos_ϕ_gc
-    z  = r * sin_ϕ_gc
+    # Obtain the `z` component and the equatorial component `re`.
+    sin_ϕ_gc, cos_ϕ_gc = sincos(NT(ϕ_gc))
+
+    r_p = NT(r)
+    re  = r_p * cos_ϕ_gc
+    z   = r_p * sin_ϕ_gc
 
     # The algorithm in [1] divides by the equatorial component `re`, which vanishes on the
     # polar axis, yielding `NaN`. `re` is also negative when `|ϕ_gc|` is slightly larger than
@@ -302,22 +310,22 @@ function geocentric_to_geodetic(
     # a `DomainError`. In both situations the point lies on the polar axis to within the
     # resolution of the input, where the geodetic solution is exact and needs no iteration.
     if re <= 0
-        return copysign(oftype(re, π / 2), z), abs(z) - ellipsoid.b
+        return copysign(NT(π / 2), z), abs(z) - NT(ellipsoid.b)
     end
 
     sign_z = z >= 0 ? +1 : -1
 
     # Auxiliary variables.
-    a  = ellipsoid.a
+    a  = NT(ellipsoid.a)
     a² = a^2
-    b  = sign_z * ellipsoid.b
+    b  = sign_z * NT(ellipsoid.b)
     b² = b^2
 
     # Compute the parameters.
     E  = (b * z - (a² - b²)) / (a * re)
     E² = E^2
     F  = (b * z + (a² - b²)) / (a * re)
-    P  = T(4 / 3) * (E * F + 1)
+    P  = NT(4 / 3) * (E * F + 1)
     Q  = 2 * (E² - F^2)
     D  = P^3 + Q^2
 
@@ -352,7 +360,7 @@ function geocentric_to_geodetic(
 end
 
 """
-    geocentric_to_geodetic(geocentric_state::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> T, T
+    geocentric_to_geodetic(geocentric_state::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> NTuple{2, NT}
 
 Compute the geodetic latitude and altitude above the reference ellipsoid (defaults to
 WGS-84) from the geocentric latitude `ϕ_gc` (-π/2, π/2) [rad] and radius `r` [m]. Notice
@@ -366,8 +374,8 @@ that the longitude is the same in both geocentric and geodetic coordinates.
 
 # Returns
 
-- `T`: Geodetic latitude [rad].
-- `T`: Altitude above the reference ellipsoid (defaults to WGS-84) [m].
+- `NT`: Geodetic latitude [rad].
+- `NT`: Altitude above the reference ellipsoid (defaults to WGS-84) [m].
 
 # References
 
@@ -384,42 +392,50 @@ function geocentric_to_geodetic(
 end
 
 """
-    geodetic_to_geocentric(ϕ_gd::Number, h::Number; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> T, T
+    geodetic_to_geocentric(ϕ_gd::Number, h::Number; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> NTuple{2, NT}
 
 Compute the geocentric latitude and radius from the geodetic latitude `ϕ_gd` (-π/2, π/2)
 [rad] and height above the reference ellipsoid `h` \\[m] (defaults to WGS-84). Notice that
 the longitude is the same in both geocentric and geodetic coordinates.
+
+The returned element type `NT` is the promotion of the types of `ϕ_gd`, `h`, and the
+ellipsoid parameter `T`, converted to a float.
 
 !!! info
     The algorithm is based in **[1]**(p. 3).
 
 # Returns
 
-- `T`: Geocentric latitude [rad].
-- `T`: Radius from the center of the Earth [m].
+- `NT`: Geocentric latitude [rad].
+- `NT`: Radius from the center of the Earth [m].
 
 # References
 
 - **[1]** ISO TC 20/SC 14 N (2011). Geomagnetic Reference Models.
 """
 function geodetic_to_geocentric(
-    ϕ_gd::Number,
-    h::Number;
+    ϕ_gd::PT,
+    h::HT;
     ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
-) where T<:Number
+) where {PT<:Number, HT<:Number, T<:Number}
+    # Promote the coordinates with the ellipsoid parameters so that both returned values have
+    # the same floating-point type regardless of the ellipsoid's own parameter type.
+    NT = float(promote_type(PT, HT, T))
+
     # Auxiliary variables to decrease computational burden.
-    sin_ϕ_gd, cos_ϕ_gd = sincos(ϕ_gd)
+    sin_ϕ_gd, cos_ϕ_gd = sincos(NT(ϕ_gd))
     sin²_ϕ_gd = sin_ϕ_gd^2
 
-    a  = ellipsoid.a
-    e² = ellipsoid.e²
+    a   = NT(ellipsoid.a)
+    e²  = NT(ellipsoid.e²)
+    h_p = NT(h)
 
     # Radius of curvature in the prime vertical [m].
-    N = a / √(1 - e² * sin²_ϕ_gd )
+    N = a / √(1 - e² * sin²_ϕ_gd)
 
     # Compute the geocentric latitude and radius from the Earth center.
-    ρ = (N + h) * cos_ϕ_gd
-    z = (N * (1 - e²) + h) * sin_ϕ_gd
+    ρ = (N + h_p) * cos_ϕ_gd
+    z = (N * (1 - e²) + h_p) * sin_ϕ_gd
 
     # `hypot` is used instead of `√(ρ^2 + z^2)` because it does not overflow or underflow
     # when squaring the components.
@@ -434,7 +450,7 @@ function geodetic_to_geocentric(
 end
 
 """
-    geodetic_to_geocentric(geodetic_state::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> T, T
+    geodetic_to_geocentric(geodetic_state::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> NTuple{2, NT}
 
 Compute the geocentric latitude and radius from the geodetic latitude `ϕ_gd` (-π/2, π/2)
 [rad] and height above the reference ellipsoid `h` \\[m] (defaults to WGS-84). Notice that
@@ -448,8 +464,8 @@ the longitude is the same in both geocentric and geodetic coordinates.
 
 # Returns
 
-- `T`: Geocentric latitude [rad].
-- `T`: Radius from the center of the Earth [m].
+- `NT`: Geocentric latitude [rad].
+- `NT`: Radius from the center of the Earth [m].
 
 # References
 

@@ -568,3 +568,37 @@ end
         @test r    ≈ expected_r
     end
 end
+
+@testset "Type promotion in geocentric_to_geodetic and geodetic_to_geocentric" begin
+    # The returned type must be the promotion of the input types with the ellipsoid
+    # parameter type, converted to a float, and it must be inferable.
+    ellipsoid_f32 = Ellipsoid(6378137.0f0, 1 / 298.257223563f0)
+
+    for (ϕ, x) in ((0.35, 700e3), (Float32(0.35), Float32(700e3)), (0, 700_000))
+        @test (@inferred geodetic_to_geocentric(ϕ, x)) isa NTuple{2, Float64}
+        @test (@inferred geocentric_to_geodetic(ϕ, 6378137.0 + x)) isa NTuple{2, Float64}
+    end
+
+    # A `Float32` ellipsoid with `Float32` inputs must stay in `Float32`.
+    @test (@inferred geodetic_to_geocentric(
+        0.35f0, 700f3; ellipsoid = ellipsoid_f32
+    )) isa NTuple{2, Float32}
+
+    @test (@inferred geocentric_to_geodetic(
+        0.35f0, 7.0f6; ellipsoid = ellipsoid_f32
+    )) isa NTuple{2, Float32}
+
+    # Mixing a `Float64` input with the `Float32` ellipsoid must promote to `Float64`.
+    @test (@inferred geodetic_to_geocentric(
+        0.35, 700f3; ellipsoid = ellipsoid_f32
+    )) isa NTuple{2, Float64}
+
+    # Integer inputs must be converted to a float instead of failing.
+    @test (@inferred geodetic_to_geocentric(0, 700_000)) isa NTuple{2, Float64}
+
+    # The values must not change with the promotion.
+    ϕ_gc_64, r_64 = geodetic_to_geocentric(0.35, 700e3)
+    ϕ_gc_32, r_32 = geodetic_to_geocentric(0.35f0, 700f3)
+    @test ϕ_gc_32 ≈ ϕ_gc_64 rtol = 1e-6
+    @test r_32    ≈ r_64    rtol = 1e-6
+end
