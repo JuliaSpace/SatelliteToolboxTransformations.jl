@@ -295,6 +295,16 @@ function geocentric_to_geodetic(
     re = r * cos_ϕ_gc
     z  = r * sin_ϕ_gc
 
+    # The algorithm in [1] divides by the equatorial component `re`, which vanishes on the
+    # polar axis, yielding `NaN`. `re` is also negative when `|ϕ_gc|` is slightly larger than
+    # π / 2, which happens for entirely reasonable inputs such as `Float32(π) / 2`, and in
+    # that case the intermediate `√(E² + v)` is evaluated with a negative argument and throws
+    # a `DomainError`. In both situations the point lies on the polar axis to within the
+    # resolution of the input, where the geodetic solution is exact and needs no iteration.
+    if re <= 0
+        return copysign(oftype(re, π / 2), z), abs(z) - ellipsoid.b
+    end
+
     sign_z = z >= 0 ? +1 : -1
 
     # Auxiliary variables.

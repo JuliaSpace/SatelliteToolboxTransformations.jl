@@ -466,6 +466,32 @@ end
     ϕ_gd, h = geocentric_to_geodetic(-deg2rad(15), 10e3)
     @test ϕ_gd ≈ -1.3567978765139961
     @test h    ≈ -6353137.8454352869
+
+    # == Polar Axis ========================================================================
+    #
+    # The equatorial component vanishes on the polar axis, where the algorithm in the
+    # reference divides by zero. The geodetic solution is exact there.
+
+    b = 6356752.314245179
+
+    ϕ_gd, h = geocentric_to_geodetic(0.0, 0.0)
+    @test ϕ_gd ≈ +π / 2
+    @test h    ≈ -b
+
+    # `cos(Float32(π) / 2)` is negative, so the equatorial component is negative and the
+    # algorithm in the reference used to throw a `DomainError` from inside `sqrt`.
+    ϕ_gd, h = geocentric_to_geodetic(Float32(π) / 2, 6378137.0f0)
+    @test ϕ_gd ≈ +π / 2
+    @test h    ≈ 6378137.0 - b rtol = 1e-6
+
+    ϕ_gd, h = geocentric_to_geodetic(-Float32(π) / 2, 6378137.0f0)
+    @test ϕ_gd ≈ -π / 2
+    @test h    ≈ 6378137.0 - b rtol = 1e-6
+
+    # The result must remain continuous when approaching the axis from within the domain.
+    ϕ_gd, h = geocentric_to_geodetic(π / 2 - 1e-12, 6378137.0)
+    @test ϕ_gd ≈ +π / 2   atol = 1e-6
+    @test h    ≈ 6378137.0 - b rtol = 1e-9
 end
 
 @testset "Function geodetic_to_geocentric" begin
