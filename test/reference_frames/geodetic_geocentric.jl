@@ -539,4 +539,32 @@ end
     ϕ_gc, r = geodetic_to_geocentric(-1.3567978765139961, -6353137.8454352869)
     @test ϕ_gc ≈ -deg2rad(15)
     @test r    ≈ 10e3
+
+    # == Accuracy Near the Poles ===========================================================
+    #
+    # The geocentric latitude is obtained with `atan(z, ρ)`. Using `asin(z / r)` instead
+    # loses accuracy near the poles, where the derivative of `asin` diverges. Compare
+    # against a high-precision evaluation of the very same expressions, so that only the
+    # inverse trigonometric function differs.
+
+    a  = WGS84_ELLIPSOID.a
+    e² = WGS84_ELLIPSOID.e²
+
+    for ϕ_gd in (π / 2 - 1e-8, -(π / 2 - 1e-8))
+        h = 500e3
+
+        ϕ_gd_big = BigFloat(ϕ_gd)
+        N_big    = BigFloat(a) / √(1 - BigFloat(e²) * sin(ϕ_gd_big)^2)
+        ρ_big    = (N_big + h) * cos(ϕ_gd_big)
+        z_big    = (N_big * (1 - BigFloat(e²)) + h) * sin(ϕ_gd_big)
+
+        expected_ϕ_gc = Float64(atan(z_big, ρ_big))
+        expected_r    = Float64(hypot(z_big, ρ_big))
+
+        ϕ_gc, r = geodetic_to_geocentric(ϕ_gd, h)
+
+        # 1e-13 rad is well below the ~5e-9 rad error that `asin(z / r)` produces here.
+        @test ϕ_gc ≈ expected_ϕ_gc atol = 1e-13
+        @test r    ≈ expected_r
+    end
 end

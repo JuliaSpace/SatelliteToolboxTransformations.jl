@@ -418,10 +418,17 @@ function geodetic_to_geocentric(
     N = a / √(1 - e² * sin²_ϕ_gd )
 
     # Compute the geocentric latitude and radius from the Earth center.
-    ρ    = (N + h) * cos_ϕ_gd
-    z    = (N * (1 - e²) + h) * sin_ϕ_gd
-    r    = √(ρ^2 + z^2)
-    ϕ_gc = asin(z / r)
+    ρ = (N + h) * cos_ϕ_gd
+    z = (N * (1 - e²) + h) * sin_ϕ_gd
+
+    # `hypot` is used instead of `√(ρ^2 + z^2)` because it does not overflow or underflow
+    # when squaring the components.
+    r = hypot(ρ, z)
+
+    # The latitude is obtained with `atan` instead of `asin(z / r)`. The latter loses
+    # accuracy near the poles, where the derivative of `asin` diverges, and it throws a
+    # `DomainError` if rounding pushes `z / r` past 1.
+    ϕ_gc = atan(z, ρ)
 
     return ϕ_gc, r
 end
