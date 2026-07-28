@@ -178,26 +178,8 @@ function r_pef_to_tod_fk5(T::T_ROT, jd_ut1::Number, jd_tt::Number, δΔψ_1980::
     # Add the corrections to the nutation in obliquity and longitude.
     Δψ_1980 += δΔψ_1980
 
-    # Evaluate the Delaunay parameters associated with the Moon in the interval
-    # [0, 360]°.
-    #
-    # The parameters here were updated as stated in the errata [2].
-    t_tt = (jd_tt - JD_J2000) / 36525
-    r    = 360
-    Ω_m  = @evalpoly(
-        t_tt,
-        + 125.04452222,
-        - (5r + 134.1362608),
-        + 0.0020708,
-        + 2.2e-6
-    )
-    Ω_m = mod(Ω_m, 360) * π / 180
-
     # Compute the equation of Equinoxes.
-    #
-    # According to [2], the constant unit before `sin(2Ω_m)` is also in [rad].
-    Eq_equinox1982 = Δψ_1980 * cos(mϵ_1980) +
-        (0.002640sin(1Ω_m) + 0.000063sin(2Ω_m) ) * π / 648000
+    Eq_equinox1982 = _equation_of_equinoxes_1982(jd_tt, Δψ_1980, mϵ_1980)
 
     # Compute the Mean Greenwich Sidereal Time.
     θ_gmst = jd_to_gmst(jd_ut1)
@@ -588,24 +570,8 @@ function r_pef_to_mod_fk5(
     # Compute the obliquity.
     ϵ_1980 = mϵ_1980 + Δϵ_1980
 
-    # Evaluate the Delaunay parameters associated with the Moon in the interval [0, 360]°.
-    #
-    # The parameters here were updated as stated in the errata [2].
-    t_tt = (jd_tt - JD_J2000) / 36525
-    r    = 360
-    Ω_m  = @evalpoly(
-        t_tt,
-        + 125.04452222,
-        - (5r + 134.1362608),
-        + 0.0020708,
-        + 2.2e-6
-    )
-    Ω_m = mod(Ω_m, 360) * π / 180
-
     # Compute the equation of Equinoxes.
-    #
-    # According to [2], the constant unit before `sin(2Ω_m)` is also in [rad].
-    Eq_equinox1982 = Δψ_1980 * cos(mϵ_1980) + (0.002640sin(1Ω_m) + 0.000063sin(2Ω_m)) * π / 648000
+    Eq_equinox1982 = _equation_of_equinoxes_1982(jd_tt, Δψ_1980, mϵ_1980)
 
     # Compute the Mean Greenwich Sidereal Time.
     θ_gmst = jd_to_gmst(jd_ut1)

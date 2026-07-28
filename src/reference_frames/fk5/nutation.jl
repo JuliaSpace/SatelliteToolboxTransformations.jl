@@ -314,3 +314,57 @@ function nutation_fk5(
     # Return the values.
     return mϵ_1980, Δϵ_1980, ΔΨ_1980
 end
+
+"""
+    _equation_of_equinoxes_1982(jd_tt::Number, Δψ_1980::Number, mϵ_1980::Number) -> Number
+
+Compute the complete form of the 1982 equation of the equinoxes [rad] at the Julian Day
+`jd_tt` [Terrestrial Time], given the nutation in longitude `Δψ_1980` [rad] and the mean
+obliquity of the ecliptic `mϵ_1980` [rad].
+
+The equation of the equinoxes is the difference between the Greenwich apparent sidereal time
+and the Greenwich mean sidereal time. The two complementary terms that depend on the mean
+longitude of the ascending node of the Moon are the ones introduced in **[1]**.
+
+# Arguments
+
+- `jd_tt::Number`: Julian Day [Terrestrial Time].
+- `Δψ_1980::Number`: Nutation in longitude [rad], including the IERS EOP correction if the
+    caller applies one.
+- `mϵ_1980::Number`: Mean obliquity of the ecliptic [rad].
+
+# Returns
+
+- `Number`: The equation of the equinoxes [rad].
+
+# References
+
+- **[1]**: Gontier, A. M., Capitaine, N (1991). High-Accuracy Equation of Equinoxes and VLBI
+    Astrometric Modelling. Radio Interferometry: Theory, Techniques and Applications, IAU
+    Coll. 131, ASP Conference Series, Vol. 19.
+"""
+@inline function _equation_of_equinoxes_1982(
+    jd_tt::Number,
+    Δψ_1980::Number,
+    mϵ_1980::Number
+)
+    # Compute the Julian Centuries from `jd_tt`.
+    t_tt = (jd_tt - JD_J2000) / 36525
+
+    # Evaluate the Delaunay parameter associated with the Moon in the interval [0, 360]°.
+    #
+    # The parameters here were updated as stated in the errata [2] of the nutation reference.
+    r   = 360
+    Ω_m = @evalpoly(
+        t_tt,
+        + 125.04452222,
+        - (5r + 134.1362608),
+        + 0.0020708,
+        + 2.2e-6
+    )
+    Ω_m = mod(Ω_m, 360) * π / 180
+
+    # According to the errata, the constant unit before `sin(2Ω_m)` is also in [rad].
+    return Δψ_1980 * cos(mϵ_1980) +
+        (0.002640sin(1Ω_m) + 0.000063sin(2Ω_m)) * π / 648000
+end
