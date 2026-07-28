@@ -42,13 +42,24 @@ end
     χ = @evalpoly(T, 0, 10.5526, -2.38064, -0.001125) * a2r
     sϵ₀, cϵ₀ = sincos(84381.406 * a2r)
     aux = Ψ * cϵ₀ - χ
-    den = aux^2 * sϵ₀ - sϵ₀
-    expected = (
-        (aux * sϵ₀ * δx - sϵ₀ * δy) / den,
-        (δx - aux * δy) / den,
-    )
 
-    got = compute_δΔϵ_δΔψ(eop, jd_utc)
-    @test got[1] ≈ expected[1]
-    @test got[2] ≈ expected[2]
+    δΔϵ, δΔΨ = compute_δΔϵ_δΔψ(eop, jd_utc)
+
+    # The returned corrections must satisfy [1](eq. 5.25), which is the relation the function
+    # inverts. Checking the *forward* direction is what makes this test meaningful: it fails
+    # if the inversion picks the wrong sign, which merely re-deriving the closed-form
+    # expression here would not catch.
+    #
+    # [1] IERS (2010). IERS Technical Note No. 36, Chapter 5.
+    @test δΔΨ * sϵ₀ + aux * δΔϵ ≈ δx
+    @test δΔϵ - aux * δΔΨ * sϵ₀ ≈ δy
+
+    # `aux` is of the order of 1e-3, so the first-order relation must hold to about that
+    # relative accuracy. This pins down the sign and the scaling by `sin(ϵ₀)`.
+    @test δΔΨ ≈ δx / sϵ₀ rtol = 1e-2
+    @test δΔϵ ≈ δy       rtol = 1e-2
+
+    # The corrections are returned in the same unit as the EOP pole offsets
+    # (milliarcseconds), and the TT epoch may be supplied by the caller.
+    @test compute_δΔϵ_δΔψ(eop, jd_utc, jd_tt) == (δΔϵ, δΔΨ)
 end

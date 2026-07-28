@@ -59,10 +59,18 @@ function compute_δΔϵ_δΔψ(eop_iau2000a::EopIau2000A, JD_UTC::Number, JD_TT:
 
     sϵ₀, cϵ₀ = sincos(84381.406 * a2r)
 
+    # Reference [1](eq. 5.25) relates the offsets with respect to the GCRS to the ones
+    # referred to the IAU-1980 model by:
+    #
+    #   δx = δΔΨ ⋅ sin(ϵ₀) + aux ⋅ δΔϵ
+    #   δy = δΔϵ - aux ⋅ δΔΨ ⋅ sin(ϵ₀)
+    #
+    # where `aux = Ψ_a ⋅ cos(ϵ₀) - χ_a`. Inverting this 2x2 system gives the expressions
+    # below, whose determinant is `1 + aux²`.
     aux = Ψ_a * cϵ₀ - χ_a
-    den = aux^2 * sϵ₀ - sϵ₀
-    δΔϵ = (aux * sϵ₀ * δx - sϵ₀ * δy) / den
-    δΔΨ = (δx - aux * δy) / den
+    den = 1 + aux^2
+    δΔϵ = (δy + aux * δx) / den
+    δΔΨ = (δx - aux * δy) / (sϵ₀ * den)
 
     return δΔϵ, δΔΨ
 end
