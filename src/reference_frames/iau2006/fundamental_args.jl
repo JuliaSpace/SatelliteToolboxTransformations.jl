@@ -26,8 +26,27 @@ The returned values are in [rad].
 """
 function luni_solar_args_iau2006(jd_tt::Number)
     # Compute the Julian Centuries from `jd_tt`.
-    t_tt = (jd_tt - JD_J2000) / 36525
+    return _luni_solar_args_iau2006((jd_tt - JD_J2000) / 36525)
+end
 
+"""
+    _luni_solar_args_iau2006(t_tt::Number) -> NTuple{5, Number}
+
+Compute the fundamental arguments related to the luni-solar effect for the IAU-2006 theory
+**[1]**(p. 211) given the Julian centuries `t_tt` since J2000.0 in Terrestrial Time (TT).
+
+This is the implementation of [`luni_solar_args_iau2006`](@ref). It takes `t_tt` instead of
+the Julian Day so that the callers that already have it, like [`cio_iau2006`](@ref) and
+[`nutation_eo_iau2006`](@ref), do not need to compute it again.
+
+The returned values are in [rad].
+
+# References
+
+- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+    Press, Hawthorn, CA, USA.
+"""
+function _luni_solar_args_iau2006(t_tt::Number)
     # == Auxiliary variables ===============================================================
 
     a2d = 1 / 3600
@@ -108,8 +127,27 @@ The returned values are in [rad].
 """
 function planetary_args_iau2006(jd_tt::Number)
     # Compute the Julian Centuries from `jd_tt`.
-    t_tt = (jd_tt - JD_J2000) / 36525
+    return _planetary_args_iau2006((jd_tt - JD_J2000) / 36525)
+end
 
+"""
+    _planetary_args_iau2006(t_tt::Number) -> NTuple{9, Number}
+
+Compute the fundamental arguments related to the planetary effects for the IAU-2006 theory
+**[1]**(p. 211) given the Julian centuries `t_tt` since J2000.0 in Terrestrial Time (TT).
+
+This is the implementation of [`planetary_args_iau2006`](@ref). It takes `t_tt` instead of
+the Julian Day so that the callers that already have it, like [`cio_iau2006`](@ref) and
+[`nutation_eo_iau2006`](@ref), do not need to compute it again.
+
+The returned values are in [rad].
+
+# References
+
+- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+    Press, Hawthorn, CA, USA.
+"""
+function _planetary_args_iau2006(t_tt::Number)
     # Mean Heliocentric longitudes of the planets.
     #
     # TODO: In the example in [1, p. 221], the value related to Uranus is slight

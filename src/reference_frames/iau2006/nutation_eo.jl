@@ -35,8 +35,25 @@ The algorithm was obtained in **[1]**.
 """
 function mean_obliquity_iau2006(jd_tt::Number)
     # Compute the Julian Centuries from `jd_tt`.
-    t_tt = (jd_tt - JD_J2000) / 36525
+    return _mean_obliquity_iau2006((jd_tt - JD_J2000) / 36525)
+end
 
+"""
+    _mean_obliquity_iau2006(t_tt::Number) -> Number
+
+Compute the mean obliquity of the ecliptic [rad] using the equinox-based IAU-2006 theory
+given the Julian centuries `t_tt` since J2000.0 in Terrestrial Time (TT).
+
+This is the implementation of [`mean_obliquity_iau2006`](@ref). It takes `t_tt` instead of
+the Julian Day so that [`nutation_eo_iau2006`](@ref), which already has it, does not need to
+compute it again.
+
+# Reference
+
+- **[1]**: Wallace, P. T., Capitaine, N (2006). Precession-nutation procedures consistent
+    with IAU 2006 resolutions. Astronomy & Astrophysics.
+"""
+function _mean_obliquity_iau2006(t_tt::Number)
     # == Auxiliary variables ===============================================================
 
     a2d = 1 / 3600
@@ -100,14 +117,14 @@ function nutation_eo_iau2006(
     # == Fundamental Arguments =============================================================
 
     # Luni-solar part.
-    M_s, M_m, u_Mm, D_s, Ω_m = luni_solar_args_iau2006(jd_tt)
+    M_s, M_m, u_Mm, D_s, Ω_m = _luni_solar_args_iau2006(t_tt)
 
     # Planetary part.
-    λ_M☿, λ_M♀, λ_Me, λ_M♂, λ_M♃, λ_M♄, λ_M⛢, λ_M♆, p_λ = planetary_args_iau2006(jd_tt)
+    λ_M☿, λ_M♀, λ_Me, λ_M♂, λ_M♃, λ_M♄, λ_M⛢, λ_M♆, p_λ = _planetary_args_iau2006(t_tt)
 
     # == Mean Obliquity of the Ecliptic ====================================================
 
-    mϵ_2000 = mean_obliquity_iau2006(jd_tt)
+    mϵ_2000 = _mean_obliquity_iau2006(t_tt)
 
     # == Nutation in the Obliquity =========================================================
 

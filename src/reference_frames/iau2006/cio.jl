@@ -50,10 +50,10 @@ function cio_iau2006(jd_tt::Number)
     # == Fundamental arguments =============================================================
 
     # Luni-solar part.
-    M_s, M_m, u_Mm, D_s, Ω_m = luni_solar_args_iau2006(jd_tt)
+    M_s, M_m, u_Mm, D_s, Ω_m = _luni_solar_args_iau2006(t_tt)
 
     # Planetary part.
-    λ_M☿, λ_M♀, λ_Me, λ_M♂, λ_M♃, λ_M♄, λ_M⛢, λ_M♆, p_λ = planetary_args_iau2006(jd_tt)
+    λ_M☿, λ_M♀, λ_Me, λ_M♂, λ_M♃, λ_M♄, λ_M⛢, λ_M♆, p_λ = _planetary_args_iau2006(t_tt)
 
     # == X Position of the CIP =============================================================
 
