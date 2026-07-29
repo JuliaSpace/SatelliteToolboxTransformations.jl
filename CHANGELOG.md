@@ -1,6 +1,33 @@
 SatelliteToolboxTransformations.jl Changelog
 ============================================
 
+Version 1.2.1
+-------------
+
+- ![Bugfix][badge-bugfix] `compute_δΔϵ_δΔψ` returned the nutation in longitude correction
+  with the wrong sign. The function inverts the system in IERS Technical Note No. 36,
+  eq. 5.25, whose determinant is `1 + aux²`, but it used `sin(ϵ₀) ⋅ (aux² - 1)`. This
+  affected the equinox-based IAU-2006 transformations that consume the correction, namely
+  ITRF and TIRS against ERS, MOD06, and MJ2000, by a few centimetres on the Earth's surface.
+- ![Bugfix][badge-bugfix] `geocentric_to_geodetic` returned `NaN` on the polar axis, where
+  the algorithm divides by the vanishing equatorial component. It also threw a `DomainError`
+  from inside `sqrt` when the geocentric latitude was slightly beyond ±π/2, which is the case
+  for `Float32(π) / 2`. Both cases now return the exact polar solution.
+- ![Enhancement][badge-enhancement] `geodetic_to_geocentric` obtains the geocentric latitude
+  with `atan` instead of `asin`, which is accurate near the poles and cannot throw a
+  `DomainError`.
+- ![Enhancement][badge-enhancement] `geocentric_to_geodetic` and `geodetic_to_geocentric` now
+  promote their inputs with the ellipsoid parameter type, so that both returned values always
+  have the same floating-point type.
+- ![Enhancement][badge-enhancement] The IAU-1980 nutation coefficients are kept in a
+  transposed copy, making the coefficients of each term contiguous. This is worth about 9% of
+  the running time of `nutation_fk5`.
+- ![Enhancement][badge-enhancement] The IAU-2006 theory no longer recomputes the Julian
+  centuries in each of the functions that provide the fundamental arguments and the mean
+  obliquity.
+- ![Info][badge-info] Several documentation fixes: signatures that did not match the code,
+  generic functions that promised a `Float64` return type, and typos.
+
 Version 1.2.0
 -------------
 
