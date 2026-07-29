@@ -151,9 +151,68 @@ const _IAU_1980_NUTATION_COEFFICIENTS = [
       0    1    0    1    0        1.0          0.0        0.0           0.0;
 ]
 
+# The table above is transcribed with one term per row, which is the layout documented for the
+# `nut_coefs_1980` argument of `nutation_fk5`. Julia stores it column-major, so reading the
+# nine coefficients of a single term touches nine different cache lines. This transposed copy,
+# built once when the package is loaded, makes each term contiguous.
+#
+# The same reasoning applies to the IAU-2006 series tables, see `_split_iau2006_table`.
+const _IAU_1980_NUTATION_COEFFICIENTS_T = permutedims(_IAU_1980_NUTATION_COEFFICIENTS)
+
 ############################################################################################
 #                                        Functions                                         #
 ############################################################################################
+
+"""
+    _nutation_fk5_series(::Type{NT}, coefs::AbstractMatrix, n_max::Integer, t_tt::Number, M_m::Number, M_s::Number, u_Mm::Number, D_s::Number, Ω_m::Number) where NT -> NTuple{2, NT}
+
+Accumulate the first `n_max` terms of the 1980 IAU nutation series.
+
+`coefs` must hold **one term per column**, with the rows being `an1`, `an2`, `an3`, `an4`,
+`an5`, `Ai`, `Bi`, `Ci`, and `Di`. `NT` is the type of the accumulators, which must be
+provided by the caller so that it does not depend on which table is passed here.
+
+# Returns
+
+- `NT`: The nutation in longitude, in units of [0.0001"].
+- `NT`: The nutation in obliquity of the ecliptic, in units of [0.0001"].
+"""
+function _nutation_fk5_series(
+    ::Type{NT},
+    coefs::AbstractMatrix,
+    n_max::Integer,
+    t_tt::Number,
+    M_m::Number,
+    M_s::Number,
+    u_Mm::Number,
+    D_s::Number,
+    Ω_m::Number
+) where NT
+    ΔΨ_1980 = zero(NT)
+    Δϵ_1980 = zero(NT)
+
+    @inbounds for i in 1:n_max
+        # Unpack values. Each term is one column, hence these nine reads are contiguous.
+        an1 = coefs[1, i]
+        an2 = coefs[2, i]
+        an3 = coefs[3, i]
+        an4 = coefs[4, i]
+        an5 = coefs[5, i]
+        Ai  = coefs[6, i]
+        Bi  = coefs[7, i]
+        Ci  = coefs[8, i]
+        Di  = coefs[9, i]
+
+        a_pi = an1 * M_m + an2 * M_s + an3 * u_Mm + an4 * D_s + an5 * Ω_m
+
+        sin_a_pi, cos_a_pi = sincos(a_pi)
+
+        ΔΨ_1980 += (Ai + Bi * t_tt) * sin_a_pi
+        Δϵ_1980 += (Ci + Di * t_tt) * cos_a_pi
+    end
+
+    return ΔΨ_1980, Δϵ_1980
+end
 
 """
     nutation_fk5(jd_tt::Number, n_max::Integer = 106, nut_coefs_1980::AbstractMatrix = _IAU_1980_NUTATION_COEFFICIENTS)
@@ -282,28 +341,22 @@ function nutation_fk5(
     # change type on the first iteration whenever `jd_tt` or the coefficient table is not
     # `Float64` (e.g. `Float32`, `ForwardDiff.Dual`, or `Measurement`), which makes the
     # accumulators inferred as a union and boxes them inside this 106-term loop.
+    #
+    # The type is obtained here, from the table the user provided, so that it does not depend
+    # on which of the two branches below is taken.
     NT = typeof(zero(eltype(nut_coefs_1980)) * zero(t_tt) * zero(M_m))
-    ΔΨ_1980 = zero(NT)
-    Δϵ_1980 = zero(NT)
 
-    @inbounds for i in 1:n_max
-        # Unpack values.
-        an1 = nut_coefs_1980[i, 1]
-        an2 = nut_coefs_1980[i, 2]
-        an3 = nut_coefs_1980[i, 3]
-        an4 = nut_coefs_1980[i, 4]
-        an5 = nut_coefs_1980[i, 5]
-        Ai  = nut_coefs_1980[i, 6]
-        Bi  = nut_coefs_1980[i, 7]
-        Ci  = nut_coefs_1980[i, 8]
-        Di  = nut_coefs_1980[i, 9]
-
-        a_pi = an1 * M_m + an2 * M_s + an3 * u_Mm + an4 * D_s + an5 * Ω_m
-
-        sin_a_pi, cos_a_pi = sincos(a_pi)
-
-        ΔΨ_1980 += (Ai + Bi * t_tt) * sin_a_pi
-        Δϵ_1980 += (Ci + Di * t_tt) * cos_a_pi
+    # The default table has a pre-transposed copy, which makes the coefficients of each term
+    # contiguous. A user-provided table is wrapped in a lazy `transpose` so that the loop only
+    # needs the one-term-per-column layout.
+    ΔΨ_1980, Δϵ_1980 = if nut_coefs_1980 === _IAU_1980_NUTATION_COEFFICIENTS
+        _nutation_fk5_series(
+            NT, _IAU_1980_NUTATION_COEFFICIENTS_T, n_max, t_tt, M_m, M_s, u_Mm, D_s, Ω_m
+        )
+    else
+        _nutation_fk5_series(
+            NT, transpose(nut_coefs_1980), n_max, t_tt, M_m, M_s, u_Mm, D_s, Ω_m
+        )
     end
 
     # The nutation coefficients in `nut_coefs_1980` lead to angles with unit
