@@ -93,7 +93,7 @@ function sv_ecef_to_ecef(
 )
     D = r_ecef_to_ecef(DCM, T_ECEFo, T_ECEFf, jd_utc, eop)
 
-    # Since both frames does not have a significant angular velocity between
+    # Since both frames do not have a significant angular velocity between
     # them, then we just need to convert the representations.
     return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
 end
@@ -116,7 +116,7 @@ function sv_ecef_to_ecef(
 )
     D = r_ecef_to_ecef(DCM, T_ECEFo, T_ECEFf, jd_utc, eop)
 
-    # Since both frames does not have a significant angular velocity between
+    # Since both frames do not have a significant angular velocity between
     # them, then we just need to convert the representations.
     return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
 end

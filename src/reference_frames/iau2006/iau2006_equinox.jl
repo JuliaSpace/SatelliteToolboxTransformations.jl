@@ -62,7 +62,7 @@ Time]. This algorithm uses the IAU-2006 theory.
 
 Notice that one can provide corrections for the nutation in longitude (`δΔψ_2000`) [rad]
 that are usually obtained from IERS EOP Data (see [`fetch_iers_eop`](@ref) and
-[`compute_δΔϵ_δΔψ`](@ref)). This corrections are related to Free Core Nutation (FCN) that
+[`compute_δΔϵ_δΔψ`](@ref)). These corrections are related to Free Core Nutation (FCN) that
 models the effect of a liquid Earth core.
 
 The rotation type is described by the optional variable `T`. If it is `DCM`, then a DCM will
@@ -76,7 +76,7 @@ this parameter is omitted, then it falls back to `DCM`.
 # Remarks
 
 The reference frames TIRS and ERS are separated by a rotation about the Z-axis of the
-Greenwhich apparent sidereal angle (GAST). This angle is computed using the IAU-2006 theory,
+Greenwich apparent sidereal angle (GAST). This angle is computed using the IAU-2006 theory,
 which consist of obtaining the Earth Rotation Angle (ERA) and subtracting the result of the
 Equation of Origins (EO).
 """
@@ -112,7 +112,7 @@ Intermediate Reference System (TIRS) at the Julian Day `jd_ut1` [UT1] and `jd_tt
 
 Notice that one can provide corrections for the nutation in longitude (`δΔψ_2000`) [rad]
 that are usually obtained from IERS EOP Data (see [`fetch_iers_eop`](@ref) and
-[`compute_δΔϵ_δΔψ`](@ref)). This corrections are related to Free Core Nutation (FCN) that
+[`compute_δΔϵ_δΔψ`](@ref)). These corrections are related to Free Core Nutation (FCN) that
 models the effect of a liquid Earth core.
 
 The rotation type is described by the optional variable `T`. If it is `DCM`, then a DCM will
@@ -126,7 +126,7 @@ this parameter is omitted, then it falls back to `DCM`.
 # Remarks
 
 The reference frames TIRS and ERS are separated by a rotation about the Z-axis of the
-Greenwhich apparent sidereal angle (GAST). This angle is computed using the IAU-2006 theory,
+Greenwich apparent sidereal angle (GAST). This angle is computed using the IAU-2006 theory,
 which consist of obtaining the Earth Rotation Angle (ERA) and subtracting the result of the
 Equation of Origins (EO).
 """
@@ -149,7 +149,7 @@ IAU-2006 theory.
 
 Notice that one can provide corrections for the nutation in obliquity (`δΔϵ_2000`) and in
 longitude (`δΔψ_2000`) [rad] that are usually obtained from IERS EOP Data (see
-[`fetch_iers_eop`](@ref) and [`compute_δΔϵ_δΔψ`](@ref)). This corrections are related to
+[`fetch_iers_eop`](@ref) and [`compute_δΔϵ_δΔψ`](@ref)). These corrections are related to
 Free Core Nutation (FCN) that models the effect of a liquid Earth core.
 
 The rotation type is described by the optional variable `T`. If it is `DCM`, then a DCM will
@@ -187,7 +187,7 @@ IAU-2006 theory.
 
 Notice that one can provide corrections for the nutation in obliquity (`δΔϵ_2000`) and in
 longitude (`δΔψ_2000`) [rad] that are usually obtained from IERS EOP Data (see
-[`fetch_iers_eop`](@ref) and [`compute_δΔϵ_δΔψ`](@ref)). This corrections are related to
+[`fetch_iers_eop`](@ref) and [`compute_δΔϵ_δΔψ`](@ref)). These corrections are related to
 Free Core Nutation (FCN) that models the effect of a liquid Earth core.
 
 The rotation type is described by the optional variable `T`. If it is `DCM`, then a DCM will
@@ -270,7 +270,7 @@ end
     r_mj2000_to_mod_iau2006([T, ]jd_tt::Number) -> T
 
 Compute the rotation that aligns the J2000 mean equatorial frame with the Mean of Date (MOD)
-reference frame with the at Julian day `jd_tt` [Terrestrial Time]. This algorithm uses the
+reference frame at the Julian day `jd_tt` [Terrestrial Time]. This algorithm uses the
 IAU-2006 theory.
 
 The rotation type is described by the optional variable `T`. If it is `DCM`, then a DCM will
@@ -400,7 +400,7 @@ the Mean of Date (MOD) reference frame at the Julian Day `jd_ut1` [UT1] and `jd_
 
 Notice that one can provide corrections for the nutation in obliquity (`δΔϵ_2000`) and in
 longitude (`δΔψ_2000`) [rad] that are usually obtained from IERS EOP Data (see
-[`fetch_iers_eop`](@ref) and [`compute_δΔϵ_δΔψ`](@ref)). This corrections are related to
+[`fetch_iers_eop`](@ref) and [`compute_δΔϵ_δΔψ`](@ref)). These corrections are related to
 Free Core Nutation (FCN) that models the effect of a liquid Earth core.
 
 The rotation type is described by the optional variable `T`. If it is `DCM`, then a DCM will
@@ -467,7 +467,7 @@ Intermediate Reference System (TIRS) at the Julian Day `jd_ut1` [UT1] and `jd_tt
 
 Notice that one can provide corrections for the nutation in obliquity (`δΔϵ_2000`) and in
 longitude (`δΔψ_2000`) [rad] that are usually obtained from IERS EOP Data (see
-[`fetch_iers_eop`](@ref) and [`compute_δΔϵ_δΔψ`](@ref)). This corrections are related to
+[`fetch_iers_eop`](@ref) and [`compute_δΔϵ_δΔψ`](@ref)). These corrections are related to
 Free Core Nutation (FCN) that models the effect of a liquid Earth core.
 
 The rotation type is described by the optional variable `T`. If it is `DCM`, then a DCM will

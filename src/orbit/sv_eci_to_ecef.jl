@@ -68,7 +68,7 @@ The ECI frame is selected by the parameter `ECI`. The possible values are:
 !!! note
 
     The frames `MOD()` and `MOD06()` are virtually the same. However, we selected different
-    names to make clear which theory are being used since mixing transformation between
+    names to make clear which theory is being used since mixing transformation between
     frames from IAU-76/FK5 and IAU-2006/2010 must be performed with caution.
 
 ## Supported ECEF Reference Frames

@@ -24,11 +24,11 @@ export mean_obliquity_iau2006, nutation_eo_iau2006
     mean_obliquity_iau2006(jd_tt::Number) -> Number
 
 Compute the mean obliquity of the ecliptic [rad] using the equinox-based IAU-2006 theory in
-the Julian day `jd_tt` [Terrestiral Time].
+the Julian day `jd_tt` [Terrestrial Time].
 
 The algorithm was obtained in **[1]**.
 
-# Reference
+# References
 
 - **[1]**: Wallace, P. T., Capitaine, N (2006). Precession-nutation procedures consistent
     with IAU 2006 resolutions. Astronomy & Astrophysics.
@@ -48,7 +48,7 @@ This is the implementation of [`mean_obliquity_iau2006`](@ref). It takes `t_tt` 
 the Julian Day so that [`nutation_eo_iau2006`](@ref), which already has it, does not need to
 compute it again.
 
-# Reference
+# References
 
 - **[1]**: Wallace, P. T., Capitaine, N (2006). Precession-nutation procedures consistent
     with IAU 2006 resolutions. Astronomy & Astrophysics.

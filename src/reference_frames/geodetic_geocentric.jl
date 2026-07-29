@@ -101,7 +101,7 @@ frame into Geodetic coordinates for a custom target ellipsoid (defaults to WGS-8
 
 !!! info
 
-    The algorithm is based in **[1]**.
+    The algorithm is based on **[1]**.
 
 # Returns
 
@@ -109,7 +109,7 @@ frame into Geodetic coordinates for a custom target ellipsoid (defaults to WGS-8
 - `T`: Longitude [rad].
 - `T`: Altitude [m].
 
-# Reference
+# References
 
 - **[1]**: mu-blox ag (1999). Datum Transformations of GPS Positions. Application Note.
 """
@@ -203,9 +203,9 @@ ellipsoid parameter `T`.
 
 !!! info
 
-    The algorithm is based in **[1]**.
+    The algorithm is based on **[1]**.
 
-# Reference
+# References
 
 - **[1]**: mu-blox ag (1999). Datum Transformations of GPS Positions. Application Note.
 """
@@ -248,9 +248,9 @@ Earth-Fixed (ECEF) reference frame.
 
 !!! info
 
-    The algorithm is based in **[1]**.
+    The algorithm is based on **[1]**.
 
-# Reference
+# References
 
 - **[1]**: mu-blox ag (1999). Datum Transformations of GPS Positions. Application Note.
 """
@@ -275,7 +275,7 @@ ellipsoid parameter `T`, converted to a float.
 
 !!! info
 
-    The algorithm is based in **[1]**.
+    The algorithm is based on **[1]**.
 
 # Returns
 
@@ -370,7 +370,7 @@ that the longitude is the same in both geocentric and geodetic coordinates.
 
     The longitude is the same between states so the geocentric state vector only includes latitude and radius.
 
-    The algorithm is based in **[1]**.
+    The algorithm is based on **[1]**.
 
 # Returns
 
@@ -402,7 +402,7 @@ The returned element type `NT` is the promotion of the types of `ϕ_gd`, `h`, an
 ellipsoid parameter `T`, converted to a float.
 
 !!! info
-    The algorithm is based in **[1]**(p. 3).
+    The algorithm is based on **[1]**(p. 3).
 
 # Returns
 
@@ -460,7 +460,7 @@ the longitude is the same in both geocentric and geodetic coordinates.
 
     The longitude is the same between states so the geocentric state vector only includes latitude and radius.
 
-    The algorithm is based in **[1]**(p. 3).
+    The algorithm is based on **[1]**(p. 3).
 
 # Returns
 
