@@ -215,7 +215,7 @@ function _nutation_fk5_series(
 end
 
 """
-    nutation_fk5(jd_tt::Number, n_max::Integer = 106, nut_coefs_1980::AbstractMatrix = _IAU_1980_NUTATION_COEFFICIENTS)
+    nutation_fk5(jd_tt::Number, n_max::Integer = 106, nut_coefs_1980::AbstractMatrix = _IAU_1980_NUTATION_COEFFICIENTS; kwargs...) -> NTuple{3, Number}
 
 Compute the nutation parameters at the Julian Day `jd_tt` [Terrestrial Time] using the 1980
 IAU Theory of Nutation. The coefficients are `nut_coefs_1980` that must be a matrix in which
@@ -226,6 +226,12 @@ each line has the following syntax **[1]**(p. 1043):
 where the units of `Ai` and `Ci` are [0.0001"] and the units of `Bi` and `Di` are
 [0.0001"/JC]. The user can also specify the number of coefficients `n_max` that will be used
 when computing the nutation. If `n_max` is omitted, it defaults to 106.
+
+# Keywords
+
+- `verbose::Val`: If `Val(true)`, warn when `n_max` is outside the supported range and is
+    replaced by the default value of 106.
+    (**Default** = `Val(false)`)
 
 # Returns
 
