@@ -39,7 +39,13 @@ This is the implementation of [`luni_solar_args_iau2006`](@ref). It takes `t_tt`
 the Julian Day so that the callers that already have it, like [`cio_iau2006`](@ref) and
 [`nutation_eo_iau2006`](@ref), do not need to compute it again.
 
-The returned values are in [rad].
+# Returns
+
+- `Number`: Mean anomaly of the Sun [rad].
+- `Number`: Mean anomaly of the Moon [rad].
+- `Number`: Mean argument of latitude of the Moon [rad].
+- `Number`: Mean elongation of the Moon from the Sun [rad].
+- `Number`: Mean longitude of the ascending node of the Moon [rad].
 
 # References
 
@@ -140,7 +146,17 @@ This is the implementation of [`planetary_args_iau2006`](@ref). It takes `t_tt` 
 the Julian Day so that the callers that already have it, like [`cio_iau2006`](@ref) and
 [`nutation_eo_iau2006`](@ref), do not need to compute it again.
 
-The returned values are in [rad].
+# Returns
+
+- `Number`: Mean heliocentric longitude of Mercury [rad].
+- `Number`: Mean heliocentric longitude of Venus [rad].
+- `Number`: Mean heliocentric longitude of the Earth [rad].
+- `Number`: Mean heliocentric longitude of Mars [rad].
+- `Number`: Mean heliocentric longitude of Jupiter [rad].
+- `Number`: Mean heliocentric longitude of Saturn [rad].
+- `Number`: Mean heliocentric longitude of Uranus [rad].
+- `Number`: Mean heliocentric longitude of Neptune [rad].
+- `Number`: General accumulated precession in longitude [rad].
 
 # References
 

@@ -164,18 +164,38 @@ const _IAU_1980_NUTATION_COEFFICIENTS_T = permutedims(_IAU_1980_NUTATION_COEFFIC
 ############################################################################################
 
 """
-    _nutation_fk5_series(::Type{NT}, coefs::AbstractMatrix, n_max::Integer, t_tt::Number, M_m::Number, M_s::Number, u_Mm::Number, D_s::Number, Ω_m::Number) where NT -> NTuple{2, NT}
+    _nutation_fk5_series(
+        ::Type{NT},
+        coefs::AbstractMatrix,
+        n_max::Integer,
+        t_tt::Number,
+        M_m::Number,
+        M_s::Number,
+        u_Mm::Number,
+        D_s::Number,
+        Ω_m::Number
+    ) where NT -> NTuple{2, NT}
 
 Accumulate the first `n_max` terms of the 1980 IAU nutation series.
 
-`coefs` must hold **one term per column**, with the rows being `an1`, `an2`, `an3`, `an4`,
-`an5`, `Ai`, `Bi`, `Ci`, and `Di`. `NT` is the type of the accumulators, which must be
-provided by the caller so that it does not depend on which table is passed here.
+# Arguments
+
+- `::Type{NT}`: Type of the accumulators. The caller must provide it so that it does not
+    depend on which table is passed in `coefs`.
+- `coefs::AbstractMatrix`: Coefficient table holding **one term per column**, the rows being
+    `an1`, `an2`, `an3`, `an4`, `an5`, `Ai`, `Bi`, `Ci`, and `Di`.
+- `n_max::Integer`: Number of terms to accumulate.
+- `t_tt::Number`: Julian centuries since J2000.0 [TT].
+- `M_m::Number`: Mean anomaly of the Moon [rad].
+- `M_s::Number`: Mean anomaly of the Sun [rad].
+- `u_Mm::Number`: Mean argument of latitude of the Moon [rad].
+- `D_s::Number`: Mean elongation of the Moon from the Sun [rad].
+- `Ω_m::Number`: Mean longitude of the ascending node of the Moon [rad].
 
 # Returns
 
-- `NT`: The nutation in longitude, in units of [0.0001"].
-- `NT`: The nutation in obliquity of the ecliptic, in units of [0.0001"].
+- `NT`: Nutation in longitude [0.0001"].
+- `NT`: Nutation in obliquity of the ecliptic [0.0001"].
 """
 function _nutation_fk5_series(
     ::Type{NT},
@@ -215,7 +235,12 @@ function _nutation_fk5_series(
 end
 
 """
-    nutation_fk5(jd_tt::Number, n_max::Integer = 106, nut_coefs_1980::AbstractMatrix = _IAU_1980_NUTATION_COEFFICIENTS; kwargs...) -> NTuple{3, Number}
+    nutation_fk5(
+        jd_tt::Number,
+        n_max::Integer = 106,
+        nut_coefs_1980::AbstractMatrix = _IAU_1980_NUTATION_COEFFICIENTS;
+        kwargs...
+    ) -> NTuple{3, Number}
 
 Compute the nutation parameters at the Julian Day `jd_tt` [Terrestrial Time] using the 1980
 IAU Theory of Nutation. The coefficients are `nut_coefs_1980` that must be a matrix in which
@@ -375,11 +400,13 @@ function nutation_fk5(
 end
 
 """
-    _equation_of_equinoxes_1982(jd_tt::Number, Δψ_1980::Number, mϵ_1980::Number) -> Number
+    _equation_of_equinoxes_1982(
+        jd_tt::Number,
+        Δψ_1980::Number,
+        mϵ_1980::Number
+    ) -> Number
 
-Compute the complete form of the 1982 equation of the equinoxes [rad] at the Julian Day
-`jd_tt` [Terrestrial Time], given the nutation in longitude `Δψ_1980` [rad] and the mean
-obliquity of the ecliptic `mϵ_1980` [rad].
+Compute the complete form of the 1982 equation of the equinoxes [rad].
 
 The equation of the equinoxes is the difference between the Greenwich apparent sidereal time
 and the Greenwich mean sidereal time. The two complementary terms that depend on the mean
@@ -387,14 +414,14 @@ longitude of the ascending node of the Moon are the ones introduced in **[1]**.
 
 # Arguments
 
-- `jd_tt::Number`: Julian Day [Terrestrial Time].
+- `jd_tt::Number`: Julian Day [TT].
 - `Δψ_1980::Number`: Nutation in longitude [rad], including the IERS EOP correction if the
     caller applies one.
 - `mϵ_1980::Number`: Mean obliquity of the ecliptic [rad].
 
 # Returns
 
-- `Number`: The equation of the equinoxes [rad].
+- `Number`: Equation of the equinoxes [rad].
 
 # References
 

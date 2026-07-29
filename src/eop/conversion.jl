@@ -7,24 +7,32 @@
 export compute_δΔϵ_δΔψ
 
 """
-    compute_δΔϵ_δΔψ(eop_iau2000a::EopIau2000A, JD_UTC::Number[, JD_TT::Number]) -> NTuple{2, Number}
+    compute_δΔϵ_δΔψ(eop_iau2000a::EopIau2000A, JD_UTC::Number) -> NTuple{2, Number}
+    compute_δΔϵ_δΔψ(
+        eop_iau2000a::EopIau2000A,
+        JD_UTC::Number,
+        JD_TT::Number
+    ) -> NTuple{2, Number}
 
-Compute the celestial pole offsets in obliquity (`δΔϵ_2000`) and longitude (`δΔΨ_2000`)
-given the IERS EOP IAU 2000A `eop_iau2000a` at the UTC Julian date `JD_UTC`.
+Compute the celestial pole offsets in obliquity (`δΔϵ_2000`) and in longitude (`δΔΨ_2000`)
+[mas] given the IERS EOP IAU-2000A `eop_iau2000a` at the Julian Day `JD_UTC` [UTC].
 
 The celestial pole offsets are tabulated against UTC, whereas the precession polynomials are
 functions of TT. If the caller already computed the Julian date in TT, it can pass it as
 `JD_TT` to avoid recomputing it here. Otherwise, it is obtained from `JD_UTC` using
 [`jd_utc_to_tt`](@ref).
 
-The EOP celestial pole offsets (`δx` and `δy`) and the returned corrections are in
-milliarcseconds. The returned corrections have not yet been converted to radians; callers
-must perform that conversion before using them in the IAU-2006 transformations.
-
-This function obtains those values by converting the celestial pole offsets with respect to
-the GCRS (`δx` and `δy`). These values are necessary in the equinox-based IAU-2006 theory.
+The offsets are obtained by converting the celestial pole offsets with respect to the GCRS
+(`δx` and `δy` [mas]), which is what the EOP data provides. The result is required by the
+equinox-based IAU-2006 theory, whose functions expect it in [rad], so the caller must
+convert it before use.
 
 The algorithm was obtained from **[1]**(eq. 5.25) and **[2]**(`DPSIDEPS2000_DXDY2000`).
+
+# Returns
+
+- `Number`: Celestial pole offset in obliquity, `δΔϵ_2000` [mas].
+- `Number`: Celestial pole offset in longitude, `δΔΨ_2000` [mas].
 
 # References
 

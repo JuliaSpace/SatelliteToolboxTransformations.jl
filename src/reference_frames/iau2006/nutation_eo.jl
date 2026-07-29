@@ -83,7 +83,11 @@ function _mean_obliquity_iau2006(t_tt::Number)
 end
 
 """
-    nutation_eo_iau2006(jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_2000::Number = 0) -> NTuple{4, Number}
+    nutation_eo_iau2006(
+        jd_tt::Number,
+        δΔϵ_2000::Number = 0,
+        δΔΨ_2000::Number = 0
+    ) -> NTuple{4, Number}
 
 Compute the nutation parameters and the Equation of Origins (EO) at the Julian Day `jd_tt`
 [TT] using the equinox-based 2006 IAU Theory of Nutation. Notice that one can provide
