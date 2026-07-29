@@ -18,7 +18,7 @@
 export precession_iau2006
 
 """
-    precession_iau2006(jd_tt::Number) -> NTuple{3, Float64}
+    precession_iau2006(jd_tt::Number) -> NTuple{3, Number}
 
 Compute the precession angles [rad] according to equinox-based IAU-2006 theory in the Julia
 day `jd_tt` [Terrestrial Time].

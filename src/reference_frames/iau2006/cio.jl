@@ -15,7 +15,7 @@
 export cio_iau2006
 
 """
-    cio_iau2006(jd_tt::Number) -> Float64, Float64, Float64
+    cio_iau2006(jd_tt::Number) -> NTuple{3, Number}
 
 Compute the coordinates `X` and `Y` of the Celestial Intermediate Pole (CIP) with respect to
 the Geocentric Celestial Reference Frame (GCRF), and the CIO locator `s`. The algorithm is
@@ -28,9 +28,9 @@ nutation **[1]**(p. 214).
 
 # Returns
 
-- `Float64`: The coordinate `X` of the CIP w.r.t. the GCRF.
-- `Float64`: The coordinate `Y` of the CIP w.r.t. the GCRF.
-- `Float64`: The CIO locator `s`.
+- `Number`: The coordinate `X` of the CIP w.r.t. the GCRF.
+- `Number`: The coordinate `Y` of the CIP w.r.t. the GCRF.
+- `Number`: The CIO locator `s`.
 
 # References
 

@@ -21,7 +21,7 @@
 export mean_obliquity_iau2006, nutation_eo_iau2006
 
 """
-    mean_obliquity_iau2006(jd_tt::Number) -> Float64
+    mean_obliquity_iau2006(jd_tt::Number) -> Number
 
 Compute the mean obliquity of the ecliptic [rad] using the equinox-based IAU-2006 theory in
 the Julian day `jd_tt` [Terrestiral Time].

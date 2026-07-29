@@ -7,7 +7,7 @@
 export compute_δΔϵ_δΔψ
 
 """
-    compute_δΔϵ_δΔψ(eop_iau2000a::EopIau2000A, JD_UTC::Number[, JD_TT::Number]) -> (Float64, Float64)
+    compute_δΔϵ_δΔψ(eop_iau2000a::EopIau2000A, JD_UTC::Number[, JD_TT::Number]) -> NTuple{2, Number}
 
 Compute the celestial pole offsets in obliquity (`δΔϵ_2000`) and longitude (`δΔΨ_2000`)
 given the IERS EOP IAU 2000A `eop_iau2000a` at the UTC Julian date `JD_UTC`.

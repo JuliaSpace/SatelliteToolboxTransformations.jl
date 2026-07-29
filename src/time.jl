@@ -121,7 +121,7 @@ end
 ############################################################################################
 
 """
-    jd_utc_to_ut1(JD_UTC::Number, ΔUT1::Number) -> Float64
+    jd_utc_to_ut1(JD_UTC::Number, ΔUT1::Number) -> Number
 
 Convert the Julian Day in UTC `JD_UTC` to the Julian Day in UT1 using the accumulated
 difference `ΔUT1`, which is provided by IERS EOP Data.
@@ -129,7 +129,7 @@ difference `ΔUT1`, which is provided by IERS EOP Data.
 jd_utc_to_ut1(JD_UTC::Number, ΔUT1::Number) = JD_UTC + ΔUT1 / 86400
 
 """
-    jd_ut1_to_utc(JD_UT1::Number, ΔUT1::Number) -> Float64
+    jd_ut1_to_utc(JD_UT1::Number, ΔUT1::Number) -> Number
 
 Convert the Julian Day in UT1 `JD_UT1` to the Julian Day in UTC using the accumulated
 difference `ΔUT1`, which is provided by IERS EOP Data.
@@ -137,7 +137,7 @@ difference `ΔUT1`, which is provided by IERS EOP Data.
 jd_ut1_to_utc(JD_UT1::Number, ΔUT1::Number) = JD_UT1 - ΔUT1 / 86400
 
 """
-    jd_utc_to_ut1(JD_UTC::Number, eop::Union{EopIau1980, EopIau2000A}) -> Float64
+    jd_utc_to_ut1(JD_UTC::Number, eop::Union{EopIau1980, EopIau2000A}) -> Number
 
 Convert the Julian Day in UTC `JD_UTC` to the Julian Day in UT1 using the accumulated
 difference given by the EOP Data `eop` (see [`fetch_iers_eop`](@ref)). Notice that the
@@ -148,7 +148,7 @@ function jd_utc_to_ut1(JD_UTC::Number, eop::Union{EopIau1980, EopIau2000A})
 end
 
 """
-    jd_ut1_to_utc(JD_UT1::Number, eop::Union{EopIau1980, EopIau2000A}) -> Float64
+    jd_ut1_to_utc(JD_UT1::Number, eop::Union{EopIau1980, EopIau2000A}) -> Number
 
 Convert the Julian Day in UT1 `JD_UT1` to the Julian Day in UTC using the accumulated
 difference given by the EOP Data `eop` (see [`fetch_iers_eop`](@ref)). Notice that the
@@ -169,7 +169,7 @@ function jd_ut1_to_utc(JD_UT1::Number, eop::Union{EopIau1980, EopIau2000A})
 end
 
 """
-    jd_utc_to_tt(JD_UTC::Number[, ΔAT::Number]) -> Float64
+    jd_utc_to_tt(JD_UTC::Number[, ΔAT::Number]) -> Number
 
 Convert the Julian Day in UTC `JD_UTC` to the Julian Day in TT (Terrestrial Time) using the
 accumulated difference `ΔAT` between UTC and the International Atomic Time (TAI). If no
@@ -185,7 +185,7 @@ function jd_utc_to_tt(JD_UTC::Number)
 end
 
 """
-    jd_tt_to_utc(JD_TT::Number, ΔAT::Number) -> Float64
+    jd_tt_to_utc(JD_TT::Number, ΔAT::Number) -> Number
 
 Convert the Julian Day in TT `JD_TT` (Terrestrial Time) to the Julian Day in UTC
 (Coordinated Universal Time) using the accumulated difference `ΔAT` between UTC and the

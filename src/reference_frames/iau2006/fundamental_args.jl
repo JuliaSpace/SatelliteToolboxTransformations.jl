@@ -12,7 +12,7 @@
 export luni_solar_args_iau2006, planetary_args_iau2006
 
 """
-    luni_solar_args_iau2006(jd_tt::Number) -> NTuple{5, Float64}
+    luni_solar_args_iau2006(jd_tt::Number) -> NTuple{5, Number}
 
 Compute the fundamental arguments related to the luni-solar effect for the IAU-2006 theory
 **[1]**(p. 211).
@@ -113,7 +113,7 @@ function _luni_solar_args_iau2006(t_tt::Number)
 end
 
 """
-    planetary_args_iau2006(jd_tt::Number) -> NTuple{9, Float64}
+    planetary_args_iau2006(jd_tt::Number) -> NTuple{9, Number}
 
 Compute the fundamental arguments related to the planetary effects for the IAU-2006 theory
 **[1]**(p. 211).
