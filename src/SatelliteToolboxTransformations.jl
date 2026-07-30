@@ -27,9 +27,9 @@ include("./types.jl")
 #                                        Constants                                         #
 ############################################################################################
 
-const _CRAYON_BOLD      = Crayon(bold = true)
+const _CRAYON_BOLD      = Crayon(; bold = true)
 const _CRAYON_DARK_GRAY = crayon"dark_gray"
-const _CRAYON_RESET     = Crayon(reset = true)
+const _CRAYON_RESET     = Crayon(; reset = true)
 
 ############################################################################################
 #                                         Includes                                         #

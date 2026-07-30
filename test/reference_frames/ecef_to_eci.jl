@@ -15,7 +15,7 @@
 # However, this should be enough, because 1) the individual functions at the low level are
 # tested using the same values of [1], and 2) the difference is smaller than 30 cm.
 
-eop_iau1980  = read_iers_eop("../eop_IAU1980.txt",  Val(:IAU1980))
+eop_iau1980  = read_iers_eop("../eop_IAU1980.txt", Val(:IAU1980))
 eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
 
 # == File: ./src/reference_frames/ecef_to_eci.jl ===========================================
@@ -357,7 +357,7 @@ end
     # However, this will lead to a much smaller error than assuming that UTC =
     # UT1.
 
-    jd_ut1 = date_to_jd(2004,4,6,7,51,28.386009) - 0.4399619/86400
+    jd_ut1 = date_to_jd(2004, 4, 6, 7, 51, 28.386009) - 0.4399619/86400
 
     D_tod_pef = r_ecef_to_eci(PEF(), TOD(), jd_ut1)
     r_tod = D_tod_pef * r_pef
@@ -425,7 +425,7 @@ end
     # However, this will lead to a much smaller error than assuming that UTC =
     # UT1.
 
-    jd_ut1 = date_to_jd(2004,4,6,7,51,28.386009) - 0.4399619/86400
+    jd_ut1 = date_to_jd(2004, 4, 6, 7, 51, 28.386009) - 0.4399619/86400
 
     D_mod_pef = r_ecef_to_eci(PEF(), MOD(), jd_ut1)
     r_mod = D_mod_pef * r_pef
@@ -537,7 +537,7 @@ end
     @test r_cirs[3] ≈ +6380.34453270 atol = 3e-4
 
     q_cirs_itrf = r_ecef_to_eci(Quaternion, ITRF(), CIRS(), jd_utc, eop_iau2000a)
-    r_cirs = vect(q_cirs_itrf \r_itrf * q_cirs_itrf)
+    r_cirs = vect(q_cirs_itrf \ r_itrf * q_cirs_itrf)
 
     @test r_cirs[1] ≈ +5100.01840470 atol = 3e-4
     @test r_cirs[2] ≈ +6122.78636480 atol = 3e-4

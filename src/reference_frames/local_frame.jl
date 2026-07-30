@@ -34,12 +34,8 @@ This algorithm was based on the information in **[1]**.
     coordinates](https://gssc.esa.int/navipedia/index.php/Transformations_between_ECEF_and_ENU_coordinates)
 """
 function ecef_to_ned(
-    r_ecef::AbstractVector{T1},
-    lat::T2,
-    lon::T3,
-    h::T4;
-    translate::Bool = false
-) where {T1<:Number, T2<:Number, T3<:Number, T4<:Number}
+    r_ecef::AbstractVector{T1}, lat::T2, lon::T3, h::T4; translate::Bool = false
+) where {T1 <: Number, T2 <: Number, T3 <: Number, T4 <: Number}
 
     # Obtain the element type of the returned vector.
     T = promote_type(T1, T2, T3, T4) |> float
@@ -66,7 +62,7 @@ function ecef_to_ned(
         # position of the NED origin.
         #
         # TODO: Add support to different ellipsoids here.
-        r_ned_ecef  = T.(geodetic_to_ecef(lat, lon, h))
+        r_ned_ecef = T.(geodetic_to_ecef(lat, lon, h))
         Δr_ecef = r_ecef_T - r_ned_ecef
     end
 
@@ -100,12 +96,8 @@ This algorithm was based on the information in **[1]**.
     coordinates](https://gssc.esa.int/navipedia/index.php/Transformations_between_ECEF_and_ENU_coordinates)
 """
 function ned_to_ecef(
-    r_ned::AbstractVector{T1},
-    lat::T2,
-    lon::T3,
-    h::T4;
-    translate::Bool = false
-) where {T1<:Number, T2<:Number, T3<:Number, T4<:Number}
+    r_ned::AbstractVector{T1}, lat::T2, lon::T3, h::T4; translate::Bool = false
+) where {T1 <: Number, T2 <: Number, T3 <: Number, T4 <: Number}
 
     # Obtain the element type of the returned vector.
     T = promote_type(T1, T2, T3, T4) |> float

@@ -34,9 +34,9 @@ function show(io::IO, mime::MIME"text/plain", eop::EopIau1980)::Nothing
     # Check if IO has support for colors.
     color = get(io, :color, false)::Bool
 
-    b = color ? string(_CRAYON_BOLD)      : ""
+    b = color ? string(_CRAYON_BOLD) : ""
     g = color ? string(_CRAYON_DARK_GRAY) : ""
-    r = color ? string(_CRAYON_RESET)     : ""
+    r = color ? string(_CRAYON_RESET) : ""
 
     println(io, "EopIau1980:")
     println(io, b, "     Data ", g, "│ ", r, b, "Timespan", r)
@@ -46,7 +46,7 @@ function show(io::IO, mime::MIME"text/plain", eop::EopIau1980)::Nothing
     println(io, b, "  UT1-UTC ", g, "│ ", r, _itp_timespan(eop.Δut1_utc))
     println(io, b, "      LOD ", g, "│ ", r, _itp_timespan(eop.lod))
     println(io, b, "      δΔψ ", g, "│ ", r, _itp_timespan(eop.δΔψ))
-    print(io,   b, "      δΔϵ ", g, "│ ", r, _itp_timespan(eop.δΔϵ))
+    print(io, b, "      δΔϵ ", g, "│ ", r, _itp_timespan(eop.δΔϵ))
 
     return nothing
 end
@@ -81,9 +81,9 @@ function show(io::IO, mime::MIME"text/plain", eop::EopIau2000A)::Nothing
     # Check if IO has support for colors.
     color = get(io, :color, false)::Bool
 
-    b = color ? string(_CRAYON_BOLD)      : ""
+    b = color ? string(_CRAYON_BOLD) : ""
     g = color ? string(_CRAYON_DARK_GRAY) : ""
-    r = color ? string(_CRAYON_RESET)     : ""
+    r = color ? string(_CRAYON_RESET) : ""
 
     println(io, "EopIau2000A:")
     println(io, b, "     Data ", g, "│ ", r, b, "Timespan", r)
@@ -93,7 +93,7 @@ function show(io::IO, mime::MIME"text/plain", eop::EopIau2000A)::Nothing
     println(io, b, "  UT1-UTC ", g, "│ ", r, _itp_timespan(eop.Δut1_utc))
     println(io, b, "      LOD ", g, "│ ", r, _itp_timespan(eop.lod))
     println(io, b, "       δx ", g, "│ ", r, _itp_timespan(eop.δx))
-    print(io,   b, "       δy ", g, "│ ", r, _itp_timespan(eop.δy))
+    print(io, b, "       δy ", g, "│ ", r, _itp_timespan(eop.δy))
 
     return nothing
 end

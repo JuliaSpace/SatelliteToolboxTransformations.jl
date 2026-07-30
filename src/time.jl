@@ -12,7 +12,7 @@
 ############################################################################################
 
 export jd_ut1_to_utc, jd_utc_to_ut1
-export jd_utc_to_tt,  jd_tt_to_utc
+export jd_utc_to_tt, jd_tt_to_utc
 export get_Δat
 
 ############################################################################################
@@ -162,7 +162,7 @@ function jd_ut1_to_utc(JD_UT1::Number, eop::Union{EopIau1980, EopIau2000A})
     # first pass already lands within ~1e-8 s of the fixed point, and the second one reaches
     # it exactly in floating point.
     JD_UTC = JD_UT1
-    for _ = 1:2
+    for _ in 1:2
         JD_UTC = jd_ut1_to_utc(JD_UT1, eop.Δut1_utc(JD_UTC))
     end
     return JD_UTC

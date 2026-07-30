@@ -182,20 +182,13 @@ function r_eci_to_ecef(T_ECI::T_ECIs, T_ECEF::T_ECEFs, jd_utc::Number, eop::EopI
 end
 
 function r_eci_to_ecef(
-    T::T_ROT,
-    T_ECI::T_ECIs,
-    T_ECEF::T_ECEFs,
-    jd_utc::Number,
-    eop::EopIau1980
+    T::T_ROT, T_ECI::T_ECIs, T_ECEF::T_ECEFs, jd_utc::Number, eop::EopIau1980
 )
     return inv_rotation(r_ecef_to_eci(T, T_ECEF, T_ECI, jd_utc, eop))
 end
 
 function r_eci_to_ecef(
-    T_ECI::T_ECIs_IAU_2006,
-    T_ECEF::T_ECEFs_IAU_2006,
-    jd_utc::Number,
-    eop::EopIau2000A
+    T_ECI::T_ECIs_IAU_2006, T_ECEF::T_ECEFs_IAU_2006, jd_utc::Number, eop::EopIau2000A
 )
     return r_eci_to_ecef(DCM, T_ECI, T_ECEF, jd_utc, eop)
 end
@@ -205,7 +198,7 @@ function r_eci_to_ecef(
     T_ECI::T_ECIs_IAU_2006,
     T_ECEF::T_ECEFs_IAU_2006,
     jd_utc::Number,
-    eop::EopIau2000A
+    eop::EopIau2000A,
 )
     return inv_rotation(r_ecef_to_eci(T, T_ECEF, T_ECI, jd_utc, eop))
 end
@@ -214,7 +207,7 @@ end
 function r_eci_to_ecef(
     T_ECI::Union{Val{:J2000}, Val{:TOD}, Val{:MOD}, Val{:TEME}},
     T_ECEF::Val{:PEF},
-    jd_utc::Number
+    jd_utc::Number,
 )
     return r_eci_to_ecef(DCM, T_ECI, T_ECEF, jd_utc)
 end
@@ -223,24 +216,15 @@ function r_eci_to_ecef(
     T::T_ROT,
     T_ECI::Union{Val{:J2000}, Val{:TOD}, Val{:MOD}, Val{:TEME}},
     T_ECEF::Val{:PEF},
-    jd_utc::Number
+    jd_utc::Number,
 )
     return inv_rotation(r_ecef_to_eci(T, T_ECEF, T_ECI, jd_utc))
 end
 
-function r_eci_to_ecef(
-    T_ECI::T_ECIs_IAU_2006,
-    T_ECEF::Val{:TIRS},
-    jd_utc::Number
-)
+function r_eci_to_ecef(T_ECI::T_ECIs_IAU_2006, T_ECEF::Val{:TIRS}, jd_utc::Number)
     return r_eci_to_ecef(DCM, T_ECI, T_ECEF, jd_utc)
 end
 
-function r_eci_to_ecef(
-    T::T_ROT,
-    T_ECI::T_ECIs_IAU_2006,
-    T_ECEF::Val{:TIRS},
-    jd_utc::Number
-)
+function r_eci_to_ecef(T::T_ROT, T_ECI::T_ECIs_IAU_2006, T_ECEF::Val{:TIRS}, jd_utc::Number)
     return inv_rotation(r_ecef_to_eci(T, T_ECEF, T_ECI, jd_utc))
 end

@@ -89,7 +89,7 @@ function sv_ecef_to_ecef(
     T_ECEFo::T_ECEFs,
     T_ECEFf::T_ECEFs,
     jd_utc::Number,
-    eop::EopIau1980
+    eop::EopIau1980,
 )
     D = r_ecef_to_ecef(DCM, T_ECEFo, T_ECEFf, jd_utc, eop)
 
@@ -99,10 +99,7 @@ function sv_ecef_to_ecef(
 end
 
 function sv_ecef_to_ecef(
-    sv::OrbitStateVector,
-    T_ECEFo::T_ECEFs,
-    T_ECEFf::T_ECEFs,
-    eop::EopIau1980
+    sv::OrbitStateVector, T_ECEFo::T_ECEFs, T_ECEFf::T_ECEFs, eop::EopIau1980
 )
     return sv_ecef_to_ecef(sv, T_ECEFo, T_ECEFf, sv.t, eop)
 end
@@ -112,7 +109,7 @@ function sv_ecef_to_ecef(
     T_ECEFo::T_ECEFs_IAU_2006,
     T_ECEFf::T_ECEFs_IAU_2006,
     jd_utc::Number,
-    eop::EopIau2000A
+    eop::EopIau2000A,
 )
     D = r_ecef_to_ecef(DCM, T_ECEFo, T_ECEFf, jd_utc, eop)
 
@@ -125,7 +122,7 @@ function sv_ecef_to_ecef(
     sv::OrbitStateVector,
     T_ECEFo::T_ECEFs_IAU_2006,
     T_ECEFf::T_ECEFs_IAU_2006,
-    eop::EopIau2000A
+    eop::EopIau2000A,
 )
     return sv_ecef_to_ecef(sv, T_ECEFo, T_ECEFf, sv.t, eop)
 end

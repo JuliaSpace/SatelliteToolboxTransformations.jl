@@ -15,7 +15,7 @@
 # [1]. However, this should be enough, because 1) the individual functions at the low level
 # are tested using the same values of [1], and 2) the difference is smaller than 30 cm.
 
-eop_iau1980  = read_iers_eop("../eop_IAU1980.txt",  Val(:IAU1980))
+eop_iau1980  = read_iers_eop("../eop_IAU1980.txt", Val(:IAU1980))
 eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
 
 # == File: ./src/transformations/eci_to_ecef.jl ============================================
@@ -356,7 +356,7 @@ end
     # Notice that if we use jd_ut1, then the correction to TT will be wrong. However, this
     # will lead to a much smaller error than assuming that UTC = UT1.
 
-    jd_ut1 = date_to_jd(2004,4,6,7,51,28.386009) - 0.4399619/86400
+    jd_ut1 = date_to_jd(2004, 4, 6, 7, 51, 28.386009) - 0.4399619/86400
     r_tod  = [5094.51478040; 6127.36646120; 6380.34453270]
 
     D_pef_tod = r_eci_to_ecef(TOD(), PEF(), jd_ut1)
@@ -424,7 +424,7 @@ end
     # Notice that if we use jd_ut1, then the correction to TT will be wrong. However, this
     # will lead to a much smaller error than assuming that UTC = UT1.
 
-    jd_ut1 = date_to_jd(2004,4,6,7,51,28.386009) - 0.4399619/86400
+    jd_ut1 = date_to_jd(2004, 4, 6, 7, 51, 28.386009) - 0.4399619/86400
     r_mod  = [5094.02901670; 6127.87093630; 6380.24788850]
 
     D_pef_mod = r_eci_to_ecef(MOD(), PEF(), jd_ut1)

@@ -98,10 +98,7 @@ function r_ecef_to_ecef(T_ECEFo::T_ECEFs, T_ECEFf::T_ECEFs, jd_utc::Number, eop:
 end
 
 function r_ecef_to_ecef(
-    T_ECEFo::T_ECEFs_IAU_2006,
-    T_ECEFf::T_ECEFs_IAU_2006,
-    jd_utc::Number,
-    eop::EopIau2000A
+    T_ECEFo::T_ECEFs_IAU_2006, T_ECEFf::T_ECEFs_IAU_2006, jd_utc::Number, eop::EopIau2000A
 )
     return r_ecef_to_ecef(DCM, T_ECEFo, T_ECEFf, jd_utc, eop)
 end
@@ -112,23 +109,21 @@ end
 
 # == Identity Transformations ==============================================================
 
-function r_ecef_to_ecef(::Type{DCM}, ::Val{S}, ::Val{S}, ::Number, ::EopIau1980) where S
+function r_ecef_to_ecef(::Type{DCM}, ::Val{S}, ::Val{S}, ::Number, ::EopIau1980) where {S}
     return DCM(1.0I)
 end
 
 function r_ecef_to_ecef(
-    ::Type{Quaternion},
-    ::Val{S},
-    ::Val{S},
-    ::Number,
-    ::EopIau1980
-) where S
+    ::Type{Quaternion}, ::Val{S}, ::Val{S}, ::Number, ::EopIau1980
+) where {S}
     return Quaternion(1.0, 0.0, 0.0, 0.0)
 end
 
 # == ITRF <=> PEF ==========================================================================
 
-function r_ecef_to_ecef(T::T_ROT, ::Val{:ITRF}, ::Val{:PEF}, jd_utc::Number, eop::EopIau1980)
+function r_ecef_to_ecef(
+    T::T_ROT, ::Val{:ITRF}, ::Val{:PEF}, jd_utc::Number, eop::EopIau1980
+)
     arcsec_to_rad = π / 648000
 
     # Get the EOP data related to the desired epoch.
@@ -142,11 +137,7 @@ function r_ecef_to_ecef(T::T_ROT, ::Val{:ITRF}, ::Val{:PEF}, jd_utc::Number, eop
 end
 
 function r_ecef_to_ecef(
-    T::T_ROT,
-    T_ECEFo::Val{:PEF},
-    T_ECEFf::Val{:ITRF},
-    jd_utc::Number,
-    eop::EopIau1980
+    T::T_ROT, T_ECEFo::Val{:PEF}, T_ECEFf::Val{:ITRF}, jd_utc::Number, eop::EopIau1980
 )
     return inv_rotation(r_ecef_to_ecef(T, T_ECEFf, T_ECEFo, jd_utc, eop))
 end
@@ -157,28 +148,20 @@ end
 
 # == Identity Transformations ==============================================================
 
-function r_ecef_to_ecef(::Type{DCM}, ::Val{S}, ::Val{S}, ::Number, ::EopIau2000A) where S
+function r_ecef_to_ecef(::Type{DCM}, ::Val{S}, ::Val{S}, ::Number, ::EopIau2000A) where {S}
     return DCM(1.0I)
 end
 
 function r_ecef_to_ecef(
-    ::Type{Quaternion},
-    ::Val{S},
-    ::Val{S},
-    ::Number,
-    ::EopIau2000A
-) where S
+    ::Type{Quaternion}, ::Val{S}, ::Val{S}, ::Number, ::EopIau2000A
+) where {S}
     return Quaternion(1.0, 0.0, 0.0, 0.0)
 end
 
 # == ITRF <=> TIRS =========================================================================
 
 function r_ecef_to_ecef(
-    T::T_ROT,
-    ::Val{:ITRF},
-    ::Val{:TIRS},
-    jd_utc::Number,
-    eop::EopIau2000A
+    T::T_ROT, ::Val{:ITRF}, ::Val{:TIRS}, jd_utc::Number, eop::EopIau2000A
 )
     arcsec_to_rad = π / 648000
     jd_tt = jd_utc_to_tt(jd_utc)
@@ -193,11 +176,7 @@ function r_ecef_to_ecef(
 end
 
 function r_ecef_to_ecef(
-    T::T_ROT,
-    T_ECEFo::Val{:TIRS},
-    T_ECEFf::Val{:ITRF},
-    jd_utc::Number,
-    eop::EopIau2000A
+    T::T_ROT, T_ECEFo::Val{:TIRS}, T_ECEFf::Val{:ITRF}, jd_utc::Number, eop::EopIau2000A
 )
     return inv_rotation(r_ecef_to_ecef(T, T_ECEFf, T_ECEFo, jd_utc, eop))
 end

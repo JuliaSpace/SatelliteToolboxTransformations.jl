@@ -160,11 +160,7 @@ OrbitStateVector{Float64, Float64}:
 ```
 """
 function sv_eci_to_ecef(
-    sv::OrbitStateVector,
-    T_ECI::T_ECIs,
-    T_ECEF::Val{:ITRF},
-    jd_utc::Number,
-    eop::EopIau1980
+    sv::OrbitStateVector, T_ECI::T_ECIs, T_ECEF::Val{:ITRF}, jd_utc::Number, eop::EopIau1980
 )
     # First, convert from ECI to PEF.
     sv_pef = sv_eci_to_ecef(sv, T_ECI, Val(:PEF), jd_utc, eop)
@@ -174,10 +170,7 @@ function sv_eci_to_ecef(
 end
 
 function sv_eci_to_ecef(
-    sv::OrbitStateVector,
-    T_ECI::T_ECIs,
-    T_ECEF::Val{:ITRF},
-    eop::EopIau1980
+    sv::OrbitStateVector, T_ECI::T_ECIs, T_ECEF::Val{:ITRF}, eop::EopIau1980
 )
     return sv_eci_to_ecef(sv, T_ECI, T_ECEF, sv.t, eop)
 end
@@ -187,7 +180,7 @@ function sv_eci_to_ecef(
     T_ECI::T_ECIs_IAU_2006,
     T_ECEF::Val{:ITRF},
     jd_utc::Number,
-    eop::EopIau2000A
+    eop::EopIau2000A,
 )
     # First, convert from ECI to TIRS.
     sv_tirs = sv_eci_to_ecef(sv, T_ECI, Val(:TIRS), jd_utc, eop)
@@ -197,10 +190,7 @@ function sv_eci_to_ecef(
 end
 
 function sv_eci_to_ecef(
-    sv::OrbitStateVector,
-    T_ECI::T_ECIs_IAU_2006,
-    T_ECEF::Val{:ITRF},
-    eop::EopIau2000A
+    sv::OrbitStateVector, T_ECI::T_ECIs_IAU_2006, T_ECEF::Val{:ITRF}, eop::EopIau2000A
 )
     return sv_eci_to_ecef(sv, T_ECI, T_ECEF, sv.t, eop)
 end
@@ -213,7 +203,7 @@ function sv_eci_to_ecef(
     T_ECI::Val{:GCRF},
     T_ECEF::Val{:PEF},
     jd_utc::Number,
-    eop::EopIau1980
+    eop::EopIau1980,
 )
     D = r_eci_to_ecef(DCM, T_ECI, T_ECEF, jd_utc, eop)
 
@@ -229,10 +219,7 @@ function sv_eci_to_ecef(
 end
 
 function sv_eci_to_ecef(
-    sv::OrbitStateVector,
-    T_ECI::Val{:GCRF},
-    T_ECEF::Val{:PEF},
-    eop::EopIau1980
+    sv::OrbitStateVector, T_ECI::Val{:GCRF}, T_ECEF::Val{:PEF}, eop::EopIau1980
 )
     return sv_eci_to_ecef(sv, T_ECI, T_ECEF, sv.t, eop)
 end
@@ -243,7 +230,7 @@ function sv_eci_to_ecef(
     T_ECI::Union{Val{:J2000}, Val{:MOD}, Val{:TOD}, Val{:TEME}},
     T_ECEF::Val{:PEF},
     jd_utc::Number,
-    eop::Union{Nothing, EopIau1980} = nothing
+    eop::Union{Nothing, EopIau1980} = nothing,
 )
     if eop === nothing
         D = r_eci_to_ecef(DCM, T_ECI, T_ECEF, jd_utc)
@@ -266,7 +253,7 @@ function sv_eci_to_ecef(
     sv::OrbitStateVector,
     T_ECI::Union{Val{:J2000}, Val{:MOD}, Val{:TOD}, Val{:TEME}},
     T_ECEF::Val{:PEF},
-    eop::Union{Nothing, EopIau1980} = nothing
+    eop::Union{Nothing, EopIau1980} = nothing,
 )
     return sv_eci_to_ecef(sv, T_ECI, T_ECEF, sv.t, eop)
 end
@@ -278,7 +265,7 @@ function sv_eci_to_ecef(
     T_ECI::T_ECIs_IAU_2006,
     T_ECEF::Val{:TIRS},
     jd_utc::Number,
-    eop::Union{Nothing, EopIau2000A} = nothing
+    eop::Union{Nothing, EopIau2000A} = nothing,
 )
     # Get the matrix that converts the ECI to the ECEF.
     if eop === nothing
@@ -311,7 +298,7 @@ function sv_eci_to_ecef(
     sv::OrbitStateVector,
     T_ECI::T_ECIs_IAU_2006,
     T_ECEF::Val{:TIRS},
-    eop::Union{Nothing, EopIau2000A} = nothing
+    eop::Union{Nothing, EopIau2000A} = nothing,
 )
     return sv_eci_to_ecef(sv, T_ECI, T_ECEF, sv.t, eop)
 end

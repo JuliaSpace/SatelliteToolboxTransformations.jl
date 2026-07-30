@@ -15,7 +15,7 @@
 # [1]. However, this should be enough, because 1) the individual functions at the low level
 # are tested using the same values of [1], and 2) the difference is smaller than 30 cm.
 
-eop_iau1980  = read_iers_eop("../eop_IAU1980.txt",  Val(:IAU1980))
+eop_iau1980  = read_iers_eop("../eop_IAU1980.txt", Val(:IAU1980))
 eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
 
 # == File: ./src/transformations/sv_eci_to_ecef.jl =========================================
@@ -72,9 +72,9 @@ eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
     @test sv_itrf.r[2] ≈ +7901.2952754 atol = 3e-4
     @test sv_itrf.r[3] ≈ +6380.3565958 atol = 3e-4
 
-    @test sv_itrf.v[1] ≈ -3.225636520  atol = 8e-7
-    @test sv_itrf.v[2] ≈ -2.872451450  atol = 8e-7
-    @test sv_itrf.v[3] ≈ +5.531924446  atol = 8e-7
+    @test sv_itrf.v[1] ≈ -3.225636520 atol = 8e-7
+    @test sv_itrf.v[2] ≈ -2.872451450 atol = 8e-7
+    @test sv_itrf.v[3] ≈ +5.531924446 atol = 8e-7
 end
 
 # == J2000 to PEF ==========================================================================
@@ -102,7 +102,7 @@ end
 ############################################################################################
 
 @testset "Function sv_eci_to_ecef J2000 => PEF" begin
-    jd_ut1 = date_to_jd(2004,4,6,7,51,28.386009) - 0.4399619/86400
+    jd_ut1 = date_to_jd(2004, 4, 6, 7, 51, 28.386009) - 0.4399619/86400
 
     r_j2000  = [5102.50960000; 6123.01152000; 6378.13630000]
     v_j2000  = [-4.7432196000; 0.7905366000; 5.5337561900]
@@ -115,9 +115,9 @@ end
     @test sv_pef.r[2] ≈ +7901.30558560 atol = 1e-7
     @test sv_pef.r[3] ≈ +6380.34453270 atol = 1e-7
 
-    @test sv_pef.v[1] ≈ -3.2256327470  atol = 1e-7
-    @test sv_pef.v[2] ≈ -2.8724425110  atol = 1e-7
-    @test sv_pef.v[3] ≈ +5.5319312880  atol = 1e-7
+    @test sv_pef.v[1] ≈ -3.2256327470 atol = 1e-7
+    @test sv_pef.v[2] ≈ -2.8724425110 atol = 1e-7
+    @test sv_pef.v[3] ≈ +5.5319312880 atol = 1e-7
 end
 
 ############################################################################################
@@ -161,9 +161,9 @@ end
     @test sv_itrf.r[2] ≈ +7901.2952754 atol = 3e-4
     @test sv_itrf.r[3] ≈ +6380.3565958 atol = 3e-4
 
-    @test sv_itrf.v[1] ≈ -3.225636520  atol = 8e-7
-    @test sv_itrf.v[2] ≈ -2.872451450  atol = 8e-7
-    @test sv_itrf.v[3] ≈ +5.531924446  atol = 8e-7
+    @test sv_itrf.v[1] ≈ -3.225636520 atol = 8e-7
+    @test sv_itrf.v[2] ≈ -2.872451450 atol = 8e-7
+    @test sv_itrf.v[3] ≈ +5.531924446 atol = 8e-7
 end
 
 # == GCRF to TIRS ==========================================================================
@@ -204,7 +204,7 @@ end
     @test sv_tirs.r[2] ≈ +7901.30558560 atol = 3e-4
     @test sv_tirs.r[3] ≈ +6380.34453270 atol = 3e-4
 
-    @test sv_tirs.v[1] ≈ -3.2256327470  atol = 8e-7
-    @test sv_tirs.v[2] ≈ -2.8724425110  atol = 8e-7
-    @test sv_tirs.v[3] ≈ +5.5319312880  atol = 8e-7
+    @test sv_tirs.v[1] ≈ -3.2256327470 atol = 8e-7
+    @test sv_tirs.v[2] ≈ -2.8724425110 atol = 8e-7
+    @test sv_tirs.v[3] ≈ +5.5319312880 atol = 8e-7
 end

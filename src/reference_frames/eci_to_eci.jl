@@ -190,10 +190,7 @@ function r_eci_to_eci(T_ECIo::T_ECIs, T_ECIf::T_ECIs, jd_utc::Number, eop::EopIa
 end
 
 function r_eci_to_eci(
-    T_ECIo::T_ECIs_IAU_2006,
-    T_ECIf::T_ECIs_IAU_2006,
-    jd_utc::Number,
-    eop::EopIau2000A
+    T_ECIo::T_ECIs_IAU_2006, T_ECIf::T_ECIs_IAU_2006, jd_utc::Number, eop::EopIau2000A
 )
     return r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop)
 end
@@ -204,7 +201,7 @@ function r_eci_to_eci(
     jd_utco::Number,
     T_ECIf::T_ECIs_of_date,
     jd_utcf::Number,
-    eop::EopIau1980
+    eop::EopIau1980,
 )
     return r_eci_to_eci(DCM, T_ECIo, jd_utco, T_ECIf, jd_utcf, eop)
 end
@@ -214,7 +211,7 @@ function r_eci_to_eci(
     jd_utco::Number,
     T_ECIf::Val{:CIRS},
     jd_utcf::Number,
-    eop::EopIau2000A
+    eop::EopIau2000A,
 )
     return r_eci_to_eci(DCM, T_ECIo, jd_utco, T_ECIf, jd_utcf, eop)
 end
@@ -224,50 +221,36 @@ function r_eci_to_eci(
     jd_utco::Number,
     T_ECIf::T_ECIs_IAU_2006_Equinox_of_date,
     jd_utcf::Number,
-    eop::EopIau2000A
+    eop::EopIau2000A,
 )
     return r_eci_to_eci(DCM, T_ECIo, jd_utco, T_ECIf, jd_utcf, eop)
 end
 
 # Specializations for those cases that EOP Data is not needed.
 function r_eci_to_eci(
-    T_ECIo::Val{:J2000},
-    T_ECIf::Union{Val{:MOD}, Val{:TOD}, Val{:TEME}},
-    jd_utc::Number
+    T_ECIo::Val{:J2000}, T_ECIf::Union{Val{:MOD}, Val{:TOD}, Val{:TEME}}, jd_utc::Number
 )
     return r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc)
 end
 
 function r_eci_to_eci(
-    T_ECIo::Union{Val{:MOD}, Val{:TOD}, Val{:TEME}},
-    T_ECIf::Val{:J2000},
-    jd_utc::Number
+    T_ECIo::Union{Val{:MOD}, Val{:TOD}, Val{:TEME}}, T_ECIf::Val{:J2000}, jd_utc::Number
 )
     return r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc)
 end
 
 function r_eci_to_eci(
-    T_ECIo::T_ECIs_of_date,
-    jd_utco::Number,
-    T_ECIf::T_ECIs_of_date,
-    jd_utcf::Number
+    T_ECIo::T_ECIs_of_date, jd_utco::Number, T_ECIf::T_ECIs_of_date, jd_utcf::Number
 )
     return r_eci_to_eci(DCM, T_ECIo, jd_utco, T_ECIf, jd_utcf)
 end
 
-function r_eci_to_eci(
-    T_ECIo::T_ECIs_IAU_2006,
-    T_ECIf::T_ECIs_IAU_2006,
-    jd_utc::Number
-)
+function r_eci_to_eci(T_ECIo::T_ECIs_IAU_2006, T_ECIf::T_ECIs_IAU_2006, jd_utc::Number)
     return r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc)
 end
 
 function r_eci_to_eci(
-    T_ECIo::Val{:CIRS},
-    jd_utco::Number,
-    T_ECIf::Val{:CIRS},
-    jd_utcf::Number
+    T_ECIo::Val{:CIRS}, jd_utco::Number, T_ECIf::Val{:CIRS}, jd_utcf::Number
 )
     return r_eci_to_eci(DCM, T_ECIo, jd_utco, T_ECIf, jd_utcf)
 end
@@ -287,7 +270,9 @@ end
 
 # == GCRF <=> J2000 ========================================================================
 
-function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:J2000}, jd_utc::Number, eop::EopIau1980)
+function r_eci_to_eci(
+    T::T_ROT, ::Val{:GCRF}, ::Val{:J2000}, jd_utc::Number, eop::EopIau1980
+)
     milliarcsec_to_rad = π / 648000000
 
     # Get the time in UT1 and TT.
@@ -313,11 +298,7 @@ function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:J2000}, jd_utc::Number, eop
 end
 
 function r_eci_to_eci(
-    T::T_ROT,
-    T_ECIo::Val{:J2000},
-    T_ECIf::Val{:GCRF},
-    jd_utc::Number,
-    eop::EopIau1980
+    T::T_ROT, T_ECIo::Val{:J2000}, T_ECIf::Val{:GCRF}, jd_utc::Number, eop::EopIau1980
 )
     return inv_rotation(r_eci_to_eci(T, T_ECIf, T_ECIo, jd_utc, eop))
 end
@@ -333,11 +314,7 @@ function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:MOD}, jd_utc::Number, eop::
 end
 
 function r_eci_to_eci(
-    T::T_ROT,
-    T_ECIo::Val{:MOD},
-    T_ECIf::Val{:GCRF},
-    jd_utc::Number,
-    eop::EopIau1980
+    T::T_ROT, T_ECIo::Val{:MOD}, T_ECIf::Val{:GCRF}, jd_utc::Number, eop::EopIau1980
 )
     return inv_rotation(r_eci_to_eci(T, T_ECIf, T_ECIo, jd_utc, eop))
 end
@@ -348,7 +325,7 @@ function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:TOD}, jd_utc::Number, eop::
     milliarcsec_to_rad = π / 648000000
 
     # Get the time in TT.
-    jd_tt  = jd_utc_to_tt(jd_utc)
+    jd_tt = jd_utc_to_tt(jd_utc)
 
     # Get the EOP data related to the desired epoch.
     δΔϵ_1980 = eop.δΔϵ(jd_utc) * milliarcsec_to_rad
@@ -363,11 +340,7 @@ function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:TOD}, jd_utc::Number, eop::
 end
 
 function r_eci_to_eci(
-    T::T_ROT,
-    T_ECIo::Val{:TOD},
-    T_ECIf::Val{:GCRF},
-    jd_utc::Number,
-    eop::EopIau1980
+    T::T_ROT, T_ECIo::Val{:TOD}, T_ECIf::Val{:GCRF}, jd_utc::Number, eop::EopIau1980
 )
     return inv_rotation(r_eci_to_eci(T, T_ECIf, T_ECIo, jd_utc, eop))
 end
@@ -378,7 +351,7 @@ function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:TEME}, jd_utc::Number, eop:
     milliarcsec_to_rad = π / 648000000
 
     # Get the time in TT.
-    jd_tt  = jd_utc_to_tt(jd_utc)
+    jd_tt = jd_utc_to_tt(jd_utc)
 
     # Get the EOP data related to the desired epoch.
     δΔϵ_1980 = eop.δΔϵ(jd_utc) * milliarcsec_to_rad
@@ -393,11 +366,7 @@ function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:TEME}, jd_utc::Number, eop:
 end
 
 function r_eci_to_eci(
-    T::T_ROT,
-    T_ECIo::Val{:TEME},
-    T_ECIf::Val{:GCRF},
-    jd_utc::Number,
-    eop::EopIau1980
+    T::T_ROT, T_ECIo::Val{:TEME}, T_ECIf::Val{:GCRF}, jd_utc::Number, eop::EopIau1980
 )
     return inv_rotation(r_eci_to_eci(T, T_ECIf, T_ECIo, jd_utc, eop))
 end
@@ -430,7 +399,7 @@ end
 
 function r_eci_to_eci(T::T_ROT, ::Val{:J2000}, ::Val{:MOD}, jd_utc::Number)
     # Get the time in TT.
-    jd_tt  = jd_utc_to_tt(jd_utc)
+    jd_tt = jd_utc_to_tt(jd_utc)
 
     # Compute and return the rotation.
     r_mod_j2000 = r_gcrf_to_mod_fk5(T, jd_tt)
@@ -439,11 +408,7 @@ function r_eci_to_eci(T::T_ROT, ::Val{:J2000}, ::Val{:MOD}, jd_utc::Number)
 end
 
 function r_eci_to_eci(
-    T::T_ROT,
-    T_ECIo::Val{:MOD},
-    T_ECIf::Val{:J2000},
-    jd_utc::Number,
-    eop::EopIau1980
+    T::T_ROT, T_ECIo::Val{:MOD}, T_ECIf::Val{:J2000}, jd_utc::Number, eop::EopIau1980
 )
     return inv_rotation(r_eci_to_eci(T, T_ECIf, T_ECIo, jd_utc, eop))
 end
@@ -480,7 +445,7 @@ end
 
 function r_eci_to_eci(T::T_ROT, ::Val{:J2000}, ::Val{:TOD}, jd_utc::Number)
     # Get the time in TT.
-    jd_tt  = jd_utc_to_tt(jd_utc)
+    jd_tt = jd_utc_to_tt(jd_utc)
 
     # Compute and return the composed rotation.
     r_mod_j2000 = r_gcrf_to_mod_fk5(T, jd_tt)
@@ -490,11 +455,7 @@ function r_eci_to_eci(T::T_ROT, ::Val{:J2000}, ::Val{:TOD}, jd_utc::Number)
 end
 
 function r_eci_to_eci(
-    T::T_ROT,
-    T_ECIo::Val{:TOD},
-    T_ECIf::Val{:J2000},
-    jd_utc::Number,
-    eop::EopIau1980
+    T::T_ROT, T_ECIo::Val{:TOD}, T_ECIf::Val{:J2000}, jd_utc::Number, eop::EopIau1980
 )
     return inv_rotation(r_eci_to_eci(T, T_ECIf, T_ECIo, jd_utc, eop))
 end
@@ -506,11 +467,7 @@ end
 # == J2000 <=> TEME ========================================================================
 
 function r_eci_to_eci(
-    T::T_ROT,
-    T_ECIo::Val{:J2000},
-    T_ECIf::Val{:TEME},
-    jd_utc::Number,
-    eop::EopIau1980
+    T::T_ROT, T_ECIo::Val{:J2000}, T_ECIf::Val{:TEME}, jd_utc::Number, eop::EopIau1980
 )
     # The J2000 <=> TEME conversion does not depend on EOP data. `eop` is accepted here only
     # so that the frame pair can be used with the same signature as its neighbors.
@@ -518,11 +475,7 @@ function r_eci_to_eci(
 end
 
 function r_eci_to_eci(
-    T::T_ROT,
-    T_ECIo::Val{:TEME},
-    T_ECIf::Val{:J2000},
-    jd_utc::Number,
-    eop::EopIau1980
+    T::T_ROT, T_ECIo::Val{:TEME}, T_ECIf::Val{:J2000}, jd_utc::Number, eop::EopIau1980
 )
     # The TEME <=> J2000 conversion does not depend on EOP data. `eop` is accepted here only
     # so that the frame pair can be used with the same signature as its neighbors.
@@ -531,18 +484,13 @@ end
 
 function r_eci_to_eci(T::T_ROT, ::Val{:J2000}, ::Val{:TEME}, jd_utc::Number)
     # Get the time in TT.
-    jd_tt  = jd_utc_to_tt(jd_utc)
+    jd_tt = jd_utc_to_tt(jd_utc)
 
     # Return the rotation.
     return r_gcrf_to_teme(T, jd_tt, 0, 0)
 end
 
-function r_eci_to_eci(
-    T::T_ROT,
-    T_ECIo::Val{:TEME},
-    T_ECIf::Val{:J2000},
-    jd_utc::Number
-)
+function r_eci_to_eci(T::T_ROT, T_ECIo::Val{:TEME}, T_ECIf::Val{:J2000}, jd_utc::Number)
     return inv_rotation(r_eci_to_eci(T, T_ECIf, T_ECIo, jd_utc))
 end
 
@@ -554,12 +502,12 @@ function r_eci_to_eci(
     jd_utco::Number,
     T_ECIf::T_ECIs_of_date,
     jd_utcf::Number,
-    eop::EopIau1980
+    eop::EopIau1980,
 )
     # In this case, we convert origin to GCRF and then convert back to the destination. This
     # is necessary because the user may want to change the epoch.
-    r_gcrf_ecio = r_eci_to_eci(T, T_ECIo,     Val(:GCRF), jd_utco, eop)
-    r_ecif_gcrf = r_eci_to_eci(T, Val(:GCRF), T_ECIf,     jd_utcf, eop)
+    r_gcrf_ecio = r_eci_to_eci(T, T_ECIo, Val(:GCRF), jd_utco, eop)
+    r_ecif_gcrf = r_eci_to_eci(T, Val(:GCRF), T_ECIf, jd_utcf, eop)
 
     # Return the full rotation.
     return compose_rotation(r_gcrf_ecio, r_ecif_gcrf)
@@ -570,13 +518,13 @@ function r_eci_to_eci(
     T_ECIo::T_ECIs_of_date,
     jd_utco::Number,
     T_ECIf::T_ECIs_of_date,
-    jd_utcf::Number
+    jd_utcf::Number,
 )
     # In this case, in which we do not have EOP data, we convert origin to J2000 and then
     # convert back to the destination. This is necessary because the user may want to change
     # the epoch.
-    r_gcrf_ecio = r_eci_to_eci(T, T_ECIo,      Val(:J2000), jd_utco)
-    r_ecif_gcrf = r_eci_to_eci(T, Val(:J2000), T_ECIf,      jd_utcf)
+    r_gcrf_ecio = r_eci_to_eci(T, T_ECIo, Val(:J2000), jd_utco)
+    r_ecif_gcrf = r_eci_to_eci(T, Val(:J2000), T_ECIf, jd_utcf)
 
     # Return the full rotation.
     return compose_rotation(r_gcrf_ecio, r_ecif_gcrf)
@@ -588,7 +536,9 @@ end
 
 # == GCRF <=> CIRS =========================================================================
 
-function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:CIRS}, jd_utc::Number, eop::EopIau2000A)
+function r_eci_to_eci(
+    T::T_ROT, ::Val{:GCRF}, ::Val{:CIRS}, jd_utc::Number, eop::EopIau2000A
+)
     milliarcsec_to_rad = π / 648000000
 
     # Get the time in TT.
@@ -603,11 +553,7 @@ function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:CIRS}, jd_utc::Number, eop:
 end
 
 function r_eci_to_eci(
-    T::T_ROT,
-    T_ECIo::Val{:CIRS},
-    T_ECIf::Val{:GCRF},
-    jd_utc::Number,
-    eop::EopIau2000A
+    T::T_ROT, T_ECIo::Val{:CIRS}, T_ECIf::Val{:GCRF}, jd_utc::Number, eop::EopIau2000A
 )
     return inv_rotation(r_eci_to_eci(T, T_ECIf, T_ECIo, jd_utc, eop))
 end
@@ -632,28 +578,24 @@ function r_eci_to_eci(
     jd_utco::Number,
     T_ECIf::Val{:CIRS},
     jd_utcf::Number,
-    eop::EopIau2000A
+    eop::EopIau2000A,
 )
     # In this case, we convert origin to GCRF and then convert back to the destination. This
     # is necessary because the user may want to change the epoch.
-    r_gcrf_ecio = r_eci_to_eci(T, T_ECIo,     Val(:GCRF), jd_utco, eop)
-    r_ecif_gcrf = r_eci_to_eci(T, Val(:GCRF), T_ECIf,     jd_utcf, eop)
+    r_gcrf_ecio = r_eci_to_eci(T, T_ECIo, Val(:GCRF), jd_utco, eop)
+    r_ecif_gcrf = r_eci_to_eci(T, Val(:GCRF), T_ECIf, jd_utcf, eop)
 
     # Return the full rotation.
     return compose_rotation(r_gcrf_ecio, r_ecif_gcrf)
 end
 
 function r_eci_to_eci(
-    T::T_ROT,
-    T_ECIo::Val{:CIRS},
-    jd_utco::Number,
-    T_ECIf::Val{:CIRS},
-    jd_utcf::Number
+    T::T_ROT, T_ECIo::Val{:CIRS}, jd_utco::Number, T_ECIf::Val{:CIRS}, jd_utcf::Number
 )
     # In this case, we convert origin to GCRF and then convert back to the destination. This
     # is necessary because the user may want to change the epoch.
-    r_gcrf_ecio = r_eci_to_eci(T, T_ECIo,     Val(:GCRF), jd_utco)
-    r_ecif_gcrf = r_eci_to_eci(T, Val(:GCRF), T_ECIf,     jd_utcf)
+    r_gcrf_ecio = r_eci_to_eci(T, T_ECIo, Val(:GCRF), jd_utco)
+    r_ecif_gcrf = r_eci_to_eci(T, Val(:GCRF), T_ECIf, jd_utcf)
 
     # Return the full rotation.
     return compose_rotation(r_gcrf_ecio, r_ecif_gcrf)
@@ -665,7 +607,9 @@ end
 
 # == GCRF <=> MJ2000 =======================================================================
 
-function r_eci_to_eci(T::T_ROT, ::Val{:MJ2000}, ::Val{:GCRF}, jd_utc::Number, eop::EopIau2000A)
+function r_eci_to_eci(
+    T::T_ROT, ::Val{:MJ2000}, ::Val{:GCRF}, jd_utc::Number, eop::EopIau2000A
+)
     return r_mj2000_to_gcrf_iau2006(T)
 end
 
@@ -673,7 +617,9 @@ function r_eci_to_eci(T::T_ROT, ::Val{:MJ2000}, ::Val{:GCRF}, jd_utc::Number)
     return r_mj2000_to_gcrf_iau2006(T)
 end
 
-function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:MJ2000}, jd_utc::Number, eop::EopIau2000A)
+function r_eci_to_eci(
+    T::T_ROT, ::Val{:GCRF}, ::Val{:MJ2000}, jd_utc::Number, eop::EopIau2000A
+)
     return r_gcrf_to_mj2000_iau2006(T)
 end
 
@@ -683,7 +629,9 @@ end
 
 # == GCRF <=> MOD ==========================================================================
 
-function r_eci_to_eci(T::T_ROT, ::Val{:MOD06}, ::Val{:GCRF}, jd_utc::Number, eop::EopIau2000A)
+function r_eci_to_eci(
+    T::T_ROT, ::Val{:MOD06}, ::Val{:GCRF}, jd_utc::Number, eop::EopIau2000A
+)
     return r_eci_to_eci(T, Val(:MOD06), Val(:GCRF), jd_utc)
 end
 
@@ -698,7 +646,9 @@ function r_eci_to_eci(T::T_ROT, ::Val{:MOD06}, ::Val{:GCRF}, jd_utc::Number)
     return compose_rotation(r_mj2000_mod, r_gcrf_mj2000)
 end
 
-function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:MOD06}, jd_utc::Number, eop::EopIau2000A)
+function r_eci_to_eci(
+    T::T_ROT, ::Val{:GCRF}, ::Val{:MOD06}, jd_utc::Number, eop::EopIau2000A
+)
     return r_eci_to_eci(T, Val(:GCRF), Val(:MOD06), jd_utc)
 end
 
@@ -749,7 +699,9 @@ end
 
 # == MJ2000 <=> MOD ========================================================================
 
-function r_eci_to_eci(T::T_ROT, ::Val{:MOD06}, ::Val{:MJ2000}, jd_utc::Number, eop::EopIau2000A)
+function r_eci_to_eci(
+    T::T_ROT, ::Val{:MOD06}, ::Val{:MJ2000}, jd_utc::Number, eop::EopIau2000A
+)
     return r_eci_to_eci(T, Val(:MOD06), Val(:MJ2000), jd_utc)
 end
 
@@ -761,22 +713,21 @@ function r_eci_to_eci(T::T_ROT, ::Val{:MOD06}, ::Val{:MJ2000}, jd_utc::Number)
     return r_mod_to_mj2000_iau2006(T, jd_tt)
 end
 
-function r_eci_to_eci(T::T_ROT, ::Val{:MJ2000}, ::Val{:MOD06}, jd_utc::Number, eop::EopIau2000A)
+function r_eci_to_eci(
+    T::T_ROT, ::Val{:MJ2000}, ::Val{:MOD06}, jd_utc::Number, eop::EopIau2000A
+)
     return r_eci_to_eci(T, Val(:MJ2000), Val(:MOD06), jd_utc)
 end
 
-function r_eci_to_eci(
-    T::T_ROT,
-    ::Val{:MJ2000},
-    ::Val{:MOD06},
-    jd_utc::Number
-)
+function r_eci_to_eci(T::T_ROT, ::Val{:MJ2000}, ::Val{:MOD06}, jd_utc::Number)
     return inv_rotation(r_eci_to_eci(T, Val(:MOD06), Val(:MJ2000), jd_utc))
 end
 
 # == MJ2000 <=> ERS ========================================================================
 
-function r_eci_to_eci(T::T_ROT, ::Val{:ERS}, ::Val{:MJ2000}, jd_utc::Number, eop::EopIau2000A)
+function r_eci_to_eci(
+    T::T_ROT, ::Val{:ERS}, ::Val{:MJ2000}, jd_utc::Number, eop::EopIau2000A
+)
     milliarcsec_to_rad = π / 648000000
 
     # Get the time in TT.
@@ -805,7 +756,9 @@ function r_eci_to_eci(T::T_ROT, ::Val{:ERS}, ::Val{:MJ2000}, jd_utc::Number)
     return compose_rotation(r_mod_ers, r_mj2000_mod)
 end
 
-function r_eci_to_eci(T::T_ROT, ::Val{:MJ2000}, ::Val{:ERS}, jd_utc::Number, eop::EopIau2000A)
+function r_eci_to_eci(
+    T::T_ROT, ::Val{:MJ2000}, ::Val{:ERS}, jd_utc::Number, eop::EopIau2000A
+)
     return inv_rotation(r_eci_to_eci(T, Val(:ERS), Val(:MJ2000), jd_utc, eop))
 end
 
@@ -821,12 +774,12 @@ function r_eci_to_eci(
     jd_utco::Number,
     T_ECIf::T_ECIs_IAU_2006_Equinox_of_date,
     jd_utcf::Number,
-    eop::EopIau2000A
+    eop::EopIau2000A,
 )
     # In this case, we convert origin to GCRF and then convert back to the destination. This
     # is necessary because the user may want to change the epoch.
-    r_gcrf_ecio = r_eci_to_eci(T, T_ECIo,     Val(:GCRF), jd_utco, eop)
-    r_ecif_gcrf = r_eci_to_eci(T, Val(:GCRF), T_ECIf,     jd_utcf, eop)
+    r_gcrf_ecio = r_eci_to_eci(T, T_ECIo, Val(:GCRF), jd_utco, eop)
+    r_ecif_gcrf = r_eci_to_eci(T, Val(:GCRF), T_ECIf, jd_utcf, eop)
 
     # Return the full rotation.
     return compose_rotation(r_gcrf_ecio, r_ecif_gcrf)
@@ -837,14 +790,14 @@ function r_eci_to_eci(
     T_ECIo::T_ECIs_IAU_2006_Equinox_of_date,
     jd_utco::Number,
     T_ECIf::T_ECIs_IAU_2006_Equinox_of_date,
-    jd_utcf::Number
+    jd_utcf::Number,
 )
     # In this case, we convert origin to GCRF and then convert back to the destination. This
     # is necessary because the user may want to change the epoch. Notice that, differently
     # from IAU-76/FK5, we can convert to GCRF without using EOP data with minor degradation
     # in precision.
-    r_gcrf_ecio = r_eci_to_eci(T, T_ECIo,      Val(:GCRF), jd_utco)
-    r_ecif_gcrf = r_eci_to_eci(T, Val(:GCRF), T_ECIf,      jd_utcf)
+    r_gcrf_ecio = r_eci_to_eci(T, T_ECIo, Val(:GCRF), jd_utco)
+    r_ecif_gcrf = r_eci_to_eci(T, Val(:GCRF), T_ECIf, jd_utcf)
 
     # Return the full rotation.
     return compose_rotation(r_gcrf_ecio, r_ecif_gcrf)

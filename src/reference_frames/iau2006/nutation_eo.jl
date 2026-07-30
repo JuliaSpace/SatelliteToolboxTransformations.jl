@@ -67,13 +67,7 @@ function _mean_obliquity_iau2006(t_tt::Number)
     # NOTE: This equation is wrong in [1](p. 216, eq. 3-68)!
     # The one used here was obtained in [3].
     mϵ_2000 = @evalpoly(
-        t_tt,
-        +84381.406,
-        -46.836769,
-        -0.0001831,
-        +0.00200340,
-        -0.000000576,
-        -0.0000000434
+        t_tt, +84381.406, -46.836769, -0.0001831, +0.00200340, -0.000000576, -0.0000000434
     )
 
     # Reduce to the interval [0, 2π].
@@ -102,11 +96,7 @@ corrections for the nutation in obliquity (`δΔϵ_2000`) [rad] and in longitude
 - `Number`: The nutation in longitude [rad].
 - `Number`: The Equation of Origins (EO) [rad].
 """
-function nutation_eo_iau2006(
-    jd_tt::Number,
-    δΔϵ_2000::Number = 0,
-    δΔΨ_2000::Number = 0
-)
+function nutation_eo_iau2006(jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_2000::Number = 0)
     # Compute the Julian Centuries from `jd_tt`.
     t_tt = (jd_tt - JD_J2000) / 36525
 
@@ -134,10 +124,7 @@ function nutation_eo_iau2006(
     # == Nutation in the Obliquity =========================================================
 
     Δϵ_2000 = _iau2006_sum(
-        (
-            _IAU_2006_NUT_OBL0,
-            _IAU_2006_NUT_OBL1
-        ),
+        (_IAU_2006_NUT_OBL0, _IAU_2006_NUT_OBL1),
         t_tt,
         M_s,
         M_m,
@@ -152,7 +139,7 @@ function nutation_eo_iau2006(
         λ_M♄,
         λ_M⛢,
         λ_M♆,
-        p_λ
+        p_λ,
     )
 
     # Apply the correction given EOP data.
@@ -161,10 +148,7 @@ function nutation_eo_iau2006(
     # == Nutation in Longitude =============================================================
 
     ΔΨ_2000 = _iau2006_sum(
-        (
-            _IAU_2006_NUT_LON0,
-            _IAU_2006_NUT_LON1
-        ),
+        (_IAU_2006_NUT_LON0, _IAU_2006_NUT_LON1),
         t_tt,
         M_s,
         M_m,
@@ -179,7 +163,7 @@ function nutation_eo_iau2006(
         λ_M♄,
         λ_M⛢,
         λ_M♆,
-        p_λ
+        p_λ,
     )
 
     # Apply the correction given EOP data.
@@ -188,10 +172,7 @@ function nutation_eo_iau2006(
     # == Equation of Origins (EO) ==========================================================
 
     ΔEO = _iau2006_sum(
-        (
-            _IAU_2006_EO_0,
-            _IAU_2006_EO_1
-        ),
+        (_IAU_2006_EO_0, _IAU_2006_EO_1),
         t_tt,
         M_s,
         M_m,
@@ -206,20 +187,21 @@ function nutation_eo_iau2006(
         λ_M♄,
         λ_M⛢,
         λ_M♆,
-        p_λ
+        p_λ,
     )
 
     # NOTE: This equation is wrong in [1](p. 216, eq. 3-66)! The coefficients
     # were obtained from [2] and [4](eq. 69).
-    EO = @evalpoly(
-        t_tt,
-        -0.014_506,
-        -4612.156_534,
-        -1.391_581_7,
-        +0.000_000_44,
-        +0.000_029_956,
-        +3.68e-8
-    ) - ΔΨ_2000 * cos(mϵ_2000) - ΔEO
+    EO =
+        @evalpoly(
+            t_tt,
+            -0.014_506,
+            -4612.156_534,
+            -1.391_581_7,
+            +0.000_000_44,
+            +0.000_029_956,
+            +3.68e-8
+        ) - ΔΨ_2000 * cos(mϵ_2000) - ΔEO
 
     # Convert to [rad].
     EO *= a2r

@@ -15,7 +15,7 @@
 # [1]. However, this should be enough, because 1) the individual functions at the low level
 # are tested using the same values of [1], and 2) the difference is smaller than 30 cm.
 
-eop_iau1980  = read_iers_eop("../eop_IAU1980.txt",  Val(:IAU1980))
+eop_iau1980  = read_iers_eop("../eop_IAU1980.txt", Val(:IAU1980))
 eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
 
 # == File: ./src/transformations/sv_eci_to_eci.jl ==========================================
@@ -72,9 +72,9 @@ eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
     @test sv_j2000.r[2] ≈ +6123.01152000 atol = 1e-4
     @test sv_j2000.r[3] ≈ +6378.13630000 atol = 1e-4
 
-    @test sv_j2000.v[1] ≈ -4.7432196000  atol = 1e-7
-    @test sv_j2000.v[2] ≈ +0.7905366000  atol = 1e-7
-    @test sv_j2000.v[3] ≈ +5.5337561900  atol = 1e-7
+    @test sv_j2000.v[1] ≈ -4.7432196000 atol = 1e-7
+    @test sv_j2000.v[2] ≈ +0.7905366000 atol = 1e-7
+    @test sv_j2000.v[3] ≈ +5.5337561900 atol = 1e-7
 
     # == J2000 => GCRF =====================================================================
 
@@ -89,10 +89,9 @@ eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
     @test sv_gcrf.r[2] ≈ +6123.01140070 atol = 1e-4
     @test sv_gcrf.r[3] ≈ +6378.13692820 atol = 1e-4
 
-    @test sv_gcrf.v[1] ≈ -4.7432201570  atol = 1e-7
-    @test sv_gcrf.v[2] ≈ +0.7905364970  atol = 1e-7
-    @test sv_gcrf.v[3] ≈ +5.5337557270  atol = 1e-7
-
+    @test sv_gcrf.v[1] ≈ -4.7432201570 atol = 1e-7
+    @test sv_gcrf.v[2] ≈ +0.7905364970 atol = 1e-7
+    @test sv_gcrf.v[3] ≈ +5.5337557270 atol = 1e-7
 end
 
 # == MOD <=> TOD ===========================================================================
@@ -134,9 +133,9 @@ end
     @test sv_tod.r[2] ≈ +6127.36527840 atol = 1e-4
     @test sv_tod.r[3] ≈ +6380.34453270 atol = 1e-4
 
-    @test sv_tod.v[1] ≈ -4.7460883850  atol = 1e-7
-    @test sv_tod.v[2] ≈ +0.7860783240  atol = 1e-7
-    @test sv_tod.v[3] ≈ +5.5319312880  atol = 1e-7
+    @test sv_tod.v[1] ≈ -4.7460883850 atol = 1e-7
+    @test sv_tod.v[2] ≈ +0.7860783240 atol = 1e-7
+    @test sv_tod.v[3] ≈ +5.5319312880 atol = 1e-7
 
     # == TOD => MOD ========================================================================
 
@@ -151,9 +150,9 @@ end
     @test sv_mod.r[2] ≈ +6127.87081640 atol = 1e-4
     @test sv_mod.r[3] ≈ +6380.24851640 atol = 1e-4
 
-    @test sv_mod.v[1] ≈ -4.7462630520  atol = 1e-7
-    @test sv_mod.v[2] ≈ +0.7860140450  atol = 1e-7
-    @test sv_mod.v[3] ≈ +5.5317905620  atol = 1e-7
+    @test sv_mod.v[1] ≈ -4.7462630520 atol = 1e-7
+    @test sv_mod.v[2] ≈ +0.7860140450 atol = 1e-7
+    @test sv_mod.v[3] ≈ +5.5317905620 atol = 1e-7
 end
 
 ############################################################################################
@@ -203,9 +202,9 @@ end
     @test sv_cirs.r[2] ≈ +6122.78636480 atol = 1e-4
     @test sv_cirs.r[3] ≈ +6380.34453270 atol = 1e-4
 
-    @test sv_cirs.v[1] ≈ -4.7453803300  atol = 1e-7
-    @test sv_cirs.v[2] ≈ +0.7903414530  atol = 1e-7
-    @test sv_cirs.v[3] ≈ +5.5319312880  atol = 1e-7
+    @test sv_cirs.v[1] ≈ -4.7453803300 atol = 1e-7
+    @test sv_cirs.v[2] ≈ +0.7903414530 atol = 1e-7
+    @test sv_cirs.v[3] ≈ +5.5319312880 atol = 1e-7
 
     # == CIRS => GCRF ======================================================================
 
@@ -220,9 +219,9 @@ end
     @test sv_gcrf.r[2] ≈ +6123.01139910 atol = 1e-4
     @test sv_gcrf.r[3] ≈ +6378.13693380 atol = 1e-4
 
-    @test sv_gcrf.v[1] ≈ -4.7432201610  atol = 1e-7
-    @test sv_gcrf.v[2] ≈ +0.7905364950  atol = 1e-7
-    @test sv_gcrf.v[3] ≈ +5.5337557240  atol = 1e-7
+    @test sv_gcrf.v[1] ≈ -4.7432201610 atol = 1e-7
+    @test sv_gcrf.v[2] ≈ +0.7905364950 atol = 1e-7
+    @test sv_gcrf.v[3] ≈ +5.5337557240 atol = 1e-7
 end
 
 ############################################################################################
@@ -233,59 +232,59 @@ end
 # `r_eci_to_eci`. Notice that the latter has already been extensively tested.
 
 @testset "Comparing `sv_eci_to_eci` with `r_eci_to_eci`" begin
-    eop_iau1980  = read_iers_eop("../eop_IAU1980.txt",  Val(:IAU1980))
+    eop_iau1980  = read_iers_eop("../eop_IAU1980.txt", Val(:IAU1980))
     eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
 
     jd_utc = date_to_jd(2024, 4, 19)
     r_i    = [7000.0, 7500.0, 7600.0] * 1000
-    v_i    = [   5.0,    6.0,    7.0] * 1000
+    v_i    = [5.0, 6.0, 7.0] * 1000
     sv_i   = OrbitStateVector(jd_utc, r_i, v_i)
 
     for (T_ECIo, T_ECIf, eop) in (
-        (GCRF(),   J2000(),  eop_iau1980),
-        (J2000(),  GCRF(),   eop_iau1980),
-        (GCRF(),   MOD(),    eop_iau1980),
-        (GCRF(),   TOD(),    eop_iau1980),
-        (GCRF(),   TEME(),   eop_iau1980),
-        (MOD(),    GCRF(),   eop_iau1980),
-        (TOD(),    GCRF(),   eop_iau1980),
-        (TEME(),   GCRF(),   eop_iau1980),
-        (J2000(),  MOD(),    eop_iau1980),
-        (J2000(),  TOD(),    eop_iau1980),
-        (J2000(),  TEME(),   eop_iau1980),
-        (MOD(),    J2000(),  eop_iau1980),
-        (TOD(),    J2000(),  eop_iau1980),
-        (TEME(),   J2000(),  eop_iau1980),
-        (J2000(),  MOD(),    nothing),
-        (J2000(),  TOD(),    nothing),
-        (J2000(),  TEME(),   nothing),
-        (MOD(),    J2000(),  nothing),
-        (TOD(),    J2000(),  nothing),
-        (TEME(),   J2000(),  nothing),
-        (GCRF(),   CIRS(),   eop_iau2000a),
-        (CIRS(),   GCRF(),   eop_iau2000a),
-        (GCRF(),   CIRS(),   nothing),
-        (CIRS(),   GCRF(),   nothing),
-        (GCRF(),   MJ2000(), eop_iau2000a),
-        (MJ2000(), GCRF(),   eop_iau2000a),
-        (GCRF(),   MJ2000(), nothing),
-        (MJ2000(), GCRF(),   nothing),
-        (GCRF(),   MOD06(),  eop_iau2000a),
-        (GCRF(),   ERS(),    eop_iau2000a),
-        (ERS(),    GCRF(),   eop_iau2000a),
-        (MOD06(),  GCRF(),   eop_iau2000a),
-        (MJ2000(), MOD06(),  eop_iau2000a),
-        (MJ2000(), ERS(),    eop_iau2000a),
-        (ERS(),    MJ2000(), eop_iau2000a),
-        (MOD06(),  MJ2000(), eop_iau2000a),
-        (GCRF(),   MOD06(),  nothing),
-        (GCRF(),   ERS(),    nothing),
-        (ERS(),    GCRF(),   nothing),
-        (MOD06(),  GCRF(),   nothing),
-        (MJ2000(), MOD06(),  nothing),
-        (MJ2000(), ERS(),    nothing),
-        (ERS(),    MJ2000(), nothing),
-        (MOD06(),  MJ2000(), nothing),
+        (GCRF(), J2000(), eop_iau1980),
+        (J2000(), GCRF(), eop_iau1980),
+        (GCRF(), MOD(), eop_iau1980),
+        (GCRF(), TOD(), eop_iau1980),
+        (GCRF(), TEME(), eop_iau1980),
+        (MOD(), GCRF(), eop_iau1980),
+        (TOD(), GCRF(), eop_iau1980),
+        (TEME(), GCRF(), eop_iau1980),
+        (J2000(), MOD(), eop_iau1980),
+        (J2000(), TOD(), eop_iau1980),
+        (J2000(), TEME(), eop_iau1980),
+        (MOD(), J2000(), eop_iau1980),
+        (TOD(), J2000(), eop_iau1980),
+        (TEME(), J2000(), eop_iau1980),
+        (J2000(), MOD(), nothing),
+        (J2000(), TOD(), nothing),
+        (J2000(), TEME(), nothing),
+        (MOD(), J2000(), nothing),
+        (TOD(), J2000(), nothing),
+        (TEME(), J2000(), nothing),
+        (GCRF(), CIRS(), eop_iau2000a),
+        (CIRS(), GCRF(), eop_iau2000a),
+        (GCRF(), CIRS(), nothing),
+        (CIRS(), GCRF(), nothing),
+        (GCRF(), MJ2000(), eop_iau2000a),
+        (MJ2000(), GCRF(), eop_iau2000a),
+        (GCRF(), MJ2000(), nothing),
+        (MJ2000(), GCRF(), nothing),
+        (GCRF(), MOD06(), eop_iau2000a),
+        (GCRF(), ERS(), eop_iau2000a),
+        (ERS(), GCRF(), eop_iau2000a),
+        (MOD06(), GCRF(), eop_iau2000a),
+        (MJ2000(), MOD06(), eop_iau2000a),
+        (MJ2000(), ERS(), eop_iau2000a),
+        (ERS(), MJ2000(), eop_iau2000a),
+        (MOD06(), MJ2000(), eop_iau2000a),
+        (GCRF(), MOD06(), nothing),
+        (GCRF(), ERS(), nothing),
+        (ERS(), GCRF(), nothing),
+        (MOD06(), GCRF(), nothing),
+        (MJ2000(), MOD06(), nothing),
+        (MJ2000(), ERS(), nothing),
+        (ERS(), MJ2000(), nothing),
+        (MOD06(), MJ2000(), nothing),
     )
         D = if !isnothing(eop)
             r_eci_to_eci(T_ECIo, T_ECIf, jd_utc, eop)
@@ -302,29 +301,29 @@ end
         end
 
         @test sv_if.t === jd_utc
-        @test sv_if.r ≈   r_if
-        @test sv_if.v ≈   v_if
+        @test sv_if.r ≈ r_if
+        @test sv_if.v ≈ v_if
     end
 
     for (T_ECIo, T_ECIf, eop) in (
-        (MOD(),    TOD(),    eop_iau1980),
-        (MOD(),    TEME(),   eop_iau1980),
-        (TOD(),    MOD(),    eop_iau1980),
-        (TOD(),    TEME(),   eop_iau1980),
-        (TEME(),   MOD(),    eop_iau1980),
-        (TEME(),   TOD(),    eop_iau1980),
-        (MOD(),    TOD(),    nothing),
-        (MOD(),    TEME(),   nothing),
-        (TOD(),    MOD(),    nothing),
-        (TOD(),    TEME(),   nothing),
-        (TEME(),   MOD(),    nothing),
-        (TEME(),   TOD(),    nothing),
-        (CIRS(),   CIRS(),   eop_iau2000a),
-        (CIRS(),   CIRS(),   nothing),
-        (ERS(),    MOD06(),  eop_iau2000a),
-        (MOD06(),  ERS(),    eop_iau2000a),
-        (ERS(),    MOD06(),  nothing),
-        (MOD06(),  ERS(),    nothing),
+        (MOD(), TOD(), eop_iau1980),
+        (MOD(), TEME(), eop_iau1980),
+        (TOD(), MOD(), eop_iau1980),
+        (TOD(), TEME(), eop_iau1980),
+        (TEME(), MOD(), eop_iau1980),
+        (TEME(), TOD(), eop_iau1980),
+        (MOD(), TOD(), nothing),
+        (MOD(), TEME(), nothing),
+        (TOD(), MOD(), nothing),
+        (TOD(), TEME(), nothing),
+        (TEME(), MOD(), nothing),
+        (TEME(), TOD(), nothing),
+        (CIRS(), CIRS(), eop_iau2000a),
+        (CIRS(), CIRS(), nothing),
+        (ERS(), MOD06(), eop_iau2000a),
+        (MOD06(), ERS(), eop_iau2000a),
+        (ERS(), MOD06(), nothing),
+        (MOD06(), ERS(), nothing),
     )
         D = if !isnothing(eop)
             r_eci_to_eci(T_ECIo, jd_utc, T_ECIf, jd_utc, eop)
@@ -341,7 +340,7 @@ end
         end
 
         @test sv_if.t === jd_utc
-        @test sv_if.r ≈   r_if
-        @test sv_if.v ≈   v_if
+        @test sv_if.r ≈ r_if
+        @test sv_if.v ≈ v_if
     end
 end

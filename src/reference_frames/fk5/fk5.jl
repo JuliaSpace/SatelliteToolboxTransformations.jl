@@ -14,12 +14,12 @@
 ############################################################################################
 
 export r_itrf_to_pef_fk5, r_pef_to_itrf_fk5
-export r_pef_to_tod_fk5,  r_tod_to_pef_fk5
-export r_tod_to_mod_fk5,  r_mod_to_tod_fk5
+export r_pef_to_tod_fk5, r_tod_to_pef_fk5
+export r_tod_to_mod_fk5, r_mod_to_tod_fk5
 export r_mod_to_gcrf_fk5, r_gcrf_to_mod_fk5
 
 export r_itrf_to_gcrf_fk5, r_gcrf_to_itrf_fk5
-export r_pef_to_mod_fk5,   r_mod_to_pef_fk5
+export r_pef_to_mod_fk5, r_mod_to_pef_fk5
 
 ############################################################################################
 #                                 IAU-76 / FK5 Reductions                                  #
@@ -258,7 +258,9 @@ function r_tod_to_mod_fk5(jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::N
     return r_tod_to_mod_fk5(DCM, jd_tt, δΔϵ_1980, δΔψ_1980)
 end
 
-function r_tod_to_mod_fk5(T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
+function r_tod_to_mod_fk5(
+    T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0
+)
     # Compute the nutation in the Julian Day (Terrestrial Time) `jd_tt`.
     mϵ_1980, Δϵ_1980, Δψ_1980 = nutation_fk5(jd_tt)
 
@@ -300,7 +302,9 @@ function r_mod_to_tod_fk5(jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::N
     return r_mod_to_tod_fk5(DCM, jd_tt, δΔϵ_1980, δΔψ_1980)
 end
 
-function r_mod_to_tod_fk5(T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
+function r_mod_to_tod_fk5(
+    T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0
+)
     return inv_rotation(r_tod_to_mod_fk5(T, jd_tt, δΔϵ_1980, δΔψ_1980))
 end
 
@@ -425,7 +429,7 @@ function r_itrf_to_gcrf_fk5(
     x_p::Number,
     y_p::Number,
     δΔϵ_1980::Number = 0,
-    δΔψ_1980::Number = 0
+    δΔψ_1980::Number = 0,
 )
     return r_itrf_to_gcrf_fk5(DCM, jd_ut1, jd_tt, x_p, y_p, δΔϵ_1980, δΔψ_1980)
 end
@@ -437,7 +441,7 @@ function r_itrf_to_gcrf_fk5(
     x_p::Number,
     y_p::Number,
     δΔϵ_1980::Number = 0,
-    δΔψ_1980::Number = 0
+    δΔψ_1980::Number = 0,
 )
     # Compute the rotation ITRF => PEF.
     r_pef_itrf = r_itrf_to_pef_fk5(T, x_p, y_p)
@@ -499,7 +503,7 @@ function r_gcrf_to_itrf_fk5(
     x_p::Number,
     y_p::Number,
     δΔϵ_1980::Number = 0,
-    δΔψ_1980::Number = 0
+    δΔψ_1980::Number = 0,
 )
     return r_gcrf_to_itrf_fk5(DCM, jd_ut1, jd_tt, x_p, y_p, δΔϵ_1980, δΔψ_1980)
 end
@@ -511,7 +515,7 @@ function r_gcrf_to_itrf_fk5(
     x_p::Number,
     y_p::Number,
     δΔϵ_1980::Number = 0,
-    δΔψ_1980::Number = 0
+    δΔψ_1980::Number = 0,
 )
     return inv_rotation(r_itrf_to_gcrf_fk5(T, jd_ut1, jd_tt, x_p, y_p, δΔϵ_1980, δΔψ_1980))
 end
@@ -541,20 +545,13 @@ this parameter is omitted, then it falls back to `DCM`.
 - `T`: The rotation that aligns the PEF frame with the MOD frame.
 """
 function r_pef_to_mod_fk5(
-    jd_ut1::Number,
-    jd_tt::Number,
-    δΔϵ_1980::Number = 0,
-    δΔψ_1980::Number = 0
+    jd_ut1::Number, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0
 )
     return r_pef_to_mod_fk5(DCM, jd_ut1, jd_tt, δΔϵ_1980, δΔψ_1980)
 end
 
 function r_pef_to_mod_fk5(
-    T::T_ROT,
-    jd_ut1::Number,
-    jd_tt::Number,
-    δΔϵ_1980::Number = 0,
-    δΔψ_1980::Number = 0
+    T::T_ROT, jd_ut1::Number, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0
 )
     # Notice that, in this case, we will not use `r_pef_to_tod` and `r_tod_to_mod` because
     # this would call the function `nutation` twice, leading to a huge performance drop.
@@ -613,20 +610,13 @@ this parameter is omitted, then it falls back to `DCM`.
 - `T`: The rotation that aligns the MOD frame with the PEF frame.
 """
 function r_mod_to_pef_fk5(
-    jd_ut1::Number,
-    jd_tt::Number,
-    δΔϵ_1980::Number = 0,
-    δΔψ_1980::Number = 0
+    jd_ut1::Number, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0
 )
     return r_mod_to_pef_fk5(DCM, jd_ut1, jd_tt, δΔϵ_1980, δΔψ_1980)
 end
 
 function r_mod_to_pef_fk5(
-    T::T_ROT,
-    jd_ut1::Number,
-    jd_tt::Number,
-    δΔϵ_1980::Number = 0,
-    δΔψ_1980::Number = 0
+    T::T_ROT, jd_ut1::Number, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0
 )
     return inv_rotation(r_pef_to_mod_fk5(T, jd_ut1, jd_tt, δΔϵ_1980, δΔψ_1980))
 end

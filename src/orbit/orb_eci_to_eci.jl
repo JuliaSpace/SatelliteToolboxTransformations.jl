@@ -166,7 +166,7 @@ KeplerianElements{Float64, Float64}:
     True Anomaly :   45.0    °
 ```
 """
-function orb_eci_to_eci(orb::T, args::Vararg{Any, N}) where {N, T<:Orbit}
+function orb_eci_to_eci(orb::T, args::Vararg{Any, N}) where {N, T <: Orbit}
     # First, we need to convert to state vector.
     sv_o = convert(OrbitStateVector, orb)
 

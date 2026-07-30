@@ -16,10 +16,10 @@
 #
 ############################################################################################
 
-export r_teme_to_tod,  r_tod_to_teme
-export r_teme_to_mod,  r_mod_to_teme
+export r_teme_to_tod, r_tod_to_teme
+export r_teme_to_mod, r_mod_to_teme
 export r_teme_to_gcrf, r_gcrf_to_teme
-export r_teme_to_pef,  r_pef_to_teme
+export r_teme_to_pef, r_pef_to_teme
 
 # == TEME <=> TOD ==========================================================================
 
@@ -216,7 +216,7 @@ end
 
 function r_teme_to_gcrf(T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
     # Compute the rotation TEME => MOD.
-    r_mod_teme  = r_teme_to_mod(T, jd_tt, δΔϵ_1980, δΔψ_1980)
+    r_mod_teme = r_teme_to_mod(T, jd_tt, δΔϵ_1980, δΔψ_1980)
 
     # Compute the rotation MOD => GCRF.
     r_gcrf_mod = r_mod_to_gcrf_fk5(T, jd_tt)

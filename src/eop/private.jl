@@ -19,8 +19,8 @@ discontinuity before interpolation.
 - `leap_safe::Bool`: Whether the wrapped data is adjusted for leap seconds.
 - `values::W`: Original data values, exposed as the `u` property.
 """
-struct EopInterpolation{T,I,V<:AbstractVector{T},W<:AbstractVector{T}} <:
-    DataInterpolations.AbstractInterpolation{T}
+struct EopInterpolation{T, I, V <: AbstractVector{T}, W <: AbstractVector{T}} <:
+       DataInterpolations.AbstractInterpolation{T}
     interpolation::I
     t::V
     first_value::T
@@ -137,9 +137,9 @@ Fields that are empty, and the textual `Type` columns, are returned as `NaN` so 
 function _read_iers_eop_csv(filename::AbstractString)
     lines = readlines(filename)
 
-    length(lines) < 2 && throw(ArgumentError(
-        "The IERS EOP file must contain a header and at least one data row."
-    ))
+    length(lines) < 2 && throw(
+        ArgumentError("The IERS EOP file must contain a header and at least one data row."),
+    )
 
     # The header fixes the number of columns.
     num_cols = count(==(_IERS_EOP_DELIMITER), first(lines)) + 1
@@ -156,7 +156,8 @@ function _read_iers_eop_csv(filename::AbstractString)
 
         while col ≤ num_cols
             delimiter_id = findnext(==(_IERS_EOP_DELIMITER), line, first_id)
-            last_id = delimiter_id === nothing ? lastindex(line) : prevind(line, delimiter_id)
+            last_id =
+                delimiter_id === nothing ? lastindex(line) : prevind(line, delimiter_id)
 
             # An empty field is left as `NaN`, and so is a field that does not hold a number,
             # which is the case of the `Type` columns.
@@ -191,9 +192,7 @@ Create an EOP interpolation from IERS knots and field values.
 - `leap_safe`: Adjust UT1-UTC values around leap seconds when `true`.
 """
 function _create_iers_eop_interpolation(
-    knots::AbstractVector,
-    field::AbstractVector;
-    leap_safe::Bool = false
+    knots::AbstractVector, field::AbstractVector; leap_safe::Bool = false
 )
     # Obtain the last available index of the field.
     last_id = something(findlast(_iers_eop_available, field), length(field))
@@ -209,10 +208,12 @@ function _create_iers_eop_interpolation(
     # Only *trailing* gaps are trimmed above. A gap in the middle of the field would silently
     # poison the interpolation with `NaN`, so reject it with a descriptive message instead.
     gap_id = findfirst(isnan, field_float)
-    gap_id === nothing || throw(ArgumentError(
-        "The EOP field has a missing value at index $gap_id, which is not at its end. " *
-        "The IERS file is likely corrupted or truncated."
-    ))
+    gap_id === nothing || throw(
+        ArgumentError(
+            "The EOP field has a missing value at index $gap_id, which is not at its end. " *
+            "The IERS file is likely corrupted or truncated.",
+        ),
+    )
 
     # Keep one knot array for both the interpolation and its wrapper. Using a
     # view here is important for fields with trailing missing values.
@@ -224,17 +225,12 @@ function _create_iers_eop_interpolation(
     interp_field = leap_safe ? field_float .- get_Δat.(knots_view) : field_float
     interp = DataInterpolations.LinearInterpolation(
         interp_field,
-        knots_view,
-        extrapolation = DataInterpolations.ExtrapolationType.Constant
+        knots_view;
+        extrapolation = DataInterpolations.ExtrapolationType.Constant,
     )
 
     return EopInterpolation(
-        interp,
-        interp.t,
-        field_float[1],
-        field_float[end],
-        leap_safe,
-        field_float
+        interp, interp.t, field_float[1], field_float[end], leap_safe, field_float
     )
 end
 
@@ -256,10 +252,7 @@ explicitly requested.
 - `force_download`: Download even when a current cached file exists.
 """
 function _download_eop(
-    url::String,
-    key::String,
-    filename::String;
-    force_download::Bool = false
+    url::String, key::String, filename::String; force_download::Bool = false
 )
     # Get the scratch space where the files are located.
     eop_cache_dir      = @get_scratch!(key)
@@ -273,7 +266,6 @@ function _download_eop(
         isempty(readdir(eop_cache_dir)) ||
         !isfile(eop_file) ||
         !isfile(eop_file_timestamp)
-
         download_eop = true
 
     else
@@ -293,7 +285,6 @@ function _download_eop(
         catch
             # If any error occurred, we will download the data again.
             download_eop = true
-
         end
     end
 
@@ -302,7 +293,7 @@ function _download_eop(
         @info "Downloading the file '$filename' from '$url'..."
         download(url, eop_file)
         open(eop_file_timestamp, "w") do f
-            write(f, string(now()))
+            return write(f, string(now()))
         end
     end
 

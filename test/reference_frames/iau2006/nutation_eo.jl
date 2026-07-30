@@ -45,7 +45,7 @@
     mϵ_2000, Δϵ_2000, ΔΨ_2000, EO = nutation_eo_iau2006(JD_TT)
 
     @test mϵ_2000 * r2a ≈ 84378.576696215 atol = 1e-9
-    @test Δϵ_2000 * r2a ≈     8.656841020 atol = 1e-7
-    @test ΔΨ_2000 * r2a ≈    -1.071332969 atol = 1e-7
-    @test EO * r2a      ≈  -277.646996035 atol = 1e-6
+    @test Δϵ_2000 * r2a ≈ 8.656841020 atol = 1e-7
+    @test ΔΨ_2000 * r2a ≈ -1.071332969 atol = 1e-7
+    @test EO * r2a ≈ -277.646996035 atol = 1e-6
 end

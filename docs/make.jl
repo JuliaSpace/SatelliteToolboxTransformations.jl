@@ -1,9 +1,9 @@
 using Documenter
 using SatelliteToolboxTransformations
 
-makedocs(
+makedocs(;
     modules = [SatelliteToolboxTransformations],
-    format = Documenter.HTML(
+    format = Documenter.HTML(;
         prettyurls = !("local" in ARGS),
         canonical = "https://juliaspace.github.io/SatelliteToolboxTransformations.jl/stable/",
         size_threshold = 500 * 1024,
@@ -23,7 +23,6 @@ makedocs(
     ],
 )
 
-deploydocs(
-    repo = "github.com/JuliaSpace/SatelliteToolboxTransformations.jl.git",
-    target = "build",
+deploydocs(;
+    repo = "github.com/JuliaSpace/SatelliteToolboxTransformations.jl.git", target = "build"
 )

@@ -57,7 +57,7 @@ end
     # `aux` is of the order of 1e-3, so the first-order relation must hold to about that
     # relative accuracy. This pins down the sign and the scaling by `sin(ϵ₀)`.
     @test δΔΨ ≈ δx / sϵ₀ rtol = 1e-2
-    @test δΔϵ ≈ δy       rtol = 1e-2
+    @test δΔϵ ≈ δy rtol = 1e-2
 
     # The corrections are returned in the same unit as the EOP pole offsets
     # (milliarcseconds), and the TT epoch may be supplied by the caller.

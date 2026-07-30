@@ -84,7 +84,9 @@ function r_tirs_to_ers_iau2006(jd_ut1::Number, jd_tt::Number, δΔΨ_2000::Numbe
     return r_tirs_to_ers_iau2006(DCM, jd_ut1, jd_tt, δΔΨ_2000)
 end
 
-function r_tirs_to_ers_iau2006(T::T_ROT, jd_ut1::Number, jd_tt::Number, δΔΨ_2000::Number = 0)
+function r_tirs_to_ers_iau2006(
+    T::T_ROT, jd_ut1::Number, jd_tt::Number, δΔΨ_2000::Number = 0
+)
     # In this theory, the rotation of Earth is taken into account by the Earth Rotation
     # Angle, which is the angle between the Conventional International Origin (CIO) and the
     # Terrestrial Intermediate Origin (TIO) [1]. The latter is a reference meridian on Earth
@@ -134,7 +136,9 @@ function r_ers_to_tirs_iau2006(jd_ut1::Number, jd_tt::Number, δΔΨ_2000::Numbe
     return r_ers_to_tirs_iau2006(DCM, jd_ut1, jd_tt, δΔΨ_2000)
 end
 
-function r_ers_to_tirs_iau2006(T::T_ROT, jd_ut1::Number, jd_tt::Number, δΔΨ_2000::Number = 0)
+function r_ers_to_tirs_iau2006(
+    T::T_ROT, jd_ut1::Number, jd_tt::Number, δΔΨ_2000::Number = 0
+)
     return inv_rotation(r_tirs_to_ers_iau2006(T, jd_ut1, jd_tt, δΔΨ_2000))
 end
 
@@ -168,10 +172,7 @@ function r_ers_to_mod_iau2006(jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_200
 end
 
 function r_ers_to_mod_iau2006(
-    T::T_ROT,
-    jd_tt::Number,
-    δΔϵ_2000::Number = 0,
-    δΔΨ_2000::Number = 0
+    T::T_ROT, jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_2000::Number = 0
 )
     # Compute the angles used to compute the nutation.
     mϵ_2000, Δϵ_2000, ΔΨ_2000, ~ = nutation_eo_iau2006(jd_tt, δΔϵ_2000, δΔΨ_2000)
@@ -203,10 +204,7 @@ function r_mod_to_ers_iau2006(jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_200
 end
 
 function r_mod_to_ers_iau2006(
-    T::T_ROT,
-    jd_tt::Number,
-    δΔϵ_2000::Number = 0,
-    δΔΨ_2000::Number = 0
+    T::T_ROT, jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_2000::Number = 0
 )
     return inv_rotation(r_ers_to_mod_iau2006(T, jd_tt, δΔϵ_2000, δΔΨ_2000))
 end
@@ -261,8 +259,7 @@ function r_mod_to_mj2000_iau2006(T::T_ROT, jd_tt::Number)
     # MOD. Hence, we need the inverse matrix. Furthermore, the equation in [1](p. 218, eq.
     # 3-73) uses mϵ_2000 instead of ϵ_0 as in [2](eq. 12).
     return compose_rotation(
-        angle_to_rot(T, -χ_a, ω_a, Ψ_a, :ZXZ),
-        angle_to_rot(T, -ϵ_0, 0, 0, :XYZ)
+        angle_to_rot(T, -χ_a, ω_a, Ψ_a, :ZXZ), angle_to_rot(T, -ϵ_0, 0, 0, :XYZ)
     )
 end
 
@@ -419,20 +416,13 @@ this parameter is omitted, then it falls back to `DCM`.
 - `T`: The rotation that aligns the TIRS frame with the MOD frame.
 """
 function r_tirs_to_mod_iau2006(
-    jd_ut1::Number,
-    jd_tt::Number,
-    δΔϵ_2000::Number = 0,
-    δΔΨ_2000::Number = 0
+    jd_ut1::Number, jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_2000::Number = 0
 )
     return r_tirs_to_mod_iau2006(DCM, jd_ut1, jd_tt, δΔϵ_2000, δΔΨ_2000)
 end
 
 function r_tirs_to_mod_iau2006(
-    T::T_ROT,
-    jd_ut1::Number,
-    jd_tt::Number,
-    δΔϵ_2000::Number = 0,
-    δΔΨ_2000::Number = 0
+    T::T_ROT, jd_ut1::Number, jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_2000::Number = 0
 )
     # In this theory, the rotation of Earth is taken into account by the Earth Rotation
     # Angle, which is the angle between the Conventional International Origin (CIO) and the
@@ -485,20 +475,13 @@ this parameter is omitted, then it falls back to `DCM`.
 - `T`: The rotation that aligns the MOD frame with the TIRS frame.
 """
 function r_mod_to_tirs_iau2006(
-    jd_ut1::Number,
-    jd_tt::Number,
-    δΔϵ_2000::Number = 0,
-    δΔΨ_2000::Number = 0
+    jd_ut1::Number, jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_2000::Number = 0
 )
     return r_mod_to_tirs_iau2006(DCM, jd_ut1, jd_tt, δΔϵ_2000, δΔΨ_2000)
 end
 
 function r_mod_to_tirs_iau2006(
-    T::T_ROT,
-    jd_ut1::Number,
-    jd_tt::Number,
-    δΔϵ_2000::Number = 0,
-    δΔΨ_2000::Number = 0
+    T::T_ROT, jd_ut1::Number, jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_2000::Number = 0
 )
     return inv_rotation(r_tirs_to_mod_iau2006(T, jd_ut1, jd_tt, δΔϵ_2000, δΔΨ_2000))
 end

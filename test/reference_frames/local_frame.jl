@@ -17,9 +17,9 @@
 
     r_ned = ecef_to_ned(r_ecef, lat, lon, h; translate = true)
 
-    @test r_ned[1] ≈  -8.345950969454717e6
-    @test r_ned[2] ≈  -2.7167002618976594e6
-    @test r_ned[3] ≈   4.496865561149651e6
+    @test r_ned[1] ≈ -8.345950969454717e6
+    @test r_ned[2] ≈ -2.7167002618976594e6
+    @test r_ned[3] ≈ 4.496865561149651e6
 
     r_ecef_conv = ned_to_ecef(r_ned, lat, lon, h; translate = true)
 

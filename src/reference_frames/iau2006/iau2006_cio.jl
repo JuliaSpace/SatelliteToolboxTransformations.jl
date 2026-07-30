@@ -280,18 +280,17 @@ function r_cirs_to_gcrf_iau2006(::Type{DCM}, jd_tt::Number, δx::Number = 0, δy
     #   a = 1/(1 + cos(d)), d = atan( sqrt( ( x^2 + y^2 )/( 1 - x^2 - y^2 ) ) )
     a = 1 / 2 + 1 / 8 * (x² + y²)
 
+    #! format: off
     D = DCM(1 - a * x²,    -a * xy, x,
                -a * xy, 1 - a * y², y,
                     -x,        -y , 1 - a * (x² + y²))'
+    #! format: on
 
     return D * angle_to_dcm(s, :Z)
 end
 
 function r_cirs_to_gcrf_iau2006(
-    ::Type{Quaternion},
-    jd_tt::Number,
-    δx::Number = 0,
-    δy::Number = 0
+    ::Type{Quaternion}, jd_tt::Number, δx::Number = 0, δy::Number = 0
 )
     return dcm_to_quat(r_cirs_to_gcrf_iau2006(DCM, jd_tt, δx, δy))
 end
@@ -339,18 +338,17 @@ function r_gcrf_to_cirs_iau2006(::Type{DCM}, jd_tt::Number, δx::Number = 0, δy
     #   a = 1/(1 + cos(d)), d = atan( sqrt( ( x^2 + y^2 )/( 1 - x^2 - y^2 ) ) )
     a = 1 / 2 + 1 / 8 * (x² + y²)
 
+    #! format: off
     D = DCM(1 - a * x²,    -a * xy, x,
                -a * xy, 1 - a * y², y,
                    -x ,        -y , 1 - a * (x² + y²))
+    #! format: on
 
     return angle_to_dcm(-s, :Z) * D
 end
 
 function r_gcrf_to_cirs_iau2006(
-    ::Type{Quaternion},
-    jd_tt::Number,
-    δx::Number = 0,
-    δy::Number = 0
+    ::Type{Quaternion}, jd_tt::Number, δx::Number = 0, δy::Number = 0
 )
     return dcm_to_quat(r_gcrf_to_cirs_iau2006(DCM, jd_tt, δx, δy))
 end

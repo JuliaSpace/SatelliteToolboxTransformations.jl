@@ -54,12 +54,12 @@ EopIau2000A:
        dY │ 1973-01-02T00:00:00 -- 2021-08-05T00:00:00
 ```
 """
-fetch_iers_eop(;kwargs...) = fetch_iers_eop(Val(:IAU1980); kwargs...)
+fetch_iers_eop(; kwargs...) = fetch_iers_eop(Val(:IAU1980); kwargs...)
 
 function fetch_iers_eop(
     ::Val{:IAU1980};
     force_download::Bool = false,
-    url::String = "https://datacenter.iers.org/data/csv/finals.all.csv"
+    url::String = "https://datacenter.iers.org/data/csv/finals.all.csv",
 )
     # Download the file, if necessary, and obtain its path.
     eop_file = _download_eop(url, "eop_iau1980", "finals.all.csv"; force_download)
@@ -71,7 +71,7 @@ end
 function fetch_iers_eop(
     ::Val{:IAU2000A};
     force_download::Bool = false,
-    url::String = "https://datacenter.iers.org/data/csv/finals2000A.all.csv"
+    url::String = "https://datacenter.iers.org/data/csv/finals2000A.all.csv",
 )
     # Download the file, if necessary, and obtain its path.
     eop_file = _download_eop(url, "eop_iau2000A", "finals2000A.all.csv"; force_download)

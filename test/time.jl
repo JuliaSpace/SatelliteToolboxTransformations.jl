@@ -14,7 +14,7 @@
 
 # -- Function get_Δat ----------------------------------------------------------------------
 
-@testset "Function get_Δat"  begin
+@testset "Function get_Δat" begin
     # Leap seconds values obtained from [2].
     leap_secs = [
         2272060800 10 1 "Jan" 1972;
@@ -116,12 +116,12 @@ end
 
     (year, month, day, hour, minute, second) = jd_to_date(JD_UT1)
 
-    @test year   == 2004
-    @test month  == 5
-    @test day    == 14
-    @test hour   == 16
+    @test year == 2004
+    @test month == 5
+    @test day == 14
+    @test hour == 16
     @test minute == 42
-    @test second  ≈ 59.5367 atol = 1e-4
+    @test second ≈ 59.5367 atol = 1e-4
 
     # -- jd_ut1_to_utc ---------------------------------------------------------------------
 
@@ -130,12 +130,12 @@ end
 
     (year, month, day, hour, minute, second) = jd_to_date(JD_UTC)
 
-    @test year   == 2004
-    @test month  == 5
-    @test day    == 14
-    @test hour   == 10+6
+    @test year == 2004
+    @test month == 5
+    @test day == 14
+    @test hour == 10+6
     @test minute == 43
-    @test second  ≈ 0.0000 atol = 1e-4
+    @test second ≈ 0.0000 atol = 1e-4
 
     # == Scenario 02 =======================================================================
 
@@ -148,12 +148,12 @@ end
 
     (year, month, day, hour, minute, second) = jd_to_date(JD_UT1)
 
-    @test year   == 2004
-    @test month  == 4
-    @test day    == 6
-    @test hour   == 7
+    @test year == 2004
+    @test month == 4
+    @test day == 6
+    @test hour == 7
     @test minute == 51
-    @test second  ≈ 27.946047 atol = 1e-4
+    @test second ≈ 27.946047 atol = 1e-4
 
     # -- jd_ut1_to_utc ---------------------------------------------------------------------
 
@@ -162,12 +162,12 @@ end
 
     (year, month, day, hour, minute, second) = jd_to_date(JD_UTC)
 
-    @test year   == 2004
-    @test month  == 4
-    @test day    == 6
-    @test hour   == 7
+    @test year == 2004
+    @test month == 4
+    @test day == 6
+    @test hour == 7
     @test minute == 51
-    @test second  ≈ 28.386009 atol = 1e-4
+    @test second ≈ 28.386009 atol = 1e-4
 
     # == Using EOP =========================================================================
 
@@ -186,23 +186,23 @@ end
 
     (year, month, day, hour, minute, second) = jd_to_date(JD_UT1)
 
-    @test year   == 2004
-    @test month  == 5
-    @test day    == 14
-    @test hour   == 16
+    @test year == 2004
+    @test month == 5
+    @test day == 14
+    @test hour == 16
     @test minute == 42
-    @test second  ≈ 59.5474 atol = 1e-4
+    @test second ≈ 59.5474 atol = 1e-4
 
     JD_UT1 = jd_utc_to_ut1(JD_UTC, eop_iau2000a)
 
     (year, month, day, hour, minute, second) = jd_to_date(JD_UT1)
 
-    @test year   == 2004
-    @test month  == 5
-    @test day    == 14
-    @test hour   == 16
+    @test year == 2004
+    @test month == 5
+    @test day == 14
+    @test hour == 16
     @test minute == 42
-    @test second  ≈ 59.5474 atol = 1e-4
+    @test second ≈ 59.5474 atol = 1e-4
 
     # -- jd_ut1_to_utc ---------------------------------------------------------------------
 
@@ -212,23 +212,23 @@ end
 
     (year, month, day, hour, minute, second) = jd_to_date(JD_UTC)
 
-    @test year   == 2004
-    @test month  == 5
-    @test day    == 14
-    @test hour   == 10+6
+    @test year == 2004
+    @test month == 5
+    @test day == 14
+    @test hour == 10+6
     @test minute == 43
-    @test second  ≈ 0.0000 atol = 1e-4
+    @test second ≈ 0.0000 atol = 1e-4
 
     JD_UTC = jd_ut1_to_utc(JD_UT1, eop_iau2000a)
 
     (year, month, day, hour, minute, second) = jd_to_date(JD_UTC)
 
-    @test year   == 2004
-    @test month  == 5
-    @test day    == 14
-    @test hour   == 10+6
+    @test year == 2004
+    @test month == 5
+    @test day == 14
+    @test hour == 10+6
     @test minute == 43
-    @test second  ≈ 0.0000 atol = 1e-4
+    @test second ≈ 0.0000 atol = 1e-4
 end
 
 @testset "Leap-safe EOP interpolation and inverse" begin
@@ -293,12 +293,12 @@ end
 
     (year, month, day, hour, minute, second) = jd_to_date(JD_TT)
 
-    @test year   == 2004
-    @test month  == 5
-    @test day    == 14
-    @test hour   == 16
+    @test year == 2004
+    @test month == 5
+    @test day == 14
+    @test hour == 16
     @test minute == 44
-    @test second  ≈ 04.1840 atol = 1e-4
+    @test second ≈ 04.1840 atol = 1e-4
 
     # -- jd_tt_to_utc ----------------------------------------------------------------------
 
@@ -307,18 +307,18 @@ end
 
     (year, month, day, hour, minute, second) = jd_to_date(JD_UTC)
 
-    @test year   == 2004
-    @test month  == 5
-    @test day    == 14
-    @test hour   == 16
+    @test year == 2004
+    @test month == 5
+    @test day == 14
+    @test hour == 16
 
     # TODO: Fix this rounding problem.
     if minute == 42
         @test minute == 42
-        @test second  ≈ 60.0000 atol = 1e-4
+        @test second ≈ 60.0000 atol = 1e-4
     else
         @test minute == 43
-        @test second  ≈ 0.0000 atol = 1e-4
+        @test second ≈ 0.0000 atol = 1e-4
     end
 
     # == Scenario 02 =======================================================================
@@ -338,12 +338,12 @@ end
 
     (year, month, day, hour, minute, second) = jd_to_date(JD_UTC)
 
-    @test year   == 2004
-    @test month  == 4
-    @test day    == 6
-    @test hour   == 07
+    @test year == 2004
+    @test month == 4
+    @test day == 6
+    @test hour == 07
     @test minute == 51
-    @test second  ≈ 28.386009 atol = 1e-4
+    @test second ≈ 28.386009 atol = 1e-4
 
     # The offset used for the inverse must be selected from UTC, including at
     # a leap boundary (2017-01-01, when ΔAT changed from 36 s to 37 s).

@@ -14,7 +14,8 @@ struct OffsetCoefficientMatrix{T} <: AbstractMatrix{T}
 end
 
 Base.size(matrix::OffsetCoefficientMatrix) = size(matrix.data)
-Base.axes(matrix::OffsetCoefficientMatrix) = (2:(size(matrix.data, 1) + 1), axes(matrix.data, 2))
+Base.axes(matrix::OffsetCoefficientMatrix) =
+    (2:(size(matrix.data, 1) + 1), axes(matrix.data, 2))
 Base.getindex(matrix::OffsetCoefficientMatrix, row, column) = matrix.data[row - 1, column]
 
 # == File: ./src/reference_frames/fk5/nutation.jl ==========================================
@@ -62,7 +63,7 @@ Base.getindex(matrix::OffsetCoefficientMatrix, row, column) = matrix.data[row - 
     mϵ_1980, Δϵ_1980, Δψ_1980 = nutation_fk5(2453101.828154745)
 
     @test mϵ_1980 * 180 / π ≈ 23.4387368 atol = 1e-7
-    @test Δϵ_1980 * 180 / π ≈  0.0020316 atol = 1e-7
+    @test Δϵ_1980 * 180 / π ≈ 0.0020316 atol = 1e-7
     @test Δψ_1980 * 180 / π ≈ -0.0034108 atol = 1e-7
 
     # == Scenario 02 =======================================================================
@@ -72,7 +73,7 @@ Base.getindex(matrix::OffsetCoefficientMatrix, row, column) = matrix.data[row - 
 
     (mϵ_1980, Δϵ_1980, Δψ_1980) = nutation_fk5(JD_TT, 4)
 
-    @test mϵ_1980 * 180 / π ≈ 23.43922657  atol = 1e-6
+    @test mϵ_1980 * 180 / π ≈ 23.43922657 atol = 1e-6
     @test Δϵ_1980 * 180 / π ≈ -0.001260854 atol = 1e-8
     @test Δψ_1980 * 180 / π ≈ -0.004250260 atol = 1e-8
 
@@ -81,7 +82,7 @@ Base.getindex(matrix::OffsetCoefficientMatrix, row, column) = matrix.data[row - 
 
     mϵ_1980, Δϵ_1980, Δψ_1980 = nutation_fk5(JD_TT, 4)
 
-    @test mϵ_1980 * 180 / π ≈ 23.43922657  atol = 1e-6
+    @test mϵ_1980 * 180 / π ≈ 23.43922657 atol = 1e-6
     @test Δϵ_1980 * 180 / π ≈ -0.001247061 atol = 1e-8
     @test Δψ_1980 * 180 / π ≈ -0.004337544 atol = 1e-8
 
@@ -93,16 +94,13 @@ Base.getindex(matrix::OffsetCoefficientMatrix, row, column) = matrix.data[row - 
     @test (@test_logs(
         (
             :warn,
-            "The maximum number of coefficients to compute nutation using IAU-76/FK5 theory is 106."
+            "The maximum number of coefficients to compute nutation using IAU-76/FK5 theory is 106.",
         ),
         nutation_fk5(JD_TT, 107; verbose = Val(true))
     )) == (mϵ_1980, Δϵ_1980, Δψ_1980)
 
     @test (@test_logs(
-        (
-            :warn,
-            "n_max must greater than 0. The default value will be used (106)."
-        ),
+        (:warn, "n_max must greater than 0. The default value will be used (106)."),
         nutation_fk5(JD_TT, 0; verbose = Val(true))
     )) == (mϵ_1980, Δϵ_1980, Δψ_1980)
 

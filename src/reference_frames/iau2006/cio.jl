@@ -79,18 +79,19 @@ function cio_iau2006(jd_tt::Number)
         λ_M♄,
         λ_M⛢,
         λ_M♆,
-        p_λ
+        p_λ,
     )
 
-    X = @evalpoly(
-        t_tt,
-        -0.016_617,
-        +2004.191_898,
-        -0.429_782_9,
-        -0.198_618_34,
-        +0.000_007_578,
-        +0.000_005_928_5
-    ) + ΔX
+    X =
+        @evalpoly(
+            t_tt,
+            -0.016_617,
+            +2004.191_898,
+            -0.429_782_9,
+            -0.198_618_34,
+            +0.000_007_578,
+            +0.000_005_928_5
+        ) + ΔX
 
     # Convert to [rad].
     X *= a2r
@@ -103,7 +104,7 @@ function cio_iau2006(jd_tt::Number)
             _IAU_2006_CIP_Y1,
             _IAU_2006_CIP_Y2,
             _IAU_2006_CIP_Y3,
-            _IAU_2006_CIP_Y4
+            _IAU_2006_CIP_Y4,
         ),
         t_tt,
         M_s,
@@ -119,18 +120,19 @@ function cio_iau2006(jd_tt::Number)
         λ_M♄,
         λ_M⛢,
         λ_M♆,
-        p_λ
+        p_λ,
     )
 
-    Y = @evalpoly(
-        t_tt,
-        -0.006_951,
-        -0.025_896,
-        -22.407_274_7,
-        +0.001_900_59,
-        +0.001_112_526,
-        +0.000_000_135_8
-    ) + ΔY
+    Y =
+        @evalpoly(
+            t_tt,
+            -0.006_951,
+            -0.025_896,
+            -22.407_274_7,
+            +0.001_900_59,
+            +0.001_112_526,
+            +0.000_000_135_8
+        ) + ΔY
 
     # Convert to [rad].
     Y *= a2r
@@ -148,7 +150,7 @@ function cio_iau2006(jd_tt::Number)
             _IAU_2006_CIO_S1,
             _IAU_2006_CIO_S2,
             _IAU_2006_CIO_S3,
-            _IAU_2006_CIO_S4
+            _IAU_2006_CIO_S4,
         ),
         t_tt,
         M_s,
@@ -164,21 +166,22 @@ function cio_iau2006(jd_tt::Number)
         λ_M♄,
         λ_M⛢,
         λ_M♆,
-        p_λ
+        p_λ,
     )
 
-    s = @evalpoly(
-        t_tt,
-        # We must convert this term to [arcsec] to match the units.
-        #    ||
-        # |------|
-        (-X * Y / 2) / a2r + 0.000_094,
-        +0.003_808_65,
-        -0.000_122_68,
-        -0.072_574_11,
-        +0.000_027_98,
-        +0.000_015_65
-    ) + Δs
+    s =
+        @evalpoly(
+            t_tt,
+            # We must convert this term to [arcsec] to match the units.
+            #    ||
+            # |------|
+            (-X * Y / 2) / a2r + 0.000_094,
+            +0.003_808_65,
+            -0.000_122_68,
+            -0.072_574_11,
+            +0.000_027_98,
+            +0.000_015_65
+        ) + Δs
 
     # Convert to [rad].
     s *= a2r

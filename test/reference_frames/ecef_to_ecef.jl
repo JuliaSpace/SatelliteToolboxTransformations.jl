@@ -15,7 +15,7 @@
 # However, this should be enough, because 1) the individual functions at the low level are
 # tested using the same values of [1], and 2) the difference is smaller than 30 cm.
 
-eop_iau1980  = read_iers_eop("../eop_IAU1980.txt",  Val(:IAU1980))
+eop_iau1980  = read_iers_eop("../eop_IAU1980.txt", Val(:IAU1980))
 eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
 
 # == File: ./src/reference_frames/ecef_to_ecef.jl ==========================================
@@ -68,9 +68,9 @@ eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
     @test r_pef[2] ≈ +7901.30558560 atol = 1e-4
     @test r_pef[3] ≈ +6380.34453270 atol = 1e-4
 
-    @test v_pef[1] ≈ -3.2256327470  atol = 1e-7
-    @test v_pef[2] ≈ -2.8724425110  atol = 1e-7
-    @test v_pef[3] ≈ +5.5319312880  atol = 1e-7
+    @test v_pef[1] ≈ -3.2256327470 atol = 1e-7
+    @test v_pef[2] ≈ -2.8724425110 atol = 1e-7
+    @test v_pef[3] ≈ +5.5319312880 atol = 1e-7
 
     # -- Quaternion ------------------------------------------------------------------------
 
@@ -83,14 +83,14 @@ eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
     @test r_pef[2] ≈ +7901.30558560 atol = 1e-4
     @test r_pef[3] ≈ +6380.34453270 atol = 1e-4
 
-    @test v_pef[1] ≈ -3.2256327470  atol = 1e-7
-    @test v_pef[2] ≈ -2.8724425110  atol = 1e-7
-    @test v_pef[3] ≈ +5.5319312880  atol = 1e-7
+    @test v_pef[1] ≈ -3.2256327470 atol = 1e-7
+    @test v_pef[2] ≈ -2.8724425110 atol = 1e-7
+    @test v_pef[3] ≈ +5.5319312880 atol = 1e-7
 
     # == PEF => ITRF =======================================================================
 
-    r_pef  = [-1033.47503130; 7901.30558560; 6380.34453270]
-    v_pef  = [-3.2256327470; -2.8724425110; +5.5319312880]
+    r_pef = [-1033.47503130; 7901.30558560; 6380.34453270]
+    v_pef = [-3.2256327470; -2.8724425110; +5.5319312880]
 
     # -- DCM -------------------------------------------------------------------------------
 
@@ -103,9 +103,9 @@ eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
     @test r_itrf[2] ≈ +7901.2952754 atol = 1e-4
     @test r_itrf[3] ≈ +6380.3565958 atol = 1e-4
 
-    @test v_itrf[1] ≈ -3.225636520  atol = 1e-7
-    @test v_itrf[2] ≈ -2.872451450  atol = 1e-7
-    @test v_itrf[3] ≈ +5.531924446  atol = 1e-7
+    @test v_itrf[1] ≈ -3.225636520 atol = 1e-7
+    @test v_itrf[2] ≈ -2.872451450 atol = 1e-7
+    @test v_itrf[3] ≈ +5.531924446 atol = 1e-7
 
     # -- Quaternion ------------------------------------------------------------------------
 
@@ -118,9 +118,9 @@ eop_iau2000a = read_iers_eop("../eop_IAU2000A.txt", Val(:IAU2000A))
     @test r_itrf[2] ≈ +7901.2952754 atol = 1e-4
     @test r_itrf[3] ≈ +6380.3565958 atol = 1e-4
 
-    @test v_itrf[1] ≈ -3.225636520  atol = 1e-7
-    @test v_itrf[2] ≈ -2.872451450  atol = 1e-7
-    @test v_itrf[3] ≈ +5.531924446  atol = 1e-7
+    @test v_itrf[1] ≈ -3.225636520 atol = 1e-7
+    @test v_itrf[2] ≈ -2.872451450 atol = 1e-7
+    @test v_itrf[3] ≈ +5.531924446 atol = 1e-7
 end
 
 ############################################################################################
@@ -169,9 +169,9 @@ end
     @test r_tirs[2] ≈ +7901.30558560 atol = 1e-4
     @test r_tirs[3] ≈ +6380.34453270 atol = 1e-4
 
-    @test v_tirs[1] ≈ -3.2256327470  atol = 1e-7
-    @test v_tirs[2] ≈ -2.8724425110  atol = 1e-7
-    @test v_tirs[3] ≈ +5.5319312880  atol = 1e-7
+    @test v_tirs[1] ≈ -3.2256327470 atol = 1e-7
+    @test v_tirs[2] ≈ -2.8724425110 atol = 1e-7
+    @test v_tirs[3] ≈ +5.5319312880 atol = 1e-7
 
     # -- Quaternion ------------------------------------------------------------------------
 
@@ -184,14 +184,14 @@ end
     @test r_tirs[2] ≈ +7901.30558560 atol = 1e-4
     @test r_tirs[3] ≈ +6380.34453270 atol = 1e-4
 
-    @test v_tirs[1] ≈ -3.2256327470  atol = 1e-7
-    @test v_tirs[2] ≈ -2.8724425110  atol = 1e-7
-    @test v_tirs[3] ≈ +5.5319312880  atol = 1e-7
+    @test v_tirs[1] ≈ -3.2256327470 atol = 1e-7
+    @test v_tirs[2] ≈ -2.8724425110 atol = 1e-7
+    @test v_tirs[3] ≈ +5.5319312880 atol = 1e-7
 
     # == TIRS => ITRF ======================================================================
 
-    r_tirs  = [-1033.47503120; 7901.30558560; 6380.34453270]
-    v_tirs  = [-3.2256327470; -2.8724425110; +5.5319312880]
+    r_tirs = [-1033.47503120; 7901.30558560; 6380.34453270]
+    v_tirs = [-3.2256327470; -2.8724425110; +5.5319312880]
 
     # -- DCM -------------------------------------------------------------------------------
 
@@ -204,9 +204,9 @@ end
     @test r_itrf[2] ≈ +7901.2952754 atol = 1e-4
     @test r_itrf[3] ≈ +6380.3565958 atol = 1e-4
 
-    @test v_itrf[1] ≈ -3.225636520  atol = 1e-7
-    @test v_itrf[2] ≈ -2.872451450  atol = 1e-7
-    @test v_itrf[3] ≈ +5.531924446  atol = 1e-7
+    @test v_itrf[1] ≈ -3.225636520 atol = 1e-7
+    @test v_itrf[2] ≈ -2.872451450 atol = 1e-7
+    @test v_itrf[3] ≈ +5.531924446 atol = 1e-7
 
     # -- Quaternion ------------------------------------------------------------------------
 
@@ -219,18 +219,16 @@ end
     @test r_itrf[2] ≈ +7901.2952754 atol = 1e-4
     @test r_itrf[3] ≈ +6380.3565958 atol = 1e-4
 
-    @test v_itrf[1] ≈ -3.225636520  atol = 1e-7
-    @test v_itrf[2] ≈ -2.872451450  atol = 1e-7
-    @test v_itrf[3] ≈ +5.531924446  atol = 1e-7
+    @test v_itrf[1] ≈ -3.225636520 atol = 1e-7
+    @test v_itrf[2] ≈ -2.872451450 atol = 1e-7
+    @test v_itrf[3] ≈ +5.531924446 atol = 1e-7
 
     # IAU-2006 polynomial arguments are TT, while the EOP lookup remains in UTC.
     jd_tt = jd_utc_to_tt(jd_utc)
     arcsec_to_rad = π / 648000
     x_p = eop_iau2000a.x(jd_utc) * arcsec_to_rad
     y_p = eop_iau2000a.y(jd_utc) * arcsec_to_rad
-    expected = SatelliteToolboxTransformations.r_itrf_to_tirs_iau2006(
-        DCM, jd_tt, x_p, y_p
-    )
+    expected = SatelliteToolboxTransformations.r_itrf_to_tirs_iau2006(DCM, jd_tt, x_p, y_p)
     wrong_epoch = SatelliteToolboxTransformations.r_itrf_to_tirs_iau2006(
         DCM, jd_utc, x_p, y_p
     )

@@ -22,66 +22,66 @@
         lat, lon, r = ecef_to_geocentric([R₀, 0, R₀])
         @test lat ≈ deg2rad(45)
         @test lon ≈ deg2rad(0)
-        @test r   ≈ √2 * R₀
+        @test r ≈ √2 * R₀
         @test typeof(lat) === T
         @test typeof(lon) === T
-        @test typeof(r)   === T
+        @test typeof(r) === T
 
         lat, lon, r = ecef_to_geocentric([R₀, 0, -R₀])
         @test lat ≈ deg2rad(-45)
         @test lon ≈ deg2rad(0)
-        @test r   ≈ √2 * R₀
+        @test r ≈ √2 * R₀
         @test typeof(lat) === T
         @test typeof(lon) === T
-        @test typeof(r)   === T
+        @test typeof(r) === T
 
         lat, lon, r = ecef_to_geocentric([-R₀, 0, R₀])
         @test lat ≈ deg2rad(45)
         @test lon ≈ deg2rad(180)
-        @test r   ≈ √2 * R₀
+        @test r ≈ √2 * R₀
         @test typeof(lat) === T
         @test typeof(lon) === T
-        @test typeof(r)   === T
+        @test typeof(r) === T
 
         lat, lon, r = ecef_to_geocentric([-R₀, 0, -R₀])
         @test lat ≈ deg2rad(-45)
         @test lon ≈ deg2rad(180)
-        @test r   ≈ √2 * R₀
+        @test r ≈ √2 * R₀
         @test typeof(lat) === T
         @test typeof(lon) === T
-        @test typeof(r)   === T
+        @test typeof(r) === T
 
         lat, lon, r = ecef_to_geocentric([R₀, R₀, 0])
         @test lat ≈ deg2rad(0)
         @test lon ≈ deg2rad(45)
-        @test r   ≈ √2 * R₀
+        @test r ≈ √2 * R₀
         @test typeof(lat) === T
         @test typeof(lon) === T
-        @test typeof(r)   === T
+        @test typeof(r) === T
 
         lat, lon, r = ecef_to_geocentric([-R₀, R₀, 0])
         @test lat ≈ deg2rad(0)
         @test lon ≈ deg2rad(135)
-        @test r   ≈ √2 * R₀
+        @test r ≈ √2 * R₀
         @test typeof(lat) === T
         @test typeof(lon) === T
-        @test typeof(r)   === T
+        @test typeof(r) === T
 
         lat, lon, r = ecef_to_geocentric([-R₀, -R₀, 0])
         @test lat ≈ deg2rad(0)
         @test lon ≈ deg2rad(-135)
-        @test r   ≈ √2 * R₀
+        @test r ≈ √2 * R₀
         @test typeof(lat) === T
         @test typeof(lon) === T
-        @test typeof(r)   === T
+        @test typeof(r) === T
 
         lat, lon, r = ecef_to_geocentric([R₀, -R₀, 0])
         @test lat ≈ deg2rad(0)
         @test lon ≈ deg2rad(-45)
-        @test r   ≈ √2 * R₀
+        @test r ≈ √2 * R₀
         @test typeof(lat) === T
         @test typeof(lon) === T
-        @test typeof(r)   === T
+        @test typeof(r) === T
     end
 end
 
@@ -217,9 +217,11 @@ end
 
     # Float32 coordinates are promoted with the default Float64 ellipsoid consistently
     # in each of the explicit and closed-form branches.
-    for r in ([Float32(1), 0f0, 0f0],
-              [0f0, 0f0, Float32(R0 + 1000)],
-              [Float32(6524.834e3), Float32(6862.875e3), Float32(6448.296e3)])
+    for r in (
+        [Float32(1), 0.0f0, 0.0f0],
+        [0.0f0, 0.0f0, Float32(R0 + 1000)],
+        [Float32(6524.834e3), Float32(6862.875e3), Float32(6448.296e3)],
+    )
         ϕ_gd, λ_gd, h = ecef_to_geodetic(r)
         @test typeof(ϕ_gd) === Float64
         @test typeof(λ_gd) === Float64
@@ -243,8 +245,11 @@ end
 
     # Inside the inner evolute, the closed-form atan can select a polar branch on the
     # equator.  The equatorial convention must remain stable across that region.
-    for p in (1.0, 0.5 * WGS84_ELLIPSOID.e² * WGS84_ELLIPSOID.a,
-              2.0 * WGS84_ELLIPSOID.e² * WGS84_ELLIPSOID.a)
+    for p in (
+        1.0,
+        0.5 * WGS84_ELLIPSOID.e² * WGS84_ELLIPSOID.a,
+        2.0 * WGS84_ELLIPSOID.e² * WGS84_ELLIPSOID.a,
+    )
         for z in (0.0, -0.0)
             ϕ_gd, λ_gd, h = ecef_to_geodetic([p, 0.0, z])
             @test ϕ_gd == z
@@ -276,31 +281,31 @@ end
     ϕ_gd, λ_gd, h = ecef_to_geodetic(r)
 
     @test rad2deg(ϕ_gd) ≈ 34.352496 atol = 1e-6
-    @test rad2deg(λ_gd) ≈ 46.4464   atol = 1e-4
-    @test h/1000        ≈ 5085.22   atol = 1e-2
+    @test rad2deg(λ_gd) ≈ 46.4464 atol = 1e-4
+    @test h/1000 ≈ 5085.22 atol = 1e-2
 
     # == Scenario 02 =======================================================================
 
     aux = rand(0:1000)
 
     Z = R0 + aux
-    ϕ_gd, λ_gd, h = ecef_to_geodetic([0;0;Z])
+    ϕ_gd, λ_gd, h = ecef_to_geodetic([0; 0; Z])
 
     @test rad2deg(ϕ_gd) ≈ 90
     @test rad2deg(λ_gd) ≈ 0
-    @test h             ≈ Z - WGS84_ELLIPSOID.b
+    @test h ≈ Z - WGS84_ELLIPSOID.b
 
     Z = -R0 + aux
-    ϕ_gd, λ_gd, h = ecef_to_geodetic([0;0;Z])
+    ϕ_gd, λ_gd, h = ecef_to_geodetic([0; 0; Z])
 
     @test rad2deg(ϕ_gd) ≈ -90
     @test rad2deg(λ_gd) ≈ 0
-    @test h             ≈ -Z - WGS84_ELLIPSOID.b
+    @test h ≈ -Z - WGS84_ELLIPSOID.b
 
     # Round trips representative of LEO and GEO should retain both latitude and
     # altitude after conversion through ECEF.
-    for (lat, lon, h) in ((deg2rad(51.6), deg2rad(-73.2), 400e3),
-                          (deg2rad(-12.5), deg2rad(141.0), 35_786e3))
+    for (lat, lon, h) in
+        ((deg2rad(51.6), deg2rad(-73.2), 400e3), (deg2rad(-12.5), deg2rad(141.0), 35_786e3))
         r_ecef = geodetic_to_ecef(lat, lon, h)
         lat′, lon′, h′ = ecef_to_geodetic(r_ecef)
         @test lat′ ≈ lat atol = 2e-14
@@ -428,44 +433,44 @@ end
 
     ϕ_gd, h = geocentric_to_geodetic(19.86, R0 + 1987)
     @test ϕ_gd ≈ 1.0134554245512695
-    @test h    ≈ 17352.756962650223
+    @test h ≈ 17352.756962650223
 
     ϕ_gd, h = geocentric_to_geodetic(π/2, R0 + 190686)
     @test ϕ_gd ≈ 1.5707963267948966
-    @test h    ≈ 212070.68575482070
+    @test h ≈ 212070.68575482070
 
     ϕ_gd, h = geocentric_to_geodetic(deg2rad(31.25), R0 + 752000)
     @test ϕ_gd ≈ 0.54808101129276687
-    @test h    ≈ 757773.37237201189
+    @test h ≈ 757773.37237201189
 
     # == South Hemisphere ==================================================================
 
     ϕ_gd, h = geocentric_to_geodetic(-19.86, R0 + 1987)
     @test ϕ_gd ≈ -1.0134554245512695
-    @test h    ≈ 17352.756962650223
+    @test h ≈ 17352.756962650223
 
     ϕ_gd, h = geocentric_to_geodetic(-π/2, R0 + 190686)
     @test ϕ_gd ≈ -1.5707963267948966
-    @test h    ≈ 212070.68575482070
+    @test h ≈ 212070.68575482070
 
     ϕ_gd, h = geocentric_to_geodetic(-deg2rad(31.25), R0 + 752000)
     @test ϕ_gd ≈ -0.54808101129276687
-    @test h    ≈ 757773.37237201189
+    @test h ≈ 757773.37237201189
 
     # == Special Cases =====================================================================
 
     ϕ_gd, h = geocentric_to_geodetic(0, R0)
     @test ϕ_gd ≈ 0.0
-    @test h    ≈ 0.0
+    @test h ≈ 0.0
 
     # D < 0
     ϕ_gd, h = geocentric_to_geodetic(deg2rad(15), 10e3)
     @test ϕ_gd ≈ 1.3567978765139961
-    @test h    ≈ -6353137.8454352869
+    @test h ≈ -6353137.8454352869
 
     ϕ_gd, h = geocentric_to_geodetic(-deg2rad(15), 10e3)
     @test ϕ_gd ≈ -1.3567978765139961
-    @test h    ≈ -6353137.8454352869
+    @test h ≈ -6353137.8454352869
 
     # == Polar Axis ========================================================================
     #
@@ -476,22 +481,22 @@ end
 
     ϕ_gd, h = geocentric_to_geodetic(0.0, 0.0)
     @test ϕ_gd ≈ +π / 2
-    @test h    ≈ -b
+    @test h ≈ -b
 
     # `cos(Float32(π) / 2)` is negative, so the equatorial component is negative and the
     # algorithm in the reference used to throw a `DomainError` from inside `sqrt`.
     ϕ_gd, h = geocentric_to_geodetic(Float32(π) / 2, 6378137.0f0)
     @test ϕ_gd ≈ +π / 2
-    @test h    ≈ 6378137.0 - b rtol = 1e-6
+    @test h ≈ 6378137.0 - b rtol = 1e-6
 
     ϕ_gd, h = geocentric_to_geodetic(-Float32(π) / 2, 6378137.0f0)
     @test ϕ_gd ≈ -π / 2
-    @test h    ≈ 6378137.0 - b rtol = 1e-6
+    @test h ≈ 6378137.0 - b rtol = 1e-6
 
     # The result must remain continuous when approaching the axis from within the domain.
     ϕ_gd, h = geocentric_to_geodetic(π / 2 - 1e-12, 6378137.0)
-    @test ϕ_gd ≈ +π / 2   atol = 1e-6
-    @test h    ≈ 6378137.0 - b rtol = 1e-9
+    @test ϕ_gd ≈ +π / 2 atol = 1e-6
+    @test h ≈ 6378137.0 - b rtol = 1e-9
 end
 
 @testset "Function geodetic_to_geocentric" begin
@@ -501,44 +506,44 @@ end
 
     ϕ_gc, r = geodetic_to_geocentric(1.0134554245512695, 17352.756962650223)
     @test ϕ_gc ≈ mod(19.86, 2π)
-    @test r    ≈ R0 + 1987
+    @test r ≈ R0 + 1987
 
     ϕ_gc, r = geodetic_to_geocentric(1.5707963267948966, 212070.68575482070)
     @test ϕ_gc ≈ π/2
-    @test r    ≈ R0 + 190686
+    @test r ≈ R0 + 190686
 
     ϕ_gc, r = geodetic_to_geocentric(0.54808101129276687, 757773.37237201189)
     @test ϕ_gc ≈ deg2rad(31.25)
-    @test r    ≈ R0 + 752000
+    @test r ≈ R0 + 752000
 
     # == South Hemisphere ==================================================================
 
     ϕ_gc, r = geodetic_to_geocentric(-1.0134554245512695, 17352.756962650223)
     @test ϕ_gc ≈ -mod(19.86, 2π)
-    @test r    ≈ R0 + 1987
+    @test r ≈ R0 + 1987
 
     ϕ_gc, r = geodetic_to_geocentric(-1.5707963267948966, 212070.68575482070)
     @test ϕ_gc ≈ -π/2
-    @test r    ≈ R0 + 190686
+    @test r ≈ R0 + 190686
 
     ϕ_gc, r = geodetic_to_geocentric(-0.54808101129276687, 757773.37237201189)
     @test ϕ_gc ≈ -deg2rad(31.25)
-    @test r    ≈ R0 + 752000
+    @test r ≈ R0 + 752000
 
     # == Special Cases =====================================================================
 
     ϕ_gc, r = geodetic_to_geocentric(0.0, 0.0)
     @test ϕ_gc ≈ 0
-    @test r    ≈ R0
+    @test r ≈ R0
 
     # D < 0
     ϕ_gc, r = geodetic_to_geocentric(1.3567978765139961, -6353137.8454352869)
     @test ϕ_gc ≈ deg2rad(15)
-    @test r    ≈ 10e3
+    @test r ≈ 10e3
 
     ϕ_gc, r = geodetic_to_geocentric(-1.3567978765139961, -6353137.8454352869)
     @test ϕ_gc ≈ -deg2rad(15)
-    @test r    ≈ 10e3
+    @test r ≈ 10e3
 
     # == Accuracy Near the Poles ===========================================================
     #
@@ -565,7 +570,7 @@ end
 
         # 1e-13 rad is well below the ~5e-9 rad error that `asin(z / r)` produces here.
         @test ϕ_gc ≈ expected_ϕ_gc atol = 1e-13
-        @test r    ≈ expected_r
+        @test r ≈ expected_r
     end
 end
 
@@ -580,25 +585,22 @@ end
     end
 
     # A `Float32` ellipsoid with `Float32` inputs must stay in `Float32`.
-    @test (@inferred geodetic_to_geocentric(
-        0.35f0, 700f3; ellipsoid = ellipsoid_f32
-    )) isa NTuple{2, Float32}
+    @test (@inferred geodetic_to_geocentric(0.35f0, 700.0f3; ellipsoid = ellipsoid_f32)) isa
+        NTuple{2, Float32}
 
-    @test (@inferred geocentric_to_geodetic(
-        0.35f0, 7.0f6; ellipsoid = ellipsoid_f32
-    )) isa NTuple{2, Float32}
+    @test (@inferred geocentric_to_geodetic(0.35f0, 7.0f6; ellipsoid = ellipsoid_f32)) isa
+        NTuple{2, Float32}
 
     # Mixing a `Float64` input with the `Float32` ellipsoid must promote to `Float64`.
-    @test (@inferred geodetic_to_geocentric(
-        0.35, 700f3; ellipsoid = ellipsoid_f32
-    )) isa NTuple{2, Float64}
+    @test (@inferred geodetic_to_geocentric(0.35, 700.0f3; ellipsoid = ellipsoid_f32)) isa
+        NTuple{2, Float64}
 
     # Integer inputs must be converted to a float instead of failing.
     @test (@inferred geodetic_to_geocentric(0, 700_000)) isa NTuple{2, Float64}
 
     # The values must not change with the promotion.
     ϕ_gc_64, r_64 = geodetic_to_geocentric(0.35, 700e3)
-    ϕ_gc_32, r_32 = geodetic_to_geocentric(0.35f0, 700f3)
+    ϕ_gc_32, r_32 = geodetic_to_geocentric(0.35f0, 700.0f3)
     @test ϕ_gc_32 ≈ ϕ_gc_64 rtol = 1e-6
-    @test r_32    ≈ r_64    rtol = 1e-6
+    @test r_32 ≈ r_64 rtol = 1e-6
 end

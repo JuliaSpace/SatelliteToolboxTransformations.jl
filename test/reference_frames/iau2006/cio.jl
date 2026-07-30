@@ -35,6 +35,6 @@
     X, Y, s = cio_iau2006(JD_TT)
 
     @test X * 180 / π * 3600 ≈ 80.531880 atol = 5e-5
-    @test Y * 180 / π * 3600 ≈  7.273921 atol = 5e-5
+    @test Y * 180 / π * 3600 ≈ 7.273921 atol = 5e-5
     @test s * 180 / π * 3600 ≈ -0.003027 atol = 1e-6
 end

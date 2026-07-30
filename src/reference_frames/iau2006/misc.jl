@@ -48,9 +48,11 @@ the raw tables:
    Splitting them out lets [`_iau2006_sum`](@ref) skip nine multiply-adds per such term.
 """
 function _split_iau2006_table(coefs::AbstractMatrix)
-    size(coefs, 1) != 17 && throw(ArgumentError(
-        "The IAU-2006 series table must have 17 rows, but it has $(size(coefs, 1))."
-    ))
+    size(coefs, 1) != 17 && throw(
+        ArgumentError(
+            "The IAU-2006 series table must have 17 rows, but it has $(size(coefs, 1))."
+        ),
+    )
 
     # A term is purely luni-solar when all of its nine planetary multipliers (rows 9 to 17)
     # are zero.
@@ -58,7 +60,7 @@ function _split_iau2006_table(coefs::AbstractMatrix)
 
     # Rows 2 and 3 are the amplitudes, rows 4 to 8 the luni-solar multipliers, and rows 9 to
     # 17 the planetary ones. Row 1 (the term index) is never used and is dropped here.
-    luni_solar = coefs[2:8,  is_luni_solar]
+    luni_solar = coefs[2:8, is_luni_solar]
     mixed      = coefs[2:17, .!is_luni_solar]
 
     return Iau2006Series(luni_solar, mixed)
@@ -113,7 +115,7 @@ function _iau2006_sum(
     λ_M♄::Number,
     λ_M⛢::Number,
     λ_M♆::Number,
-    p_λ::Number
+    p_λ::Number,
 )
     # Type of the accumulators. It must be obtained by promotion instead of being hardcoded
     # to `Float64`, otherwise the accumulators would change type on the first iteration when
@@ -121,9 +123,21 @@ function _iau2006_sum(
     # which makes them inferred as a union and boxes them inside these long loops.
     NT = promote_type(
         eltype(first(coefs).luni_solar),
-        typeof(t_tt), typeof(M_s), typeof(M_m), typeof(u_Mm), typeof(D_s), typeof(Ω_m),
-        typeof(λ_M☿), typeof(λ_M♀), typeof(λ_Me), typeof(λ_M♂), typeof(λ_M♃),
-        typeof(λ_M♄), typeof(λ_M⛢), typeof(λ_M♆), typeof(p_λ)
+        typeof(t_tt),
+        typeof(M_s),
+        typeof(M_m),
+        typeof(u_Mm),
+        typeof(D_s),
+        typeof(Ω_m),
+        typeof(λ_M☿),
+        typeof(λ_M♀),
+        typeof(λ_Me),
+        typeof(λ_M♂),
+        typeof(λ_M♃),
+        typeof(λ_M♄),
+        typeof(λ_M⛢),
+        typeof(λ_M♆),
+        typeof(p_λ),
     )
 
     # Result of the sum.
@@ -142,19 +156,33 @@ function _iau2006_sum(
         # Terms that depend only on the luni-solar arguments. These dominate most tables, and
         # handling them separately avoids nine multiply-adds by zero for each one.
         for j in axes(ls, 2)
-            ap = ls[3, j] * M_m + ls[4, j] * M_s  + ls[5, j] * u_Mm +
-                 ls[6, j] * D_s + ls[7, j] * Ω_m
+            ap =
+                ls[3, j] * M_m +
+                ls[4, j] * M_s +
+                ls[5, j] * u_Mm +
+                ls[6, j] * D_s +
+                ls[7, j] * Ω_m
             sj, cj = sincos(ap)
             rp += ls[1, j] * sj + ls[2, j] * cj
         end
 
         # Terms that also depend on the planetary arguments.
         for j in axes(mx, 2)
-            ap = mx[ 3, j] * M_m  + mx[ 4, j] * M_s  + mx[ 5, j] * u_Mm +
-                 mx[ 6, j] * D_s  + mx[ 7, j] * Ω_m  + mx[ 8, j] * λ_M☿ +
-                 mx[ 9, j] * λ_M♀ + mx[10, j] * λ_Me + mx[11, j] * λ_M♂ +
-                 mx[12, j] * λ_M♃ + mx[13, j] * λ_M♄ + mx[14, j] * λ_M⛢ +
-                 mx[15, j] * λ_M♆ + mx[16, j] * p_λ
+            ap =
+                mx[3, j] * M_m +
+                mx[4, j] * M_s +
+                mx[5, j] * u_Mm +
+                mx[6, j] * D_s +
+                mx[7, j] * Ω_m +
+                mx[8, j] * λ_M☿ +
+                mx[9, j] * λ_M♀ +
+                mx[10, j] * λ_Me +
+                mx[11, j] * λ_M♂ +
+                mx[12, j] * λ_M♃ +
+                mx[13, j] * λ_M♄ +
+                mx[14, j] * λ_M⛢ +
+                mx[15, j] * λ_M♆ +
+                mx[16, j] * p_λ
             sj, cj = sincos(ap)
             rp += mx[1, j] * sj + mx[2, j] * cj
         end

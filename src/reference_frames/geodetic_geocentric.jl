@@ -38,9 +38,9 @@ center).
 function ecef_to_geocentric(r_e::AbstractVector)
 
     # Auxiliary variables.
-    x  = r_e[1]
-    y  = r_e[2]
-    z  = r_e[3]
+    x = r_e[1]
+    y = r_e[2]
+    z = r_e[3]
     if x == 0 && y == 0 && z == 0
         throw(DomainError(r_e, "the ECEF origin has undefined latitude and longitude"))
     end
@@ -63,18 +63,16 @@ distance from Earth's center `r` [m]) into a Earth-Centered, Earth-Fixed vector 
     The output type `T` is obtained by promoting the input types `T1`, `T2`, and `T3`. If
     all of them are integers, they will be converted to float.
 """
-function geocentric_to_ecef(lat::T1, lon::T2, r::T3) where {T1<:Number, T2<:Number, T3<:Number}
+function geocentric_to_ecef(
+    lat::T1, lon::T2, r::T3
+) where {T1 <: Number, T2 <: Number, T3 <: Number}
     T = promote_type(T1, T2, T3)
 
     # Compute the vector at Earth's center that points to the desired geocentric point.
     sin_lon, cos_lon = sincos(T(lon))
     sin_lat, cos_lat = sincos(T(lat))
 
-    r_ecef = SVector{3}(
-        T(r) * cos_lat * cos_lon,
-        T(r) * cos_lat * sin_lon,
-        T(r) * sin_lat
-    )
+    r_ecef = SVector{3}(T(r) * cos_lat * cos_lon, T(r) * cos_lat * sin_lon, T(r) * sin_lat)
 
     return r_ecef
 end
@@ -114,9 +112,8 @@ frame into Geodetic coordinates for a custom target ellipsoid (defaults to WGS-8
 - **[1]**: mu-blox ag (1999). Datum Transformations of GPS Positions. Application Note.
 """
 function ecef_to_geodetic(
-    r_e::AbstractVector;
-    ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
-) where {T<:Number}
+    r_e::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
+) where {T <: Number}
 
     # Promote the coordinates with the ellipsoid parameters before entering any branch.
     # This keeps all returned values at the same promoted floating-point type.
@@ -151,13 +148,13 @@ function ecef_to_geodetic(
         return lat, zero(lat), abs(z) - b
     end
 
-    θ   = atan(z * a, p * b)
+    θ = atan(z * a, p * b)
 
     sin_θ, cos_θ = sincos(θ)
 
     # Compute Geodetic.
     lon = atan(y, x)
-    lat = atan(z + el² * b * sin_θ^3, p -  e² * a * cos_θ^3)
+    lat = atan(z + el² * b * sin_θ^3, p - e² * a * cos_θ^3)
 
     # Refine Bowring's closed-form estimate with a few bounded Newton steps. Solving
     #
@@ -171,7 +168,9 @@ function ecef_to_geodetic(
         N = a / √(denominator)
         f = p * sin_lat - z * cos_lat - e² * N * sin_lat * cos_lat
         dN = N * e² * sin_lat * cos_lat / denominator
-        df = p * cos_lat + z * sin_lat - e² * (dN * sin_lat * cos_lat + N * (cos_lat^2 - sin_lat^2))
+        df =
+            p * cos_lat + z * sin_lat -
+            e² * (dN * sin_lat * cos_lat + N * (cos_lat^2 - sin_lat^2))
         step = clamp(f / df, -RT(π / 4), RT(π / 4))
         lat = clamp(lat - step, -RT(π / 2), RT(π / 2))
     end
@@ -210,12 +209,8 @@ ellipsoid parameter `T`.
 - **[1]**: mu-blox ag (1999). Datum Transformations of GPS Positions. Application Note.
 """
 function geodetic_to_ecef(
-    lat::LT,
-    lon::LT2,
-    h::HT;
-    ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
-) where {LT<:Number, LT2<:Number, HT<:Number, T<:Number}
-
+    lat::LT, lon::LT2, h::HT; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
+) where {LT <: Number, LT2 <: Number, HT <: Number, T <: Number}
     RT = promote_type(LT, LT2, HT, T)
 
     # Auxiliary variables. Everything is promoted to `RT` up front so that the returned
@@ -233,9 +228,9 @@ function geodetic_to_ecef(
 
     # Compute the position in ECEF frame.
     return SVector{3, RT}(
-        (            N + hr) * cos_lat * cos_lon,
-        (            N + hr) * cos_lat * sin_lon,
-        ((b / a)^2 * N + hr) * sin_lat
+        (N + hr) * cos_lat * cos_lon,
+        (N + hr) * cos_lat * sin_lon,
+        ((b / a)^2 * N + hr) * sin_lat,
     )
 end
 
@@ -255,12 +250,11 @@ Earth-Fixed (ECEF) reference frame.
 - **[1]**: mu-blox ag (1999). Datum Transformations of GPS Positions. Application Note.
 """
 function geodetic_to_ecef(
-    geodetic_state::AbstractVector;
-    ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
-) where T<:Number
-
-    return geodetic_to_ecef(geodetic_state[1], geodetic_state[2], geodetic_state[3]; ellipsoid=ellipsoid)
-
+    geodetic_state::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
+) where {T <: Number}
+    return geodetic_to_ecef(
+        geodetic_state[1], geodetic_state[2], geodetic_state[3]; ellipsoid = ellipsoid
+    )
 end
 
 """
@@ -288,10 +282,8 @@ ellipsoid parameter `T`, converted to a float.
     without approximations. Astrophysics and Space Science, vol. 139, pp. 1-4.
 """
 function geocentric_to_geodetic(
-    ϕ_gc::PT,
-    r::RT;
-    ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
-) where {PT<:Number, RT<:Number, T<:Number}
+    ϕ_gc::PT, r::RT; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
+) where {PT <: Number, RT <: Number, T <: Number}
     # Promote the coordinates with the ellipsoid parameters before entering any branch. This
     # keeps all the returned values at the same promoted floating-point type.
     NT = float(promote_type(PT, RT, T))
@@ -383,12 +375,11 @@ that the longitude is the same in both geocentric and geodetic coordinates.
     without approximations. Astrophysics and Space Science, vol. 139, pp. 1-4.
 """
 function geocentric_to_geodetic(
-    geocentric_state::AbstractVector;
-    ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
-) where T<:Number
-
-    return geocentric_to_geodetic(geocentric_state[1], geocentric_state[2]; ellipsoid=ellipsoid)
-
+    geocentric_state::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
+) where {T <: Number}
+    return geocentric_to_geodetic(
+        geocentric_state[1], geocentric_state[2]; ellipsoid = ellipsoid
+    )
 end
 
 """
@@ -414,10 +405,8 @@ ellipsoid parameter `T`, converted to a float.
 - **[1]** ISO TC 20/SC 14 N (2011). Geomagnetic Reference Models.
 """
 function geodetic_to_geocentric(
-    ϕ_gd::PT,
-    h::HT;
-    ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
-) where {PT<:Number, HT<:Number, T<:Number}
+    ϕ_gd::PT, h::HT; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
+) where {PT <: Number, HT <: Number, T <: Number}
     # Promote the coordinates with the ellipsoid parameters so that both returned values have
     # the same floating-point type regardless of the ellipsoid's own parameter type.
     NT = float(promote_type(PT, HT, T))
@@ -472,9 +461,9 @@ the longitude is the same in both geocentric and geodetic coordinates.
 - **[1]** ISO TC 20/SC 14 N (2011). Geomagnetic Reference Models.
 """
 function geodetic_to_geocentric(
-    geodetic_state::AbstractVector;
-    ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
-) where T<:Number
-
-    return geodetic_to_geocentric(geodetic_state[1], geodetic_state[2]; ellipsoid=ellipsoid)
+    geodetic_state::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
+) where {T <: Number}
+    return geodetic_to_geocentric(
+        geodetic_state[1], geodetic_state[2]; ellipsoid = ellipsoid
+    )
 end
