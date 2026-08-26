@@ -8,7 +8,7 @@
 #
 ############################################################################################
 
-export ecef_to_ned, ned_to_ecef
+export ecef_to_ned, ned_to_ecef, r_eci_to_hill, r_hill_to_eci
 
 """
     ecef_to_ned(r_ecef::AbstractVector{T1}, lat::T2, lon::T3, h::T4; translate::Bool = false) -> SVector{3, T}
@@ -130,4 +130,107 @@ function ned_to_ecef(
         r_ned_ecef = T.(geodetic_to_ecef(lat, lon, h))
         return r_ecef + r_ned_ecef
     end
+end
+
+"""
+    r_eci_to_hill(r_eci::AbstractVector, v_eci::AbstractVector) -> DCM
+    r_eci_to_hill(T, r_eci::AbstractVector, v_eci::AbstractVector) -> T
+
+Compute the rotation from an Earth Centered Inertial (ECI) frame to the Hill frame (also
+known as the RTN or RSW frame), given the satellite position [m] and satellite velocity
+[m/s] in the ECI reference frame. The rotation description that will be used is given by
+`T`, which can be `DCM` or `Quaternion`. If `T` is not specified, it falls back to `DCM`.
+
+The Hill frame is defined as follows:
+
+- X-axis: along the radial direction (from Earth to satellite).
+- Y-axis: along the along-track direction (in the direction of motion).
+- Z-axis: along the cross-track direction (perpendicular to the orbital plane).
+
+# Returns
+
+- `T`: Rotation entity that rotates the ECI frame into the Hill frame.
+
+# Extended Help
+
+## Rotation Description
+
+The rotation can be described by Direction Cosine Matrices (DCMs) or Quaternions. This is
+selected by the parameter `T`. The possible values are:
+
+- `DCM`: The rotation will be described by a Direction Cosine Matrix.
+- `Quaternion`: The rotation will be described by a Quaternion.
+
+If no value is specified, it falls back to `DCM`.
+"""
+function r_eci_to_hill(r_eci::AbstractVector, v_eci::AbstractVector)
+    return r_eci_to_hill(DCM, r_eci, v_eci)
+end
+
+function r_eci_to_hill(::Type{Quaternion}, r_eci::AbstractVector, v_eci::AbstractVector)
+    return dcm_to_quat(r_eci_to_hill(DCM, r_eci, v_eci))
+end
+
+function r_eci_to_hill(
+    ::Type{DCM},
+    r_eci::AbstractVector{T1},
+    v_eci::AbstractVector{T2}
+) where {T1 <: Number, T2 <: Number}
+    # Convert the input vectors to the right type.
+    T = promote_type(T1, T2) |> float
+
+    sr_eci = @SVector T[r_eci[0 + begin], r_eci[1 + begin], r_eci[2 + begin]]
+    sv_eci = @SVector T[v_eci[0 + begin], v_eci[1 + begin], v_eci[2 + begin]]
+
+    sr̄_eci = normalize(sr_eci)
+    sh_eci = sr_eci × sv_eci
+    sh̄_eci = normalize(sh_eci)
+    sθ̄_eci = sh̄_eci × sr̄_eci
+
+    #! format: off
+    return DCM(
+        sr̄_eci[1], sr̄_eci[2], sr̄_eci[3],
+        sθ̄_eci[1], sθ̄_eci[2], sθ̄_eci[3],
+        sh̄_eci[1], sh̄_eci[2], sh̄_eci[3],
+    )
+    #! format: on
+end
+
+"""
+    r_hill_to_eci(r_eci::AbstractVector, v_eci::AbstractVector) -> DCM
+    r_hill_to_eci(T, r_eci::AbstractVector, v_eci::AbstractVector) -> T
+
+Compute the rotation from the Hill frame (also known as the RTN or RSW frame) to an Earth
+Centered Inertial (ECI) frame, given the satellite position [m] and satellite velocity [m/s]
+in the ECI reference frame. The rotation description that will be used is given by `T`,
+which can be `DCM` or `Quaternion`. If `T` is not specified, it falls back to `DCM`.
+
+The Hill frame is defined as follows:
+
+- X-axis: along the radial direction (from Earth to satellite).
+- Y-axis: along the along-track direction (in the direction of motion).
+- Z-axis: along the cross-track direction (perpendicular to the orbital plane).
+
+# Returns
+
+- `T`: Rotation entity that rotates the Hill frame into the ECI frame.
+
+# Extended Help
+
+## Rotation Description
+
+The rotation can be described by Direction Cosine Matrices (DCMs) or Quaternions. This is
+selected by the parameter `T`. The possible values are:
+
+- `DCM`: The rotation will be described by a Direction Cosine Matrix.
+- `Quaternion`: The rotation will be described by a Quaternion.
+
+If no value is specified, it falls back to `DCM`.
+"""
+function r_hill_to_eci(r_eci::AbstractVector, v_eci::AbstractVector)
+    return r_hill_to_eci(DCM, r_eci, v_eci)
+end
+
+function r_hill_to_eci(T::T_ROT, r_eci::AbstractVector, v_eci::AbstractVector)
+    return inv_rotation(r_eci_to_hill(T, r_eci, v_eci))
 end
