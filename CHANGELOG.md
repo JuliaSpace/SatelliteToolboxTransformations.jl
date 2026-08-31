@@ -27,6 +27,8 @@ Version 1.2.1
   obliquity.
 - ![Info][badge-info] Several documentation fixes: signatures that did not match the code,
   generic functions that promised a `Float64` return type, and typos.
+- ![Info][badge-info] The package now supports DataInterpolations.jl v10.
+  (PR [#27][gh-pr-27])
 
 Version 1.2.0
 -------------
@@ -118,12 +120,12 @@ Version 0.1.0
 - Initial version.
   - This version was based on the functions in **SatelliteToolbox.jl**.
 
-[badge-breaking]: https://img.shields.io/badge/BREAKING-red.svg
-[badge-deprecation]: https://img.shields.io/badge/Deprecation-orange.svg
-[badge-feature]: https://img.shields.io/badge/Feature-green.svg
-[badge-enhancement]: https://img.shields.io/badge/Enhancement-blue.svg
-[badge-bugfix]: https://img.shields.io/badge/Bugfix-purple.svg
-[badge-info]: https://img.shields.io/badge/Info-gray.svg
+[badge-breaking]: https://img.shields.io/badge/Breaking-DC2626?style=flat-square
+[badge-deprecation]: https://img.shields.io/badge/Deprecation-D97706?style=flat-square
+[badge-feature]: https://img.shields.io/badge/Feature-16A34A?style=flat-square
+[badge-enhancement]: https://img.shields.io/badge/Enhancement-0284C7?style=flat-square
+[badge-bugfix]: https://img.shields.io/badge/Bugfix-DB2777?style=flat-square
+[badge-info]: https://img.shields.io/badge/Info-475569?style=flat-square
 
 [gh-pr-2]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/2
 [gh-pr-3]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/3
@@ -133,3 +135,4 @@ Version 0.1.0
 [gh-pr-11]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/11
 [gh-pr-12]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/12
 [gh-pr-14]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/14
+[gh-pr-27]: https://github.com/JuliaSpace/SatelliteToolboxTransformations.jl/pull/27
