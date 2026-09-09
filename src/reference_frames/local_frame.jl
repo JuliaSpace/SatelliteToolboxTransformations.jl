@@ -190,9 +190,9 @@ function r_eci_to_hill(
 
     #! format: off
     return DCM(
-        sr̄_eci[1], sr̄_eci[2], sr̄_eci[3],
-        sθ̄_eci[1], sθ̄_eci[2], sθ̄_eci[3],
-        sh̄_eci[1], sh̄_eci[2], sh̄_eci[3],
+        sr̄_eci[1], sθ̄_eci[1], sh̄_eci[1],
+        sr̄_eci[2], sθ̄_eci[2], sh̄_eci[2],
+        sr̄_eci[3], sθ̄_eci[3], sh̄_eci[3]
     )
     #! format: on
 end
