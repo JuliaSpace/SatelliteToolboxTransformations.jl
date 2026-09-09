@@ -236,3 +236,74 @@ end
 function r_hill_to_eci(T::T_ROT, r_eci::AbstractVector, v_eci::AbstractVector)
     return inv_rotation(r_eci_to_hill(T, r_eci, v_eci))
 end
+
+"""
+    r_eci_to_lvlh(r_eci::AbstractVector, v_eci::AbstractVector) -> DCM
+    r_eci_to_lvlh(T, r_eci::AbstractVector, v_eci::AbstractVector) -> T
+
+Compute the rotation from an Earth Centered Inertial (ECI) frame to the Local Vertical Local
+Horizontal (LVLH), given the satellite position [m] `r_eci` and satellite velocity [m/s]
+`v_eci` in the ECI reference frame. The rotation description that will be used is given by
+`T`, which can be `DCM` or `Quaternion`. If `T` is not specified, it falls back to `DCM`.
+
+The LVLH frame is defined as follows:
+
+- X-axis: along the along-track direction (in the direction of motion).
+- Y-axis: along the cross-track direction (perpendicular to the orbital plane).
+- Z-axis: along the radial direction (from Earth to satellite).
+"""
+function r_eci_to_lvlh(r_eci::AbstractVector, v_eci::AbstractVector)
+    return r_eci_to_lvlh(DCM, r_eci, v_eci)
+end
+
+function r_eci_to_lvlh(::Type{Quaternion}, r_eci::AbstractVector, v_eci::AbstractVector)
+    return dcm_to_quat(r_eci_to_lvlh(DCM, r_eci, v_eci))
+end
+
+function r_eci_to_lvlh(
+    ::Type{DCM},
+    r_eci::AbstractVector{T1},
+    v_eci::AbstractVector{T2}
+) where {T1 <: Number, T2 <: Number}
+    # Convert the input vectors to the right type.
+    T = promote_type(T1, T2) |> float
+
+    sr_eci = @SVector T[r_eci[0 + begin], r_eci[1 + begin], r_eci[2 + begin]]
+    sv_eci = @SVector T[v_eci[0 + begin], v_eci[1 + begin], v_eci[2 + begin]]
+
+    v̄₃ = -normalize(sr_eci)
+    v̄₂ = v̄₃ × normalize(sv_eci)
+    v̄₁ = v̄₂ × v̄₃
+
+    #! format: off
+    return DCM(
+        v̄₁[1], v̄₂[1], v̄₃[1],
+        v̄₁[2], v̄₂[2], v̄₃[2],
+        v̄₁[3], v̄₂[3], v̄₃[3],
+    )
+    #! format: on
+end
+
+"""
+    r_lvlh_to_eci(r_eci::AbstractVector, v_eci::AbstractVector) -> DCM
+    r_lvlh_to_eci(T, r_eci::AbstractVector, v_eci::AbstractVector) -> T
+
+Compute the rotation from the Local Vertical Local Horizontal (LVLH) frame to an Earth
+Centered Inertial (ECI) frame, given the satellite position [m] `r_eci` and satellite
+velocity [m/s] `v_eci` in the ECI reference frame. The rotation description that will be
+used is given by `T`, which can be `DCM` or `Quaternion`. If `T` is not specified, it falls
+back to `DCM`.
+
+The LVLH frame is defined as follows:
+
+- X-axis: along the along-track direction (in the direction of motion).
+- Y-axis: along the cross-track direction (perpendicular to the orbital plane).
+- Z-axis: along the radial direction (from Earth to satellite).
+"""
+function r_lvlh_to_eci(r_eci::AbstractVector, v_eci::AbstractVector)
+    return r_lvlh_to_eci(DCM, r_eci, v_eci)
+end
+
+function r_lvlh_to_eci(T::T_ROT, r_eci::AbstractVector, v_eci::AbstractVector)
+    return inv_rotation(r_eci_to_lvlh(T, r_eci, v_eci))
+end
