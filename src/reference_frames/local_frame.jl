@@ -137,9 +137,10 @@ end
     r_eci_to_hill(T, r_eci::AbstractVector, v_eci::AbstractVector) -> T
 
 Compute the rotation from an Earth Centered Inertial (ECI) frame to the Hill frame (also
-known as the RTN or RSW frame), given the satellite position [m] and satellite velocity
-[m/s] in the ECI reference frame. The rotation description that will be used is given by
-`T`, which can be `DCM` or `Quaternion`. If `T` is not specified, it falls back to `DCM`.
+known as the RTN or RSW frame), given the satellite position [m] `r_eci` and satellite
+velocity [m/s] `v_eci` in the ECI reference frame. The rotation description that will be
+used is given by `T`, which can be `DCM` or `Quaternion`. If `T` is not specified, it falls
+back to `DCM`.
 
 The Hill frame is defined as follows:
 
@@ -201,9 +202,10 @@ end
     r_hill_to_eci(T, r_eci::AbstractVector, v_eci::AbstractVector) -> T
 
 Compute the rotation from the Hill frame (also known as the RTN or RSW frame) to an Earth
-Centered Inertial (ECI) frame, given the satellite position [m] and satellite velocity [m/s]
-in the ECI reference frame. The rotation description that will be used is given by `T`,
-which can be `DCM` or `Quaternion`. If `T` is not specified, it falls back to `DCM`.
+Centered Inertial (ECI) frame, given the satellite position [m] `r_eci` and satellite
+velocity [m/s] `v_eci` in the ECI reference frame. The rotation description that will be
+used is given by `T`, which can be `DCM` or `Quaternion`. If `T` is not specified, it falls
+back to `DCM`.
 
 The Hill frame is defined as follows:
 
