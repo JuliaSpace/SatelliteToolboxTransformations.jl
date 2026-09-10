@@ -103,18 +103,6 @@ _itp_timespan(itp::EopInterpolation)::String = begin
     string(julian2datetime(tstart)) * " -- " * string(julian2datetime(tend))
 end
 
-"""
-    _iers_eop_available(v) -> Bool
-
-Return `true` if the EOP field entry `v` holds an actual measurement.
-
-The IERS CSV files leave the fields that are not available empty. [`_read_iers_eop_csv`](@ref)
-represents those as `NaN`, whereas a matrix assembled by other means (for instance, by
-`DelimitedFiles.readdlm`) represents them as empty strings. Both spellings are accepted here.
-"""
-_iers_eop_available(v::Real) = !isnan(v)
-_iers_eop_available(v) = !isempty(v)
-
 # Delimiter used by the IERS EOP files in CSV format.
 const _IERS_EOP_DELIMITER = ';'
 
@@ -124,8 +112,8 @@ const _IERS_EOP_DELIMITER = ';'
 Read the IERS EOP file `filename` in CSV format and return its data rows as a
 `Matrix{Float64}`, discarding the header.
 
-Fields that are empty, and the textual `Type` columns, are returned as `NaN` so that
-[`_iers_eop_available`](@ref) reports them as unavailable.
+Fields that are empty, and the textual `Type` columns, are returned as `NaN`, marking them
+as unavailable.
 
 !!! note
 
@@ -177,33 +165,42 @@ function _read_iers_eop_csv(filename::AbstractString)
 end
 
 """
-    _create_iers_eop_interpolation(knots::AbstractVector, field::AbstractVector;
-                                   leap_safe::Bool = false)::EopInterpolation
+    _create_iers_eop_interpolation(knots::AbstractVector{<:Real}, field::AbstractVector{<:Real}; kwargs...) -> EopInterpolation
 
-Create an EOP interpolation from IERS knots and field values.
-
-# Arguments
-
-- `knots`: Julian-date interpolation knots.
-- `field`: EOP field values, possibly with trailing missing values.
+Create the interpolation of the EOP `field` indexed by the Julian Day `knots` [UTC], which
+must be sorted. Missing values, represented by `NaN`, are allowed only at the end of
+`field`, in which case the interpolation is created only up to the last available value. The
+function throws if the data cannot be interpolated.
 
 # Keywords
 
-- `leap_safe`: Adjust UT1-UTC values around leap seconds when `true`.
+- `leap_safe::Bool`: If `true`, the field is the UT1-UTC difference [s], which is
+    interpolated as UT1-TAI so that it does not jump across the leap seconds.
+    (**Default**: `false`)
+
+# Extended help
+
+## Throws
+
+- `ArgumentError`: `field` has no valid value, has a missing value that is not at its end, or
+    the knots up to the last available value contain `NaN`.
 """
 function _create_iers_eop_interpolation(
-    knots::AbstractVector, field::AbstractVector; leap_safe::Bool = false
+    knots::AbstractVector{<:Real}, field::AbstractVector{<:Real}; leap_safe::Bool = false
 )
     # Obtain the last available index of the field.
-    last_id = something(findlast(_iers_eop_available, field), length(field))
+    last_id = findlast(!isnan, field)
 
-    # Convert the field to a `Vector{Float64}`. Construct the shortened
-    # vector directly from a view so the intermediate slice is not copied.
-    field_float::Vector{Float64} = if field isa Vector{Float64} && last_id == length(field)
-        field
-    else
-        Vector{Float64}(@view field[1:last_id])
-    end
+    last_id === nothing && throw(
+        ArgumentError(
+            "The EOP field does not contain any valid value. The IERS file is likely " *
+            "corrupted or truncated.",
+        ),
+    )
+
+    # Convert the field to a `Vector{Float64}`, constructing the shortened vector directly
+    # from a view so that the intermediate slice is not copied.
+    field_float = Vector{Float64}(@view field[1:last_id])
 
     # Only *trailing* gaps are trimmed above. A gap in the middle of the field would silently
     # poison the interpolation with `NaN`, so reject it with a descriptive message instead.
@@ -215,9 +212,18 @@ function _create_iers_eop_interpolation(
         ),
     )
 
-    # Keep one knot array for both the interpolation and its wrapper. Using a
-    # view here is important for fields with trailing missing values.
+    # Keep one knot array for both the interpolation and its wrapper. Using a view here is
+    # important for fields with trailing missing values.
     knots_view = @view knots[1:last_id]
+
+    # A blank line in the file leaves `NaN` in the MJD column, which would poison the
+    # interpolation. We check it after trimming so that a trailing blank line is tolerated.
+    any(isnan, knots_view) && throw(
+        ArgumentError(
+            "The MJD column of the EOP data has a missing value inside the tabulated span. " *
+            "The IERS file is likely corrupted.",
+        ),
+    )
 
     # Create the interpolation object. UT1-UTC is discontinuous in UTC at a
     # leap second, so interpolate UT1-TAI instead of interpolating the raw

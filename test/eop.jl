@@ -74,3 +74,34 @@ end
         EopIau2000A, data
     )
 end
+
+@testset "EOP field validation" begin
+    knots = [2.4e6, 2.4e6 + 1, 2.4e6 + 2]
+
+    # A field without any valid value is rejected with a message that does not point to an
+    # index, since there is no gap to report.
+    field = [NaN, NaN, NaN]
+    err = try
+        SatelliteToolboxTransformations._create_iers_eop_interpolation(knots, field)
+        nothing
+    catch e
+        e
+    end
+    @test err isa ArgumentError
+    @test !occursin("index", err.msg)
+
+    # A gap in the middle of the field is rejected.
+    @test_throws ArgumentError SatelliteToolboxTransformations._create_iers_eop_interpolation(
+        knots, [1.0, NaN, 3.0]
+    )
+
+    # A missing knot inside the tabulated span is rejected, but a trailing one is tolerated
+    # when the field is also missing there.
+    @test_throws ArgumentError SatelliteToolboxTransformations._create_iers_eop_interpolation(
+        [2.4e6, NaN, 2.4e6 + 2], [1.0, 2.0, 3.0]
+    )
+    itp = SatelliteToolboxTransformations._create_iers_eop_interpolation(
+        [2.4e6, 2.4e6 + 1, NaN], [1.0, 2.0, NaN]
+    )
+    @test itp(2.4e6 + 0.5) ≈ 1.5
+end
