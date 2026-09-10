@@ -8,7 +8,7 @@
 #
 ############################################################################################
 
-export ecef_to_ned, ned_to_ecef, r_eci_to_hill, r_hill_to_eci
+export ecef_to_ned, ned_to_ecef, r_eci_to_hill, r_hill_to_eci, r_eci_to_lvlh, r_lvlh_to_eci
 
 """
     ecef_to_ned(r_ecef::AbstractVector{T1}, lat::T2, lon::T3, h::T4; translate::Bool = false) -> SVector{3, T}
