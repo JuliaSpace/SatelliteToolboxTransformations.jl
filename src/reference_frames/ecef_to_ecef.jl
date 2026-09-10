@@ -1,12 +1,12 @@
 ## Description #############################################################################
 #
 # Rotations from an Earth-Centered, Earth-Fixed (ECEF) reference frame to another ECEF
-#   reference frame.
+# reference frame.
 #
 ## References ##############################################################################
 #
-# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm Press,
-#     Hawthorn, CA, USA.
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. 4th ed.
+#     Microcosm Press, Hawthorn, CA, USA.
 #
 ############################################################################################
 
@@ -23,14 +23,19 @@ algorithm also requires the Earth Orientation Parameters (EOP) `eop`.
 !!! note
 
     For more information, including how to specify the origin and destination reference
-    frames, see the **Extended Help**.
+    frames, see the **Extended help**.
 
 # Returns
 
 - `T`: Rotation entity that aligns the `ECEFo` reference frame with the `ECEFf` reference
-    frame at the epoch `jd_utc`.
+    frame at the epoch `jd_utc` [UTC].
 
-# Extended Help
+# References
+
+- **[1]** Vallado, D. A (2013). *Fundamentals of Astrodynamics and Applications*. 4th ed.
+    Microcosm Press, Hawthorn, CA, USA.
+
+# Extended help
 
 ## Rotation Description
 

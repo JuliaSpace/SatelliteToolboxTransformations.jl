@@ -1,12 +1,12 @@
 ## Description #############################################################################
 #
-# Rotations from an Earth-Fixed, Earth-Centered (ECEF) reference frame to an Earth-Fixed
-#   Inertial (ECI) reference frame.
+# Rotations from an Earth-Centered, Earth-Fixed (ECEF) reference frame to an Earth-Centered
+# Inertial (ECI) reference frame.
 #
 ## References ##############################################################################
 #
-# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm Press,
-#     Hawthorn, CA, USA.
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. 4th ed.
+#     Microcosm Press, Hawthorn, CA, USA.
 #
 ############################################################################################
 
@@ -24,13 +24,19 @@ the source and destination frames.
 !!! note
 
     For more information, including how to specify the origin and destination reference
-    frames, see the **Extended Help**.
+    frames, see the **Extended help**.
 
 # Returns
 
-- `T`: Rotation entity that aligns the ECEF reference frame with the ECI reference frame.
+- `T`: Rotation entity that aligns the `ECEF` reference frame with the `ECI` reference
+    frame at the epoch `jd_utc` [UTC].
 
-# Extended Help
+# References
+
+- **[1]** Vallado, D. A (2013). *Fundamentals of Astrodynamics and Applications*. 4th ed.
+    Microcosm Press, Hawthorn, CA, USA.
+
+# Extended help
 
 ## Rotation Description
 
@@ -77,7 +83,7 @@ The ECI frame is selected by the parameter `ECI`. The possible values are:
     names to make clear which theory is being used since mixing transformation between
     frames from IAU-76/FK5 and IAU-2006/2010 must be performed with caution.
 
-# Earth Orientation Parameters (EOP)
+## Earth Orientation Parameters (EOP)
 
 The conversion between the frames might depend on EOP (see [`fetch_iers_eop`](@ref) and
 [`read_iers_eop`](@ref)). If IAU-76/FK5 model is used, the type of `eop` must be
@@ -110,7 +116,7 @@ selected frames.
 
 `¹`: In this case, UTC will be assumed equal to UT1 to compute the Greenwich Mean Sidereal
 Time. This is an approximation, but should be sufficiently accurate for some applications.
-Notice that, if EOP Data is provided, UT1 will be accurately computed.
+Notice that, if EOP data are provided, UT1 will be accurately computed.
 
 `²`: In this case, the terms that account for the free core nutation and time dependent
 effects of the Celestial Intermediate Pole (CIP) position with respect to the GCRF will not
@@ -125,7 +131,7 @@ the free core nutation will not be available, reducing the precision.
     computed considering the original IAU-76/FK5 theory. Otherwise, the corrected frame will
     be used.
 
-# Examples
+## Examples
 
 ```julia-repl
 julia> eop_iau1980 = fetch_iers_eop(Val(:IAU1980));
@@ -187,7 +193,7 @@ function r_ecef_to_eci(
     return r_ecef_to_eci(DCM, T_ECEF, T_ECI, jd_utc, eop)
 end
 
-# Specializations for those cases that EOP Data is not needed.
+# Specializations for the cases in which EOP data are not needed.
 function r_ecef_to_eci(
     T_ECEF::Val{:PEF},
     T_ECI::Union{Val{:J2000}, Val{:TOD}, Val{:MOD}, Val{:TEME}},
@@ -340,7 +346,7 @@ function r_ecef_to_eci(
 end
 
 function r_ecef_to_eci(T::T_ROT, ::Val{:PEF}, ::Val{:J2000}, jd_utc::Number)
-    # Since we do not have EOP Data, assume that jd_utc is equal to jd_ut1.
+    # Since we do not have EOP data, assume that `jd_utc` is equal to `jd_ut1`.
     jd_ut1 = jd_utc
     jd_tt  = jd_utc_to_tt(jd_utc)
 
@@ -368,7 +374,7 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:PEF}, ::Val{:MOD}, jd_utc::Number, eop::
 end
 
 function r_ecef_to_eci(T::T_ROT, ::Val{:PEF}, ::Val{:MOD}, jd_utc::Number)
-    # Since we do not have EOP Data, assume that jd_utc is equal to jd_ut1.
+    # Since we do not have EOP data, assume that `jd_utc` is equal to `jd_ut1`.
     jd_ut1 = jd_utc
     jd_tt  = jd_utc_to_tt(jd_utc)
 
@@ -392,7 +398,7 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:PEF}, ::Val{:TOD}, jd_utc::Number, eop::
 end
 
 function r_ecef_to_eci(T::T_ROT, ::Val{:PEF}, ::Val{:TOD}, jd_utc::Number)
-    # Since we do not have EOP Data, assume that jd_utc is equal to jd_ut1.
+    # Since we do not have EOP data, assume that `jd_utc` is equal to `jd_ut1`.
     jd_ut1 = jd_utc
     jd_tt  = jd_utc_to_tt(jd_utc)
 
@@ -411,7 +417,7 @@ function r_ecef_to_eci(T::T_ROT, ::Val{:PEF}, ::Val{:TEME}, jd_utc::Number, eop:
 end
 
 function r_ecef_to_eci(T::T_ROT, ::Val{:PEF}, ::Val{:TEME}, jd_utc::Number)
-    # Since we do not have EOP Data, assume that jd_utc is equal to jd_ut1.
+    # Since we do not have EOP data, assume that `jd_utc` is equal to `jd_ut1`.
     jd_ut1 = jd_utc
 
     # Compute the rotation.
@@ -472,7 +478,7 @@ end
 function r_ecef_to_eci(
     T::T_ROT, ::Val{:TIRS}, ::Val{:CIRS}, jd_utc::Number, eop::EopIau2000A
 )
-    # Get the time in UT1 and TT.
+    # Get the time in UT1.
     jd_ut1 = jd_utc_to_ut1(jd_utc, eop)
 
     # Compute the rotation.
@@ -480,7 +486,7 @@ function r_ecef_to_eci(
 end
 
 function r_ecef_to_eci(T::T_ROT, ::Val{:TIRS}, ::Val{:CIRS}, jd_utc::Number)
-    # Since we do not have EOP Data, assume that jd_utc is equal to jd_ut1.
+    # Since we do not have EOP data, assume that `jd_utc` is equal to `jd_ut1`.
     jd_ut1 = jd_utc
 
     # Compute the rotation.
@@ -509,7 +515,7 @@ function r_ecef_to_eci(
 end
 
 function r_ecef_to_eci(T::T_ROT, ::Val{:TIRS}, ::Val{:GCRF}, jd_utc::Number)
-    # Since we do not have EOP Data, assume that jd_utc is equal to jd_ut1.
+    # Since we do not have EOP data, assume that `jd_utc` is equal to `jd_ut1`.
     jd_ut1 = jd_utc
 
     # Get the time in TT.
@@ -626,7 +632,7 @@ function r_ecef_to_eci(
 end
 
 function r_ecef_to_eci(T::T_ROT, ::Val{:TIRS}, ::Val{:ERS}, jd_utc::Number)
-    # Since we do not have EOP Data, assume that jd_utc is equal to jd_ut1.
+    # Since we do not have EOP data, assume that `jd_utc` is equal to `jd_ut1`.
     jd_ut1 = jd_utc
     jd_tt  = jd_utc_to_tt(jd_utc)
 
@@ -654,7 +660,7 @@ function r_ecef_to_eci(
 end
 
 function r_ecef_to_eci(T::T_ROT, ::Val{:TIRS}, ::Val{:MOD06}, jd_utc::Number)
-    # Since we do not have EOP Data, assume that jd_utc is equal to jd_ut1.
+    # Since we do not have EOP data, assume that `jd_utc` is equal to `jd_ut1`.
     jd_ut1 = jd_utc
     jd_tt  = jd_utc_to_tt(jd_utc)
 
@@ -685,7 +691,7 @@ function r_ecef_to_eci(
 end
 
 function r_ecef_to_eci(T::T_ROT, ::Val{:TIRS}, ::Val{:MJ2000}, jd_utc::Number)
-    # Since we do not have EOP Data, assume that jd_utc is equal to jd_ut1.
+    # Since we do not have EOP data, assume that `jd_utc` is equal to `jd_ut1`.
     jd_ut1 = jd_utc
     jd_tt  = jd_utc_to_tt(jd_utc)
 

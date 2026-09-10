@@ -1,12 +1,12 @@
 ## Description #############################################################################
 #
-# Rotations from an Earth-Fixed Inertial (ECI) reference frame to an Earth-Fixed,
-# Earth-Centered (ECEF) reference frame.
+# Rotations from an Earth-Centered Inertial (ECI) reference frame to an Earth-Centered,
+# Earth-Fixed (ECEF) reference frame.
 #
 ## References ##############################################################################
 #
-# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm Press,
-#     Hawthorn, CA, USA.
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. 4th ed.
+#     Microcosm Press, Hawthorn, CA, USA.
 #
 ############################################################################################
 
@@ -24,13 +24,19 @@ the source and destination frames.
 !!! note
 
     For more information, including how to specify the origin and destination reference
-    frames, see the **Extended Help**.
+    frames, see the **Extended help**.
 
 # Returns
 
-- `T`: Rotation entity that aligns the ECI reference frame with the ECEF reference frame.
+- `T`: Rotation entity that aligns the `ECI` reference frame with the `ECEF` reference
+    frame at the epoch `jd_utc` [UTC].
 
-# Extended Help
+# References
+
+- **[1]** Vallado, D. A (2013). *Fundamentals of Astrodynamics and Applications*. 4th ed.
+    Microcosm Press, Hawthorn, CA, USA.
+
+# Extended help
 
 ## Rotation Description
 
@@ -110,7 +116,7 @@ selected frames.
 
 `¹`: In this case, UTC will be assumed equal to UT1 to compute the Greenwich Mean Sidereal
 Time. This is an approximation but should be sufficiently accurate for some applications.
-Notice that, if EOP Data is provided, UT1 will be accurately computed.
+Notice that, if EOP data are provided, UT1 will be accurately computed.
 
 `²`: In this case, the terms that account for the free-core nutation and time dependent
 effects of the Celestial Intermediate Pole (CIP) position with respect to the GCRF will not
@@ -203,7 +209,7 @@ function r_eci_to_ecef(
     return inv_rotation(r_ecef_to_eci(T, T_ECEF, T_ECI, jd_utc, eop))
 end
 
-# Specializations for those cases that EOP is not needed.
+# Specializations for the cases in which EOP data are not needed.
 function r_eci_to_ecef(
     T_ECI::Union{Val{:J2000}, Val{:TOD}, Val{:MOD}, Val{:TEME}},
     T_ECEF::Val{:PEF},

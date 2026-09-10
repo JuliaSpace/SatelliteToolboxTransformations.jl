@@ -5,8 +5,8 @@
 #
 ## References ##############################################################################
 #
-# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm Press,
-#     Hawthorn, CA, USA.
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. 4th ed.
+#     Microcosm Press, Hawthorn, CA, USA.
 #
 ############################################################################################
 
@@ -17,10 +17,10 @@ export r_eci_to_eci
     r_eci_to_eci([T, ]ECIo, jd_utco::Number, ECIf, jd_utcf::Number[, eop]) -> T
 
 Compute the rotation from an Earth-Centered Inertial (ECI) reference frame `ECIo` to another
-ECI reference frame `ECIf`. If the origin and destination frame contain only one *of date*
+ECI reference frame `ECIf`. If the origin and destination frames contain only one *of date*
 frame, the first signature is used and the Julian Day `jd_utc` [UTC] is the epoch of this
-frame. On the other hand, if the origin and destination frame contain two *of date*
-frame`¹`, e.g. TOD => MOD, the second signature must be used in which the Julian Day
+frame. On the other hand, if the origin and destination frames contain two *of date*
+frames`¹`, e.g. TOD => MOD, the second signature must be used in which the Julian Day
 `jd_utco` [UTC] is the epoch of the origin frame and the Julian Day `jd_utcf` [UTC] is the
 epoch of the destination frame. The rotation description that will be used is given by `T`,
 which can be `DCM` or `Quaternion`. The algorithm might also require the Earth Orientation
@@ -29,16 +29,21 @@ Parameters (EOP) `eop` depending on the source and destination frames.
 !!! note
 
     For more information, including how to specify the origin and destination reference
-    frames, see the **Extended Help**.
+    frames, see the **Extended help**.
 
 `¹`: TEME is an *of date* frame.
 
 # Returns
 
-- `T`: Rotation that aligns the origin ECI reference frame with the destination ECI
-    reference frame.
+- `T`: Rotation that aligns the origin ECI reference frame `ECIo` with the destination ECI
+    reference frame `ECIf`.
 
-# Extended Help
+# References
+
+- **[1]** Vallado, D. A (2013). *Fundamentals of Astrodynamics and Applications*. 4th ed.
+    Microcosm Press, Hawthorn, CA, USA.
+
+# Extended help
 
 ## Rotation Description
 
@@ -81,7 +86,7 @@ The supported ECI frames for both origin `ECIo` and destination `ECIf` are:
 
 ## Earth Orientation Parameters (EOP)
 
-The conversion between the frames might depend on EOP Data (see [`fetch_iers_eop`](@ref) and
+The conversion between the frames might depend on EOP data (see [`fetch_iers_eop`](@ref) and
 [`read_iers_eop`](@ref)). If IAU-76/FK5 model is used, the type of `eop` must be
 [`EopIau1980`](@ref). Otherwise, if IAU-2006/2010 model is used, the type of `eop` must be
 [`EopIau2000A`](@ref). The following table shows the requirements for EOP data given the
@@ -110,6 +115,7 @@ selected frames.
 | IAU-76/FK5                  | `TEME`   | `MOD`    | Not required  | Second             |
 | IAU-76/FK5                  | `TEME`   | `TOD`    | Not required  | Second             |
 | IAU-2006/2010 CIO-based     | `GCRF`   | `CIRS`   | Not required¹ | First              |
+| IAU-2006/2010 CIO-based     | `CIRS`   | `GCRF`   | Not required¹ | First              |
 | IAU-2006/2010 CIO-based     | `CIRS`   | `CIRS`   | Not required¹ | Second             |
 | IAU-2006/2010 Equinox-based | `GCRF`   | `MJ2000` | Not required  | First²             |
 | IAU-2006/2010 Equinox-based | `GCRF`   | `MOD06`  | Not required  | First              |
@@ -141,7 +147,7 @@ the free core nutation will not be available, reducing the precision.
     computed considering the original IAU-76/FK5 theory. Otherwise, the corrected frame will
     be used.
 
-# Examples
+## Examples
 
 ```julia-repl
 julia> eop_iau1980 = fetch_iers_eop(Val(:IAU1980));
@@ -195,7 +201,7 @@ function r_eci_to_eci(
     return r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop)
 end
 
-# Specializations for those cases in which we have two *of dates* frames.
+# Specializations for the cases in which we have two *of date* frames.
 function r_eci_to_eci(
     T_ECIo::T_ECIs_of_date,
     jd_utco::Number,
@@ -226,7 +232,7 @@ function r_eci_to_eci(
     return r_eci_to_eci(DCM, T_ECIo, jd_utco, T_ECIf, jd_utcf, eop)
 end
 
-# Specializations for those cases that EOP Data is not needed.
+# Specializations for the cases in which EOP data are not needed.
 function r_eci_to_eci(
     T_ECIo::Val{:J2000}, T_ECIf::Union{Val{:MOD}, Val{:TOD}, Val{:TEME}}, jd_utc::Number
 )
@@ -329,7 +335,7 @@ function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:TOD}, jd_utc::Number, eop::
     δΔϵ_1980 = eop.δΔϵ(jd_utc) * _MILLIARCSEC_TO_RAD
     δΔψ_1980 = eop.δΔψ(jd_utc) * _MILLIARCSEC_TO_RAD
 
-    # Return the rotation.
+    # Compute the partial rotations.
     r_mod_gcrf = r_gcrf_to_mod_fk5(T, jd_tt)
     r_tod_mod  = r_mod_to_tod_fk5(T, jd_tt, δΔϵ_1980, δΔψ_1980)
 
@@ -354,7 +360,7 @@ function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:TEME}, jd_utc::Number, eop:
     δΔϵ_1980 = eop.δΔϵ(jd_utc) * _MILLIARCSEC_TO_RAD
     δΔψ_1980 = eop.δΔψ(jd_utc) * _MILLIARCSEC_TO_RAD
 
-    # Return the rotation.
+    # Compute the partial rotations.
     r_mod_gcrf = r_gcrf_to_mod_fk5(T, jd_tt)
     r_teme_mod = r_mod_to_teme(T, jd_tt, δΔϵ_1980, δΔψ_1980)
 
