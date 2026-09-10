@@ -14,10 +14,11 @@ makedocs(;
     pages = [
         "Home" => "index.md",
         "Transformations" => [
-            "ECI and ECEF"            => "man/ecef_eci.md",
-            "ECEF and Local frames"   => "man/ecef_local_frames.md",
-            "Geodetic and Geocentric" => "man/geodetic_geocentric.md",
-            "Orbit representations"   => "man/orbit_representations.md",
+            "ECI and ECEF"                   => "man/ecef_eci.md",
+            "ECEF and Local frames"          => "man/ecef_local_frames.md",
+            "ECI and Satellite local frames" => "man/eci_local_frames.md",
+            "Geodetic and Geocentric"        => "man/geodetic_geocentric.md",
+            "Orbit representations"          => "man/orbit_representations.md",
         ],
         "Library" => "lib/library.md",
     ],
