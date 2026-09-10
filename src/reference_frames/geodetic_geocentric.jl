@@ -47,7 +47,7 @@ function ecef_to_geocentric(r_e::AbstractVector)
 
     lat = atan(z, hypot(x, y))
     lon = atan(y, x)
-    r   = hypot(hypot(x, y), z)
+    r   = hypot(x, y, z)
 
     return lat, lon, r
 end
@@ -180,7 +180,8 @@ function ecef_to_geodetic(
     N = a / √(1 - e² * sin_lat^2)
 
     # Avoid singularity if we are near the poles (~ 1 deg according to [1, p.172]). Note
-    # that `cosd(1) = -0.01745240643728351`.
+    # that `cos(89°) = sin(1°) ≈ 0.017452406437283512`, so the check excludes latitudes
+    # within 1° of the poles.
     if !(-0.01745240643728351 < cos_lat < 0.01745240643728351)
         h = p / cos_lat - N
     else
