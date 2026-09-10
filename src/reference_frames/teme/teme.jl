@@ -61,7 +61,7 @@ function r_teme_to_tod(T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_
     Eq_equinox1982 = _equation_of_equinoxes_1982(jd_tt, Δψ_1980, mϵ_1980)
 
     # Compute the rotation.
-    return angle_to_rot(T, -Eq_equinox1982, 0, 0, :ZYX)
+    return angle_to_rot(T, -Eq_equinox1982, :Z)
 end
 
 """
@@ -141,7 +141,7 @@ function r_teme_to_mod(T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_
     Eq_equinox1982 = _equation_of_equinoxes_1982(jd_tt, Δψ_1980, mϵ_1980)
 
     # Compute the rotation TEME => TOD.
-    r_tod_teme = angle_to_rot(T, -Eq_equinox1982, 0, 0, :ZYX)
+    r_tod_teme = angle_to_rot(T, -Eq_equinox1982, :Z)
 
     # Compute the rotation TOD => MOD.
     r_mod_tod = angle_to_rot(T, ϵ_1980, Δψ_1980, -mϵ_1980, :XZX)
@@ -289,7 +289,7 @@ function r_teme_to_pef(T::T_ROT, jd_ut1::Number)
     θ_gmst = jd_to_gmst(jd_ut1)
 
     # Compute the rotation.
-    return angle_to_rot(T, θ_gmst, 0, 0, :ZYX)
+    return angle_to_rot(T, θ_gmst, :Z)
 end
 
 """

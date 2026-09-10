@@ -190,7 +190,7 @@ function r_pef_to_tod_fk5(T::T_ROT, jd_ut1::Number, jd_tt::Number, δΔψ_1980::
     θ_gast = θ_gmst + Eq_equinox1982
 
     # Compute the rotation matrix.
-    return angle_to_rot(T, -θ_gast, 0, 0, :ZYX)
+    return angle_to_rot(T, -θ_gast, :Z)
 end
 
 """
@@ -579,7 +579,7 @@ function r_pef_to_mod_fk5(
     θ_gast = θ_gmst + Eq_equinox1982
 
     # Compute the rotation PEF => TOD.
-    r_tod_pef = angle_to_rot(T, -θ_gast, 0, 0, :ZYX)
+    r_tod_pef = angle_to_rot(T, -θ_gast, :Z)
 
     # Compute the rotation TOD => MOD.
     r_mod_tod = angle_to_rot(T, ϵ_1980, Δψ_1980, -mϵ_1980, :XZX)

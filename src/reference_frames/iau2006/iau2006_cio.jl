@@ -189,7 +189,7 @@ function r_tirs_to_cirs_iau2006(T::T_ROT, jd_ut1::Number)
     θ_era = 2π * (0.7790572732640 + 1.00273781191135448 * (jd_ut1 - JD_J2000))
     θ_era = mod(θ_era, 2π)
 
-    return angle_to_rot(T, -θ_era, 0, 0, :ZXY)
+    return angle_to_rot(T, -θ_era, :Z)
 end
 
 """
@@ -232,7 +232,7 @@ function r_cirs_to_tirs_iau2006(T::T_ROT, jd_ut1::Number)
     θ_era = 2π * (0.7790572732640 + 1.00273781191135448 * (jd_ut1 - JD_J2000))
     θ_era = mod(θ_era, 2π)
 
-    return angle_to_rot(T, θ_era, 0, 0, :ZXY)
+    return angle_to_rot(T, θ_era, :Z)
 end
 
 # == CIRS <=> GCRF =========================================================================

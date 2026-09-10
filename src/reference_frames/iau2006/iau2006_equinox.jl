@@ -102,7 +102,7 @@ function r_tirs_to_ers_iau2006(
     θ_gast2000 = θ_era - EO
 
     # Compute the rotation between the TIRS and ERS.
-    return angle_to_rot(T, -θ_gast2000, 0, 0, :ZYX)
+    return angle_to_rot(T, -θ_gast2000, :Z)
 end
 
 """
@@ -259,7 +259,7 @@ function r_mod_to_mj2000_iau2006(T::T_ROT, jd_tt::Number)
     # MOD. Hence, we need the inverse matrix. Furthermore, the equation in [1](p. 218, eq.
     # 3-73) uses mϵ_2000 instead of ϵ_0 as in [2](eq. 12).
     return compose_rotation(
-        angle_to_rot(T, -χ_a, ω_a, Ψ_a, :ZXZ), angle_to_rot(T, -ϵ_0, 0, 0, :XYZ)
+        angle_to_rot(T, -χ_a, ω_a, Ψ_a, :ZXZ), angle_to_rot(T, -ϵ_0, :X)
     )
 end
 
@@ -439,7 +439,7 @@ function r_tirs_to_mod_iau2006(
     θ_gast2000 = θ_era - EO
 
     # Compute the rotation between the TIRS and ERS.
-    r_ers_tirs = angle_to_rot(T, -θ_gast2000, 0, 0, :ZYX)
+    r_ers_tirs = angle_to_rot(T, -θ_gast2000, :Z)
 
     # Compute the rotation between ERS and MOD.
     r_mod_ers = angle_to_rot(T, mϵ_2000 + Δϵ_2000, ΔΨ_2000, -mϵ_2000, :XZX)
