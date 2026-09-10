@@ -168,7 +168,7 @@ this parameter is omitted, then it falls back to `DCM`.
 # Remarks
 
 The reference frames TIRS and CIRS are separated by a rotation about the Z-axis of the Earth
-Rotation Angle, which is the angle between the Conventional International Origin (CIO) and
+Rotation Angle, which is the angle between the Celestial Intermediate Origin (CIO) and
 the Terrestrial Intermediate Origin (TIO) **[1]**. The latter is a reference meridian on
 Earth that is located about 100m away from Greenwich meridian along the equator of the
 Celestial Intermediate Pole (CIP) **[1]**.
@@ -181,13 +181,8 @@ Celestial Intermediate Pole (CIP) **[1]**.
 r_tirs_to_cirs_iau2006(jd_ut1::Number) = r_tirs_to_cirs_iau2006(DCM, jd_ut1)
 
 function r_tirs_to_cirs_iau2006(T::T_ROT, jd_ut1::Number)
-    # In this theory, the rotation of Earth is taken into account by the Earth Rotation
-    # Angle, which is the angle between the Conventional International Origin (CIO) and the
-    # Terrestrial Intermediate Origin (TIO) [1]. The latter is a reference meridian on Earth
-    # that is located about 100m away from Greenwich meridian along the equator of the
-    # Celestial Intermediate Pole (CIP) [1].
-    θ_era = 2π * (0.7790572732640 + 1.00273781191135448 * (jd_ut1 - JD_J2000))
-    θ_era = mod(θ_era, 2π)
+    # Compute the Earth Rotation Angle (ERA).
+    θ_era = _earth_rotation_angle_iau2006(jd_ut1)
 
     return angle_to_rot(T, -θ_era, :Z)
 end
@@ -211,7 +206,7 @@ selected by the optional parameter `T`.
 # Remarks
 
 The reference frames TIRS and CIRS are separated by a rotation about the Z-axis of the Earth
-Rotation Angle, which is the angle between the Conventional International Origin (CIO) and
+Rotation Angle, which is the angle between the Celestial Intermediate Origin (CIO) and
 the Terrestrial Intermediate Origin (TIO) **[1]**. The latter is a reference meridian on
 Earth that is located about 100m away from Greenwich meridian along the equator of the
 Celestial Intermediate Pole (CIP) **[1]**.
@@ -224,15 +219,7 @@ Celestial Intermediate Pole (CIP) **[1]**.
 r_cirs_to_tirs_iau2006(jd_ut1::Number) = r_cirs_to_tirs_iau2006(DCM, jd_ut1)
 
 function r_cirs_to_tirs_iau2006(T::T_ROT, jd_ut1::Number)
-    # In this theory, the rotation of Earth is taken into account by the Earth Rotation
-    # Angle, which is the angle between the Conventional International Origin (CIO) and the
-    # Terrestrial Intermediate Origin (TIO) [1]. The latter is a reference meridian on Earth
-    # that is located about 100m away from Greenwich meridian along the equator of the
-    # Celestial Intermediate Pole (CIP) [1].
-    θ_era = 2π * (0.7790572732640 + 1.00273781191135448 * (jd_ut1 - JD_J2000))
-    θ_era = mod(θ_era, 2π)
-
-    return angle_to_rot(T, θ_era, :Z)
+    return inv_rotation(r_tirs_to_cirs_iau2006(T, jd_ut1))
 end
 
 # == CIRS <=> GCRF =========================================================================
@@ -280,6 +267,8 @@ function r_cirs_to_gcrf_iau2006(::Type{DCM}, jd_tt::Number, δx::Number = 0, δy
     #   a = 1/(1 + cos(d)), d = atan( sqrt( ( x^2 + y^2 )/( 1 - x^2 - y^2 ) ) )
     a = 1 / 2 + 1 / 8 * (x² + y²)
 
+    # NOTE: The `DCM` constructor fills the matrix in column-major order. Hence, the trailing
+    # transposition makes the literal read row-wise, as the matrix is printed in [1].
     #! format: off
     D = DCM(1 - a * x²,    -a * xy, x,
                -a * xy, 1 - a * y², y,
@@ -318,37 +307,31 @@ function r_gcrf_to_cirs_iau2006(jd_tt::Number, δx::Number = 0, δy::Number = 0)
     return r_gcrf_to_cirs_iau2006(DCM, jd_tt, δx, δy)
 end
 
-function r_gcrf_to_cirs_iau2006(::Type{DCM}, jd_tt::Number, δx::Number = 0, δy::Number = 0)
-    # Compute the rotations to obtain the Celestial Intermediate Origin (CIO).
-    x, y, s = cio_iau2006(jd_tt)
-
-    # Add the corrections.
-    x += δx
-    y += δy
-
-    # Auxiliary variables.
-    x² = x^2
-    y² = y^2
-    xy = x * y
-
-    # == Compute the Rotation Matrix =======================================================
-
-    # This is the approximate value for:
-    #
-    #   a = 1/(1 + cos(d)), d = atan( sqrt( ( x^2 + y^2 )/( 1 - x^2 - y^2 ) ) )
-    a = 1 / 2 + 1 / 8 * (x² + y²)
-
-    #! format: off
-    D = DCM(1 - a * x²,    -a * xy, x,
-               -a * xy, 1 - a * y², y,
-                   -x ,        -y , 1 - a * (x² + y²))
-    #! format: on
-
-    return angle_to_dcm(-s, :Z) * D
+function r_gcrf_to_cirs_iau2006(T::T_ROT, jd_tt::Number, δx::Number = 0, δy::Number = 0)
+    return inv_rotation(r_cirs_to_gcrf_iau2006(T, jd_tt, δx, δy))
 end
 
-function r_gcrf_to_cirs_iau2006(
-    ::Type{Quaternion}, jd_tt::Number, δx::Number = 0, δy::Number = 0
-)
-    return dcm_to_quat(r_gcrf_to_cirs_iau2006(DCM, jd_tt, δx, δy))
+############################################################################################
+#                                    Private Functions                                     #
+############################################################################################
+
+"""
+    _earth_rotation_angle_iau2006(jd_ut1::Number) -> Number
+
+Compute the Earth Rotation Angle (ERA) [rad] at the Julian Day `jd_ut1` [UT1] according to
+the IAU-2006 theory, reduced to the interval [0, 2π).
+
+The ERA is the angle between the Celestial Intermediate Origin (CIO) and the Terrestrial
+Intermediate Origin (TIO) **[1]**(p. 212). The latter is a reference meridian on Earth
+located about 100 m away from the Greenwich meridian along the equator of the Celestial
+Intermediate Pole (CIP).
+
+# References
+
+- **[1]** Vallado, D. A (2013). *Fundamentals of Astrodynamics and Applications*. 4th ed.
+    Microcosm Press, p. 212.
+"""
+function _earth_rotation_angle_iau2006(jd_ut1::Number)
+    θ_era = 2π * (0.7790572732640 + 1.00273781191135448 * (jd_ut1 - JD_J2000))
+    return mod(θ_era, 2π)
 end

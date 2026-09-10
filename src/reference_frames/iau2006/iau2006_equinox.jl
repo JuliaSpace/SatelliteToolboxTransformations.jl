@@ -87,13 +87,8 @@ end
 function r_tirs_to_ers_iau2006(
     T::T_ROT, jd_ut1::Number, jd_tt::Number, δΔΨ_2000::Number = 0
 )
-    # In this theory, the rotation of Earth is taken into account by the Earth Rotation
-    # Angle, which is the angle between the Conventional International Origin (CIO) and the
-    # Terrestrial Intermediate Origin (TIO) [1]. The latter is a reference meridian on Earth
-    # that is located about 100m away from Greenwich meridian along the equator of the
-    # Celestial Intermediate Pole (CIP) [1].
-    θ_era = 2π * (0.7790572732640 + 1.00273781191135448 * (jd_ut1 - JD_J2000))
-    θ_era = mod(θ_era, 2π)
+    # Compute the Earth Rotation Angle (ERA).
+    θ_era = _earth_rotation_angle_iau2006(jd_ut1)
 
     # Compute the Equation of the Origins (EO).
     _, _, _, EO = nutation_eo_iau2006(jd_tt, 0, δΔΨ_2000)
@@ -422,13 +417,8 @@ end
 function r_tirs_to_mod_iau2006(
     T::T_ROT, jd_ut1::Number, jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_2000::Number = 0
 )
-    # In this theory, the rotation of Earth is taken into account by the Earth Rotation
-    # Angle, which is the angle between the Conventional International Origin (CIO) and the
-    # Terrestrial Intermediate Origin (TIO) [1]. The latter is a reference meridian on Earth
-    # that is located about 100m away from Greenwich meridian along the equator of the
-    # Celestial Intermediate Pole (CIP) [1].
-    θ_era = 2π * (0.7790572732640 + 1.00273781191135448 * (jd_ut1 - JD_J2000))
-    θ_era = mod(θ_era, 2π)
+    # Compute the Earth Rotation Angle (ERA).
+    θ_era = _earth_rotation_angle_iau2006(jd_ut1)
 
     # Compute the Equation of the Origins (EO).
     mϵ_2000, Δϵ_2000, ΔΨ_2000, EO = nutation_eo_iau2006(jd_tt, δΔϵ_2000, δΔΨ_2000)
