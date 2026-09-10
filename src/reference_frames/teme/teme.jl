@@ -2,17 +2,15 @@
 #
 # Functions related with True Equator Mean Equinox (TEME) reference frame.
 #
+# NOTE: As mentioned in [1, p. 233], there is not an official definition of the TEME frame.
+# Hence, in this package, it is considered the definition presented in [1, p. 233] in which
+# the complete form of the Equation of Equinoxes is used. This seems to be the case when
+# comparing the values shown in Table 3-6 [1, p. 232].
+#
 ## References ##############################################################################
 #
 # [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm Press,
 #     Hawthorn, CA, USA.
-#
-## Remarks #################################################################################
-#
-# As mentioned in [1](p. 233), there is not an official definition of the TEME frame. Hence,
-# in this package, it is considered the definition presented in [1](p. 233) in which the
-# complete form of the Equation of Equinoxes is used. This seems to be the case when
-# comparing the values shown in Table 3-6 [1](p. 232).
 #
 ############################################################################################
 
@@ -24,7 +22,7 @@ export r_teme_to_pef, r_pef_to_teme
 # == TEME <=> TOD ==========================================================================
 
 """
-    r_teme_to_tod([T, ]jd_tt::Number[, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0]) -> T
+    r_teme_to_tod([T, ]jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0) -> T
 
 Compute the rotation that aligns the True Equator Mean Equinox (TEME) frame with the True of
 Date (TOD) frame at the Julian Day `jd_tt` [Terrestrial Time]. This algorithm uses the
@@ -42,7 +40,7 @@ this parameter is omitted, then it falls back to `DCM`.
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
 """
 function r_teme_to_tod(jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
@@ -61,7 +59,7 @@ function r_teme_to_tod(T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_
 end
 
 """
-    r_tod_to_teme([T, ]jd_tt::Number[, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0]) -> T
+    r_tod_to_teme([T, ]jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0) -> T
 
 Compute the rotation that aligns the True of Date (TOD) frame with the True Equator Mean
 Equinox (TEME) frame at the Julian Day `jd_tt` [Terrestrial Time]. This algorithm uses the
@@ -79,7 +77,7 @@ this parameter is omitted, then it falls back to `DCM`.
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
 """
 function r_tod_to_teme(jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
@@ -93,7 +91,7 @@ end
 # == TEME <=> MOD ==========================================================================
 
 """
-    r_teme_to_mod([T, ]jd_tt::Number[, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0]) -> T
+    r_teme_to_mod([T, ]jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0) -> T
 
 Compute the rotation that aligns the True Equator Mean Equinox (TEME) frame with the Mean of
 Date (MOD) frame at the Julian Day `jd_tt` [Terrestrial Time]. This algorithm uses the
@@ -111,7 +109,7 @@ this parameter is omitted, then it falls back to `DCM`.
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
 """
 function r_teme_to_mod(jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
@@ -143,7 +141,7 @@ function r_teme_to_mod(T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_
 end
 
 """
-    r_mod_to_teme([T, ]jd_tt::Number[, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0]) -> T
+    r_mod_to_teme([T, ]jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0) -> T
 
 Compute the rotation that aligns the Mean of Date (MOD) frame with the True Equator Mean
 Equinox (TEME) frame at the Julian Day `jd_tt` [Terrestrial Time]. This algorithm uses the
@@ -161,7 +159,7 @@ this parameter is omitted, then it falls back to `DCM`.
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
 """
 function r_mod_to_teme(jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
@@ -175,7 +173,7 @@ end
 # == TEME <=> GCRF =========================================================================
 
 """
-    r_teme_to_gcrf([T, ]jd_tt::Number[, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0]) -> T
+    r_teme_to_gcrf([T, ]jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0) -> T
 
 Compute the rotation that aligns the True Equator Mean Equinox (TEME) frame with the
 Geocentric Celestial Reference Frame (GCRF) at the Julian Day `jd_tt` [Terrestrial Time].
@@ -189,6 +187,7 @@ be returned. Otherwise, if it is `Quaternion`, then a Quaternion will be returne
 this parameter is omitted, then it falls back to `DCM`.
 
 !!! info
+
     The EOP data related to the nutation of the obliquity (`δΔϵ_1980`) and the nutation
     of the longitude (`δΔψ_1980`) can be omitted. In this case, the GCRF frame is what is
     usually called J2000 reference frame.
@@ -199,7 +198,7 @@ this parameter is omitted, then it falls back to `DCM`.
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
 """
 function r_teme_to_gcrf(jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
@@ -218,19 +217,21 @@ function r_teme_to_gcrf(T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ
 end
 
 """
-    r_gcrf_to_teme([T, ]jd_tt::Number[, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0]) -> T
+    r_gcrf_to_teme([T, ]jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0) -> T
 
-Compute the rotation that aligns the GCRF frame with the True Equator Mean Equinox (TEME)
-frame at the Julian Day `jd_tt` [Terrestrial Time]. This algorithm uses the IAU-76/FK5
-theory and TEME definition in **[1]**(p. 233). Notice that one can provide corrections for
-the nutation in obliquity (`δΔϵ_1980`) [rad] and in longitude (`δΔψ_1980`) [rad] that are
-usually obtained from IERS EOP Data (see [`fetch_iers_eop`](@ref)).
+Compute the rotation that aligns the Geocentric Celestial Reference Frame (GCRF) with the
+True Equator Mean Equinox (TEME) frame at the Julian Day `jd_tt` [Terrestrial Time]. This
+algorithm uses the IAU-76/FK5 theory and TEME definition in **[1]**(p. 233). Notice that
+one can provide corrections for the nutation in obliquity (`δΔϵ_1980`) [rad] and in
+longitude (`δΔψ_1980`) [rad] that are usually obtained from IERS EOP Data (see
+[`fetch_iers_eop`](@ref)).
 
 The rotation type is described by the optional variable `T`. If it is `DCM`, then a DCM will
 be returned. Otherwise, if it is `Quaternion`, then a Quaternion will be returned. In case
 this parameter is omitted, then it falls back to `DCM`.
 
 !!! info
+
     The EOP data related to the nutation of the obliquity (`δΔϵ_1980`) and the nutation
     of the longitude (`δΔψ_1980`) can be omitted. In this case, the GCRF frame is what is
     usually called J2000 reference frame.
@@ -241,7 +242,7 @@ this parameter is omitted, then it falls back to `DCM`.
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
 """
 function r_gcrf_to_teme(jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
@@ -271,7 +272,7 @@ this parameter is omitted, then it falls back to `DCM`.
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
 """
 r_teme_to_pef(jd_ut1::Number) = r_teme_to_pef(DCM, jd_ut1)
@@ -301,7 +302,7 @@ this parameter is omitted, then it falls back to `DCM`.
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
 """
 r_pef_to_teme(jd_ut1::Number) = r_pef_to_teme(DCM, jd_ut1)
