@@ -1,11 +1,11 @@
 ## Description #############################################################################
 #
-#  Coordinate transformations related with the geodetic and geocentric coordinates.
+# Coordinate transformations related with the geodetic and geocentric coordinates.
 #
 ## References ##############################################################################
 #
-# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
-#     Press, Hawthorn, CA, USA.
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. 4th ed.
+#     Microcosm Press, Hawthorn, CA, USA.
 #
 # [2] ESA Navipedia: http://www.navipedia.net/
 #
@@ -25,15 +25,25 @@ export geocentric_to_geodetic, geodetic_to_geocentric
 """
     ecef_to_geocentric(r_e::AbstractVector{T}) -> NTuple{3, T}
 
-Convert the vector `r_e` represented in the Earth-Centered, Earth-Fixed (ECEF) reference
-frame into geocentric coordinates (geocentric latitude, longitude, and distance from Earth's
-center).
+Convert the vector `r_e` [m] represented in the Earth-Centered, Earth-Fixed (ECEF) reference
+frame into geocentric coordinates (geocentric latitude, longitude, and distance from the
+Earth's center). The function throws if `r_e` is the origin, where the latitude and the
+longitude are undefined.
+
+The returned type `T` is the floating-point promotion of `eltype(r_e)`.
 
 # Returns
 
 - `T`: Geocentric latitude [rad] ∈ [-π / 2, π / 2].
-- `T`: Longitude [rad] ∈ [-π , π].
-- `T`: Distance from Earth's center [m].
+- `T`: Longitude [rad] ∈ [-π, π].
+- `T`: Distance from the Earth's center [m].
+
+# Extended help
+
+## Throws
+
+- `DomainError`: `r_e` is the null vector, for which the latitude and the longitude are
+    undefined.
 """
 function ecef_to_geocentric(r_e::AbstractVector)
 
@@ -55,13 +65,12 @@ end
 """
     geocentric_to_ecef(lat::Number, lon::Number, r::Number) -> SVector{3, T}
 
-Convert the geocentric coordinates (latitude `lat` [rad], longitude `lon` [rad], and
-distance from Earth's center `r` [m]) into a Earth-Centered, Earth-Fixed vector [m].
+Convert the geocentric coordinates (geocentric latitude `lat` [rad], longitude `lon` [rad],
+and distance from the Earth's center `r` [m]) into a vector [m] represented in the
+Earth-Centered, Earth-Fixed (ECEF) reference frame.
 
-!!! note
-
-    The output type `T` is obtained by promoting the input types `T1`, `T2`, and `T3`. If
-    all of them are integers, they will be converted to float.
+The element type `T` is the promotion of the types of `lat`, `lon`, and `r`. If all of them
+are integers, the result is converted to float.
 """
 function geocentric_to_ecef(
     lat::T1, lon::T2, r::T3
@@ -84,32 +93,58 @@ end
 """
     geocentric_to_ecef(geocentric_state::AbstractVector) -> SVector{3, T}
 
-Convert the geocentric coordinates (latitude `lat` [rad], longitude `lon` [rad], and
-distance from Earth's center `r` [m]) into a Earth-Centered, Earth-Fixed vector [m].
+Convert the geocentric coordinates in `geocentric_state` (geocentric latitude [rad],
+longitude [rad], and distance from the Earth's center [m], in this order) into a vector [m]
+represented in the Earth-Centered, Earth-Fixed (ECEF) reference frame.
+
+The element type `T` is obtained as in the method that receives the coordinates as separate
+arguments.
 """
 function geocentric_to_ecef(geocentric_state::AbstractVector)
     return geocentric_to_ecef(geocentric_state[1], geocentric_state[2], geocentric_state[3])
 end
 
 """
-    ecef_to_geodetic(r_e::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> NTuple{3, T}
+    ecef_to_geodetic(r_e::AbstractVector; kwargs...) -> NTuple{3, RT}
 
 Convert the vector `r_e` [m] represented in the Earth-Centered, Earth-Fixed (ECEF) reference
-frame into Geodetic coordinates for a custom target ellipsoid (defaults to WGS-84).
+frame into geodetic coordinates (geodetic latitude, longitude, and altitude) with respect to
+the reference `ellipsoid`. The function throws if `r_e` is the origin, where the geodetic
+coordinates are undefined.
 
-!!! info
+The returned type `RT` is the promotion of `eltype(r_e)` and the ellipsoid parameter type
+`T`.
 
-    The algorithm is based on **[1]**.
+The algorithm is based on **[3]**.
+
+# Keywords
+
+- `ellipsoid::Ellipsoid{T}`: Reference ellipsoid used in the conversion.
+    (**Default**: `WGS84_ELLIPSOID`)
 
 # Returns
 
-- `T`: Latitude [rad].
-- `T`: Longitude [rad].
-- `T`: Altitude [m].
+- `RT`: Geodetic latitude [rad].
+- `RT`: Longitude [rad].
+- `RT`: Altitude above the reference ellipsoid [m].
 
 # References
 
-- **[1]**: mu-blox ag (1999). Datum Transformations of GPS Positions. Application Note.
+- **[1]** Vallado, D. A (2013). *Fundamentals of Astrodynamics and Applications*. 4th ed.
+    Microcosm Press, Hawthorn, CA, USA, p. 172.
+- **[3]** mu-blox ag (1999). Datum Transformations of GPS Positions. Application Note.
+
+# Extended help
+
+The closed-form estimate of the latitude in **[3]** is refined with a few bounded Newton
+steps to keep the accuracy for high-altitude points. Points on the equator and on the polar
+axis are handled explicitly, and the altitude is computed with the alternative expression
+suggested in **[1]** when the point is within 1° of the poles.
+
+## Throws
+
+- `DomainError`: `r_e` is the null vector, for which the geodetic coordinates are
+    undefined.
 """
 function ecef_to_geodetic(
     r_e::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
@@ -152,7 +187,7 @@ function ecef_to_geodetic(
 
     sin_θ, cos_θ = sincos(θ)
 
-    # Compute Geodetic.
+    # Compute the longitude and the closed-form estimate of the geodetic latitude.
     lon = atan(y, x)
     lat = atan(z + el² * b * sin_θ^3, p - e² * a * cos_θ^3)
 
@@ -192,22 +227,25 @@ function ecef_to_geodetic(
 end
 
 """
-    geodetic_to_ecef(lat::Number, lon::Number, h::Number; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> SVector{3, RT}
+    geodetic_to_ecef(lat::Number, lon::Number, h::Number; kwargs...) -> SVector{3, RT}
 
-Convert the latitude `lat` [rad], longitude `lon` [rad], and altitude `h` \\[m] above the
-reference ellipsoid (defaults to WGS-84) into a vector represented on the Earth-Centered,
-Earth-Fixed (ECEF) reference frame.
+Convert the geodetic latitude `lat` [rad], longitude `lon` [rad], and altitude `h` [m] above
+the reference `ellipsoid` into a vector [m] represented in the Earth-Centered, Earth-Fixed
+(ECEF) reference frame.
 
-The returned element type `RT` is the promotion of the types of `lat`, `lon`, `h`, and the
-ellipsoid parameter `T`.
+The element type `RT` is the promotion of the types of `lat`, `lon`, `h`, and the ellipsoid
+parameter `T`.
 
-!!! info
+The algorithm is based on **[3]**.
 
-    The algorithm is based on **[1]**.
+# Keywords
+
+- `ellipsoid::Ellipsoid{T}`: Reference ellipsoid used in the conversion.
+    (**Default**: `WGS84_ELLIPSOID`)
 
 # References
 
-- **[1]**: mu-blox ag (1999). Datum Transformations of GPS Positions. Application Note.
+- **[3]** mu-blox ag (1999). Datum Transformations of GPS Positions. Application Note.
 """
 function geodetic_to_ecef(
     lat::LT, lon::LT2, h::HT; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
@@ -236,19 +274,25 @@ function geodetic_to_ecef(
 end
 
 """
-    geodetic_to_ecef(geodetic_state::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> SVector{3, T}
+    geodetic_to_ecef(geodetic_state::AbstractVector; kwargs...) -> SVector{3, RT}
 
-Convert the latitude `lat` [rad], longitude `lon` [rad], and altitude `h` \\[m] above the
-reference ellipsoid (defaults to WGS-84) into a vector represented on the Earth-Centered,
-Earth-Fixed (ECEF) reference frame.
+Convert the geodetic coordinates in `geodetic_state` (geodetic latitude [rad], longitude
+[rad], and altitude above the reference `ellipsoid` [m], in this order) into a vector [m]
+represented in the Earth-Centered, Earth-Fixed (ECEF) reference frame.
 
-!!! info
+The element type `RT` is the promotion of the element type of `geodetic_state` and the
+ellipsoid parameter `T`.
 
-    The algorithm is based on **[1]**.
+The algorithm is based on **[3]**.
+
+# Keywords
+
+- `ellipsoid::Ellipsoid{T}`: Reference ellipsoid used in the conversion.
+    (**Default**: `WGS84_ELLIPSOID`)
 
 # References
 
-- **[1]**: mu-blox ag (1999). Datum Transformations of GPS Positions. Application Note.
+- **[3]** mu-blox ag (1999). Datum Transformations of GPS Positions. Application Note.
 """
 function geodetic_to_ecef(
     geodetic_state::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
@@ -259,27 +303,30 @@ function geodetic_to_ecef(
 end
 
 """
-    geocentric_to_geodetic(ϕ_gc::Number, r::Number; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> NTuple{2, NT}
+    geocentric_to_geodetic(ϕ_gc::Number, r::Number; kwargs...) -> NTuple{2, NT}
 
-Compute the geodetic latitude and altitude above the reference ellipsoid (defaults to
-WGS-84) from the geocentric latitude `ϕ_gc` (-π/2, π/2) [rad] and radius `r` [m]. Notice
-that the longitude is the same in both geocentric and geodetic coordinates.
+Compute the geodetic latitude and altitude above the reference `ellipsoid` from the
+geocentric latitude `ϕ_gc` [rad] ∈ (-π / 2, π / 2) and radius `r` [m]. Notice that the
+longitude is the same in both geocentric and geodetic coordinates.
 
-The returned element type `NT` is the promotion of the types of `ϕ_gc`, `r`, and the
-ellipsoid parameter `T`, converted to a float.
+The returned type `NT` is the promotion of the types of `ϕ_gc`, `r`, and the ellipsoid
+parameter `T`, converted to float.
 
-!!! info
+The algorithm is based on **[5]**.
 
-    The algorithm is based on **[1]**.
+# Keywords
+
+- `ellipsoid::Ellipsoid{T}`: Reference ellipsoid used in the conversion.
+    (**Default**: `WGS84_ELLIPSOID`)
 
 # Returns
 
 - `NT`: Geodetic latitude [rad].
-- `NT`: Altitude above the reference ellipsoid (defaults to WGS-84) [m].
+- `NT`: Altitude above the reference ellipsoid [m].
 
 # References
 
-- **[1]** Borkowski, K. M (1987). Transformation of geocentric to geodetic coordinates
+- **[5]** Borkowski, K. M (1987). Transformation of geocentric to geodetic coordinates
     without approximations. Astrophysics and Space Science, vol. 139, pp. 1-4.
 """
 function geocentric_to_geodetic(
@@ -296,12 +343,13 @@ function geocentric_to_geodetic(
     re  = r_p * cos_ϕ_gc
     z   = r_p * sin_ϕ_gc
 
-    # The algorithm in [1] divides by the equatorial component `re`, which vanishes on the
-    # polar axis, yielding `NaN`. `re` is also negative when `|ϕ_gc|` is slightly larger than
-    # π / 2, which happens for entirely reasonable inputs such as `Float32(π) / 2`, and in
-    # that case the intermediate `√(E² + v)` is evaluated with a negative argument and throws
-    # a `DomainError`. In both situations the point lies on the polar axis to within the
-    # resolution of the input, where the geodetic solution is exact and needs no iteration.
+    # The algorithm in [5] divides by the equatorial component `re`, which vanishes on the
+    # polar axis, yielding `NaN`. `re` is also negative when `|ϕ_gc|` is slightly larger
+    # than π / 2, which happens for entirely reasonable inputs such as `Float32(π) / 2`, and
+    # in that case the intermediate `√(E² + v)` is evaluated with a negative argument and
+    # throws a `DomainError`. In both situations the point lies on the polar axis to within
+    # the resolution of the input, where the geodetic solution is exact and needs no
+    # iteration.
     if re <= 0
         return copysign(NT(π / 2), z), abs(z) - NT(ellipsoid.b)
     end
@@ -353,26 +401,31 @@ function geocentric_to_geodetic(
 end
 
 """
-    geocentric_to_geodetic(geocentric_state::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> NTuple{2, NT}
+    geocentric_to_geodetic(geocentric_state::AbstractVector; kwargs...) -> NTuple{2, NT}
 
-Compute the geodetic latitude and altitude above the reference ellipsoid (defaults to
-WGS-84) from the geocentric latitude `ϕ_gc` (-π/2, π/2) [rad] and radius `r` [m]. Notice
-that the longitude is the same in both geocentric and geodetic coordinates.
+Compute the geodetic latitude and altitude above the reference `ellipsoid` from
+`geocentric_state`, which contains the geocentric latitude [rad] ∈ (-π / 2, π / 2) and the
+radius [m], in this order. Notice that the longitude is the same in both geocentric and
+geodetic coordinates, so it is not part of the state.
 
-!!! info
+The returned type `NT` is the promotion of the element type of `geocentric_state` and the
+ellipsoid parameter `T`, converted to float.
 
-    The longitude is the same between states so the geocentric state vector only includes latitude and radius.
+The algorithm is based on **[5]**.
 
-    The algorithm is based on **[1]**.
+# Keywords
+
+- `ellipsoid::Ellipsoid{T}`: Reference ellipsoid used in the conversion.
+    (**Default**: `WGS84_ELLIPSOID`)
 
 # Returns
 
 - `NT`: Geodetic latitude [rad].
-- `NT`: Altitude above the reference ellipsoid (defaults to WGS-84) [m].
+- `NT`: Altitude above the reference ellipsoid [m].
 
 # References
 
-- **[1]** Borkowski, K. M (1987). Transformation of geocentric to geodetic coordinates
+- **[5]** Borkowski, K. M (1987). Transformation of geocentric to geodetic coordinates
     without approximations. Astrophysics and Space Science, vol. 139, pp. 1-4.
 """
 function geocentric_to_geodetic(
@@ -384,32 +437,36 @@ function geocentric_to_geodetic(
 end
 
 """
-    geodetic_to_geocentric(ϕ_gd::Number, h::Number; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> NTuple{2, NT}
+    geodetic_to_geocentric(ϕ_gd::Number, h::Number; kwargs...) -> NTuple{2, NT}
 
-Compute the geocentric latitude and radius from the geodetic latitude `ϕ_gd` (-π/2, π/2)
-[rad] and height above the reference ellipsoid `h` \\[m] (defaults to WGS-84). Notice that
-the longitude is the same in both geocentric and geodetic coordinates.
+Compute the geocentric latitude and radius from the geodetic latitude `ϕ_gd` [rad] ∈
+(-π / 2, π / 2) and altitude `h` [m] above the reference `ellipsoid`. Notice that the
+longitude is the same in both geocentric and geodetic coordinates.
 
-The returned element type `NT` is the promotion of the types of `ϕ_gd`, `h`, and the
-ellipsoid parameter `T`, converted to a float.
+The returned type `NT` is the promotion of the types of `ϕ_gd`, `h`, and the ellipsoid
+parameter `T`, converted to float.
 
-!!! info
-    The algorithm is based on **[1]**(p. 3).
+The algorithm is based on **[4]** (p. 3).
+
+# Keywords
+
+- `ellipsoid::Ellipsoid{T}`: Reference ellipsoid used in the conversion.
+    (**Default**: `WGS84_ELLIPSOID`)
 
 # Returns
 
 - `NT`: Geocentric latitude [rad].
-- `NT`: Radius from the center of the Earth [m].
+- `NT`: Distance from the Earth's center [m].
 
 # References
 
-- **[1]** ISO TC 20/SC 14 N (2011). Geomagnetic Reference Models.
+- **[4]** ISO TC 20/SC 14 N (2011). Geomagnetic Reference Models.
 """
 function geodetic_to_geocentric(
     ϕ_gd::PT, h::HT; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
 ) where {PT <: Number, HT <: Number, T <: Number}
-    # Promote the coordinates with the ellipsoid parameters so that both returned values have
-    # the same floating-point type regardless of the ellipsoid's own parameter type.
+    # Promote the coordinates with the ellipsoid parameters so that both returned values
+    # have the same floating-point type regardless of the ellipsoid's own parameter type.
     NT = float(promote_type(PT, HT, T))
 
     # Auxiliary variables to decrease computational burden.
@@ -440,26 +497,31 @@ function geodetic_to_geocentric(
 end
 
 """
-    geodetic_to_geocentric(geodetic_state::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID) where T<:Number -> NTuple{2, NT}
+    geodetic_to_geocentric(geodetic_state::AbstractVector; kwargs...) -> NTuple{2, NT}
 
-Compute the geocentric latitude and radius from the geodetic latitude `ϕ_gd` (-π/2, π/2)
-[rad] and height above the reference ellipsoid `h` \\[m] (defaults to WGS-84). Notice that
-the longitude is the same in both geocentric and geodetic coordinates.
+Compute the geocentric latitude and radius from `geodetic_state`, which contains the
+geodetic latitude [rad] ∈ (-π / 2, π / 2) and the altitude above the reference `ellipsoid`
+[m], in this order. Notice that the longitude is the same in both geocentric and geodetic
+coordinates, so it is not part of the state.
 
-!!! info
+The returned type `NT` is the promotion of the element type of `geodetic_state` and the
+ellipsoid parameter `T`, converted to float.
 
-    The longitude is the same between states so the geocentric state vector only includes latitude and radius.
+The algorithm is based on **[4]** (p. 3).
 
-    The algorithm is based on **[1]**(p. 3).
+# Keywords
+
+- `ellipsoid::Ellipsoid{T}`: Reference ellipsoid used in the conversion.
+    (**Default**: `WGS84_ELLIPSOID`)
 
 # Returns
 
 - `NT`: Geocentric latitude [rad].
-- `NT`: Radius from the center of the Earth [m].
+- `NT`: Distance from the Earth's center [m].
 
 # References
 
-- **[1]** ISO TC 20/SC 14 N (2011). Geomagnetic Reference Models.
+- **[4]** ISO TC 20/SC 14 N (2011). Geomagnetic Reference Models.
 """
 function geodetic_to_geocentric(
     geodetic_state::AbstractVector; ellipsoid::Ellipsoid{T} = WGS84_ELLIPSOID
