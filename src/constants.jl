@@ -4,12 +4,6 @@
 #
 ############################################################################################
 
-# == Crayons ===============================================================================
-
-const _CRAYON_BOLD      = Crayon(; bold = true)
-const _CRAYON_DARK_GRAY = crayon"dark_gray"
-const _CRAYON_RESET     = Crayon(; reset = true)
-
 # == Unit Conversion Factors ===============================================================
 
 # NOTE: These factors are `Float64`. They are meant for quantities that are already

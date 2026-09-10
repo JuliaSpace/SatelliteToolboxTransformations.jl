@@ -1,10 +1,11 @@
 module SatelliteToolboxTransformations
 
-using Crayons
 using Dates
-using Downloads: download
-using DataInterpolations
 using LinearAlgebra
+using StyledStrings
+
+using DataInterpolations
+using Downloads: download
 using ReferenceFrameRotations
 using Reexport
 using Scratch

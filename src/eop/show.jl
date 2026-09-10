@@ -67,25 +67,23 @@ end
     ) -> Nothing
 
 Print to `io` a table titled `name` with one row per EOP interpolation in `itps`, labeled
-by `labels`, showing the timespan of each field. The table uses colors if `io` supports
-them.
+by `labels`, showing the timespan of each field. The styles are rendered only if `io`
+supports colors.
 """
 function _show_eop(
     io::IO, name::String, labels::NTuple{6, String}, itps::NTuple{6, EopInterpolation}
 )
-    # Check if IO has support for colors.
-    color = get(io, :color, false)::Bool
-
-    b = color ? string(_CRAYON_BOLD) : ""
-    g = color ? string(_CRAYON_DARK_GRAY) : ""
-    r = color ? string(_CRAYON_RESET) : ""
+    header    = lpad("Data", 9)
+    separator = " " * "─"^9 * "┼" * "─"^46
 
     println(io, name, ":")
-    println(io, b, lpad("Data", 9), " ", g, "│ ", r, b, "Timespan", r)
-    println(io, g, " ", "─"^9, "┼", "─"^46, r)
+    println(io, styled"{bold:$header} {bright_black:│ }{bold:Timespan}")
+    println(io, styled"{bright_black:$separator}")
 
     for i in 1:6
-        print(io, b, lpad(labels[i], 9), " ", g, "│ ", r, _itp_timespan(itps[i]))
+        label    = lpad(labels[i], 9)
+        timespan = _itp_timespan(itps[i])
+        print(io, styled"{bold:$label} {bright_black:│ }$timespan")
         i < 6 && println(io)
     end
 
