@@ -183,6 +183,14 @@ function r_eci_to_hill(::Type{DCM}, r_eci::AbstractVector, v_eci::AbstractVector
     return D_hill_eci
 end
 
+function r_eci_to_hill(sv::OrbitStateVector)
+    return r_eci_to_hill(DCM, sv.r, sv.v)
+end
+
+function r_eci_to_hill(T::T_ROT, sv::OrbitStateVector)
+    return r_eci_to_hill(T, sv.r, sv.v)
+end
+
 """
     r_hill_to_eci(r_eci::AbstractVector, v_eci::AbstractVector) -> DCM
     r_hill_to_eci(T, r_eci::AbstractVector, v_eci::AbstractVector) -> T
@@ -223,6 +231,14 @@ function r_hill_to_eci(T::T_ROT, r_eci::AbstractVector, v_eci::AbstractVector)
     return inv_rotation(r_eci_to_hill(T, r_eci, v_eci))
 end
 
+function r_hill_to_eci(sv::OrbitStateVector)
+    return r_hill_to_eci(DCM, sv.r, sv.v)
+end
+
+function r_hill_to_eci(T::T_ROT, sv::OrbitStateVector)
+    return r_hill_to_eci(T, sv.r, sv.v)
+end
+
 """
     r_eci_to_lvlh(r_eci::AbstractVector, v_eci::AbstractVector) -> DCM
     r_eci_to_lvlh(T, r_eci::AbstractVector, v_eci::AbstractVector) -> T
@@ -257,6 +273,14 @@ function r_eci_to_lvlh(::Type{DCM}, r_eci::AbstractVector, v_eci::AbstractVector
     return D_lvlh_eci
 end
 
+function r_eci_to_lvlh(sv::OrbitStateVector)
+    return r_eci_to_lvlh(DCM, sv.r, sv.v)
+end
+
+function r_eci_to_lvlh(T::T_ROT, sv::OrbitStateVector)
+    return r_eci_to_lvlh(T, sv.r, sv.v)
+end
+
 """
     r_lvlh_to_eci(r_eci::AbstractVector, v_eci::AbstractVector) -> DCM
     r_lvlh_to_eci(T, r_eci::AbstractVector, v_eci::AbstractVector) -> T
@@ -279,6 +303,14 @@ end
 
 function r_lvlh_to_eci(T::T_ROT, r_eci::AbstractVector, v_eci::AbstractVector)
     return inv_rotation(r_eci_to_lvlh(T, r_eci, v_eci))
+end
+
+function r_lvlh_to_eci(sv::OrbitStateVector)
+    return r_lvlh_to_eci(DCM, sv.r, sv.v)
+end
+
+function r_lvlh_to_eci(T::T_ROT, sv::OrbitStateVector)
+    return r_lvlh_to_eci(T, sv.r, sv.v)
 end
 
 ############################################################################################
