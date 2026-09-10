@@ -229,6 +229,22 @@ else
         @test length(check_allocs(geocentric_to_geodetic, (Vector{Float64},))) == 0
     end
 
+    @testset "Local Frame Allocations" begin
+        args_ned = (SVector{3, Float64}, Float64, Float64, Float64)
+        @test length(check_allocs(ecef_to_ned, args_ned)) == 0
+        @test length(check_allocs(ned_to_ecef, args_ned)) == 0
+
+        for func in (r_eci_to_hill, r_hill_to_eci, r_eci_to_lvlh, r_lvlh_to_eci)
+            args_s = (SVector{3, Float64}, SVector{3, Float64})
+            args_v = (Vector{Float64}, Vector{Float64})
+            @test length(check_allocs(func, args_s)) == 0
+            @test length(check_allocs(func, args_v)) == 0
+            @test length(check_allocs(func, (Type{DCM}, args_s...))) == 0
+            @test length(check_allocs(func, (Type{Quaternion}, args_s...))) == 0
+            @test length(check_allocs(func, (OrbitStateVector{Float64, Float64},))) == 0
+        end
+    end
+
     @testset "Time Allocations" begin
         @test length(check_allocs(get_Δat, (Float64,))) == 0
         @test length(check_allocs(jd_utc_to_ut1, (Float64, Float64))) == 0

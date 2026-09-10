@@ -59,7 +59,7 @@ end
         include("./reference_frames/eci_to_eci.jl")
     end
 
-    @testset "Conversions ECEF <=> Local frames" verbose = true begin
+    @testset "Conversions ECEF and ECI <=> Local frames" verbose = true begin
         include("./reference_frames/local_frame.jl")
     end
 
