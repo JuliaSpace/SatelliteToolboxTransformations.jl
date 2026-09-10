@@ -337,14 +337,12 @@ this parameter is omitted, then it falls back to `DCM`.
 r_mj2000_to_gcrf_iau2006(jd_tt::Number = 0) = r_mj2000_to_gcrf_iau2006(DCM, jd_tt)
 
 function r_mj2000_to_gcrf_iau2006(T::T_ROT, jd_tt::Number = 0)
-    # Auxiliary variables.
-    d2r = π / 180
-    a2d = 1 / 3600
-    a2r = a2d * d2r
-
-    δα₀ = -0.0146 * a2r
-    ξ₀  = -0.041775 * sin(84381.448 * a2r) * a2r
-    η₀  = -0.0068192 * a2r
+    # Frame bias angles [rad]: the right ascension offset `δα₀` and the celestial pole
+    # offsets `ξ₀` and `η₀` of the J2000 mean equator and equinox with respect to the GCRF
+    # [1]. Notice that `ξ₀` uses the IAU-1976 obliquity (84381.448"), as in the reference.
+    δα₀ = -0.0146 * _ARCSEC_TO_RAD
+    ξ₀  = -0.041775 * sin(84381.448 * _ARCSEC_TO_RAD) * _ARCSEC_TO_RAD
+    η₀  = -0.0068192 * _ARCSEC_TO_RAD
 
     return angle_to_rot(T, η₀, -ξ₀, -δα₀, :XYZ)
 end

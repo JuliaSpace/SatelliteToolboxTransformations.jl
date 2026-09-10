@@ -54,12 +54,6 @@ compute it again.
     with IAU 2006 resolutions. Astronomy & Astrophysics.
 """
 function _mean_obliquity_iau2006(t_tt::Number)
-    # == Auxiliary variables ===============================================================
-
-    a2d = 1 / 3600
-    d2r = π / 180
-    a2r = a2d * d2r
-
     # == Mean Obliquity of the Ecliptic ====================================================
 
     # Compute the mean obliquity of the ecliptic [arcsec].
@@ -71,7 +65,7 @@ function _mean_obliquity_iau2006(t_tt::Number)
     )
 
     # Reduce to the interval [0, 2π].
-    mϵ_2000 = mod(mϵ_2000 * a2r, 2π)
+    mϵ_2000 = mod(mϵ_2000 * _ARCSEC_TO_RAD, 2π)
 
     return mϵ_2000
 end
@@ -99,15 +93,6 @@ corrections for the nutation in obliquity (`δΔϵ_2000`) [rad] and in longitude
 function nutation_eo_iau2006(jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_2000::Number = 0)
     # Compute the Julian Centuries from `jd_tt`.
     t_tt = (jd_tt - JD_J2000) / 36525
-
-    # == Auxiliary Variables ===============================================================
-
-    a2d = 1 / 3600
-    d2r = π / 180
-    a2r = a2d * d2r
-    r2d = 180 / π
-    d2a = 3600
-    r2a = r2d * d2a
 
     # == Fundamental Arguments =============================================================
 
@@ -143,7 +128,7 @@ function nutation_eo_iau2006(jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_2000
     )
 
     # Apply the correction given EOP data.
-    Δϵ_2000 += δΔϵ_2000 * r2a
+    Δϵ_2000 += δΔϵ_2000 * _RAD_TO_ARCSEC
 
     # == Nutation in Longitude =============================================================
 
@@ -167,7 +152,7 @@ function nutation_eo_iau2006(jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_2000
     )
 
     # Apply the correction given EOP data.
-    ΔΨ_2000 += δΔΨ_2000 * r2a
+    ΔΨ_2000 += δΔΨ_2000 * _RAD_TO_ARCSEC
 
     # == Equation of Origins (EO) ==========================================================
 
@@ -204,9 +189,9 @@ function nutation_eo_iau2006(jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_2000
         ) - ΔΨ_2000 * cos(mϵ_2000) - ΔEO
 
     # Convert to [rad].
-    EO *= a2r
-    Δϵ_2000 *= a2r
-    ΔΨ_2000 *= a2r
+    EO *= _ARCSEC_TO_RAD
+    Δϵ_2000 *= _ARCSEC_TO_RAD
+    ΔΨ_2000 *= _ARCSEC_TO_RAD
 
     return mϵ_2000, Δϵ_2000, ΔΨ_2000, EO
 end

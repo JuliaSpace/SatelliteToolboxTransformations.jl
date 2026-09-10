@@ -41,12 +41,6 @@ function cio_iau2006(jd_tt::Number)
     # Compute the Julian Centuries from `jd_tt`.
     t_tt = (jd_tt - JD_J2000) / 36525
 
-    # == Auxiliary variables ===============================================================
-
-    a2d = 1 / 3600
-    d2r = π / 180
-    a2r = a2d * d2r
-
     # == Fundamental arguments =============================================================
 
     # Luni-solar part.
@@ -94,7 +88,7 @@ function cio_iau2006(jd_tt::Number)
         ) + ΔX
 
     # Convert to [rad].
-    X *= a2r
+    X *= _ARCSEC_TO_RAD
 
     # == Y Position of the CIP =============================================================
 
@@ -135,7 +129,7 @@ function cio_iau2006(jd_tt::Number)
         ) + ΔY
 
     # Convert to [rad].
-    Y *= a2r
+    Y *= _ARCSEC_TO_RAD
 
     # == Parameter `s` (CIO locator) =======================================================
     #
@@ -175,7 +169,7 @@ function cio_iau2006(jd_tt::Number)
             # We must convert this term to [arcsec] to match the units.
             #    ||
             # |------|
-            (-X * Y / 2) / a2r + 0.000_094,
+            (-X * Y / 2) / _ARCSEC_TO_RAD + 0.000_094,
             +0.003_808_65,
             -0.000_122_68,
             -0.072_574_11,
@@ -184,7 +178,7 @@ function cio_iau2006(jd_tt::Number)
         ) + Δs
 
     # Convert to [rad].
-    s *= a2r
+    s *= _ARCSEC_TO_RAD
 
     return X, Y, s
 end

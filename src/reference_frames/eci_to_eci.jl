@@ -273,15 +273,14 @@ end
 function r_eci_to_eci(
     T::T_ROT, ::Val{:GCRF}, ::Val{:J2000}, jd_utc::Number, eop::EopIau1980
 )
-    milliarcsec_to_rad = π / 648000000
 
     # Get the time in UT1 and TT.
     jd_ut1 = jd_utc_to_ut1(jd_utc, eop)
     jd_tt  = jd_utc_to_tt(jd_utc)
 
     # Get the EOP data related to the desired epoch.
-    δΔϵ_1980 = eop.δΔϵ(jd_utc) * milliarcsec_to_rad
-    δΔψ_1980 = eop.δΔψ(jd_utc) * milliarcsec_to_rad
+    δΔϵ_1980 = eop.δΔϵ(jd_utc) * _MILLIARCSEC_TO_RAD
+    δΔψ_1980 = eop.δΔψ(jd_utc) * _MILLIARCSEC_TO_RAD
 
     # In this case, we need to convert GCRF back to PEF and then convert to J2000, which is
     # the same conversion from PEF to GCRF **without** the EOP data.
@@ -322,14 +321,13 @@ end
 # == GCRF <=> TOD ==========================================================================
 
 function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:TOD}, jd_utc::Number, eop::EopIau1980)
-    milliarcsec_to_rad = π / 648000000
 
     # Get the time in TT.
     jd_tt = jd_utc_to_tt(jd_utc)
 
     # Get the EOP data related to the desired epoch.
-    δΔϵ_1980 = eop.δΔϵ(jd_utc) * milliarcsec_to_rad
-    δΔψ_1980 = eop.δΔψ(jd_utc) * milliarcsec_to_rad
+    δΔϵ_1980 = eop.δΔϵ(jd_utc) * _MILLIARCSEC_TO_RAD
+    δΔψ_1980 = eop.δΔψ(jd_utc) * _MILLIARCSEC_TO_RAD
 
     # Return the rotation.
     r_mod_gcrf = r_gcrf_to_mod_fk5(T, jd_tt)
@@ -348,14 +346,13 @@ end
 # == GCRF <=> TEME =========================================================================
 
 function r_eci_to_eci(T::T_ROT, ::Val{:GCRF}, ::Val{:TEME}, jd_utc::Number, eop::EopIau1980)
-    milliarcsec_to_rad = π / 648000000
 
     # Get the time in TT.
     jd_tt = jd_utc_to_tt(jd_utc)
 
     # Get the EOP data related to the desired epoch.
-    δΔϵ_1980 = eop.δΔϵ(jd_utc) * milliarcsec_to_rad
-    δΔψ_1980 = eop.δΔψ(jd_utc) * milliarcsec_to_rad
+    δΔϵ_1980 = eop.δΔϵ(jd_utc) * _MILLIARCSEC_TO_RAD
+    δΔψ_1980 = eop.δΔψ(jd_utc) * _MILLIARCSEC_TO_RAD
 
     # Return the rotation.
     r_mod_gcrf = r_gcrf_to_mod_fk5(T, jd_tt)
@@ -374,15 +371,14 @@ end
 # == J2000 <=> MOD =========================================================================
 
 function r_eci_to_eci(T::T_ROT, ::Val{:J2000}, ::Val{:MOD}, jd_utc::Number, eop::EopIau1980)
-    milliarcsec_to_rad = π / 648000000
 
     # Get the time in UT1 and TT.
     jd_ut1 = jd_utc_to_ut1(jd_utc, eop)
     jd_tt  = jd_utc_to_tt(jd_utc)
 
     # Get the EOP data related to the desired epoch.
-    δΔϵ_1980 = eop.δΔϵ(jd_utc) * milliarcsec_to_rad
-    δΔψ_1980 = eop.δΔψ(jd_utc) * milliarcsec_to_rad
+    δΔϵ_1980 = eop.δΔϵ(jd_utc) * _MILLIARCSEC_TO_RAD
+    δΔψ_1980 = eop.δΔψ(jd_utc) * _MILLIARCSEC_TO_RAD
 
     # In this case, we need to convert J2000 back to PEF and then convert to MOD. This is
     # necessary because we need to apply EOP corrections to convert to MOD and just a
@@ -420,15 +416,14 @@ end
 # == J2000 <=> TOD =========================================================================
 
 function r_eci_to_eci(T::T_ROT, ::Val{:J2000}, ::Val{:TOD}, jd_utc::Number, eop::EopIau1980)
-    milliarcsec_to_rad = π / 648000000
 
     # Get the time in UT1 and TT.
     jd_ut1 = jd_utc_to_ut1(jd_utc, eop)
     jd_tt  = jd_utc_to_tt(jd_utc)
 
     # Get the EOP data related to the desired epoch.
-    δΔϵ_1980 = eop.δΔϵ(jd_utc) * milliarcsec_to_rad
-    δΔψ_1980 = eop.δΔψ(jd_utc) * milliarcsec_to_rad
+    δΔϵ_1980 = eop.δΔϵ(jd_utc) * _MILLIARCSEC_TO_RAD
+    δΔψ_1980 = eop.δΔψ(jd_utc) * _MILLIARCSEC_TO_RAD
 
     # In this case, we need to convert J2000 back to PEF and then convert to TOD. This is
     # necessary because we need to apply EOP corrections to convert to TOD.
@@ -539,14 +534,13 @@ end
 function r_eci_to_eci(
     T::T_ROT, ::Val{:GCRF}, ::Val{:CIRS}, jd_utc::Number, eop::EopIau2000A
 )
-    milliarcsec_to_rad = π / 648000000
 
     # Get the time in TT.
     jd_tt = jd_utc_to_tt(jd_utc)
 
     # Get the EOP data related to the desired epoch.
-    δx = eop.δx(jd_utc) * milliarcsec_to_rad
-    δy = eop.δy(jd_utc) * milliarcsec_to_rad
+    δx = eop.δx(jd_utc) * _MILLIARCSEC_TO_RAD
+    δy = eop.δy(jd_utc) * _MILLIARCSEC_TO_RAD
 
     # Compute and return the rotation.
     return r_gcrf_to_cirs_iau2006(T, jd_tt, δx, δy)
@@ -659,15 +653,14 @@ end
 # == GCRF <=> ERS ==========================================================================
 
 function r_eci_to_eci(T::T_ROT, ::Val{:ERS}, ::Val{:GCRF}, jd_utc::Number, eop::EopIau2000A)
-    milliarcsec_to_rad = π / 648000000
 
     # Get the time in TT.
     jd_tt = jd_utc_to_tt(jd_utc)
 
     # Obtain the correction of the nutation in obliquity and longitude.
     δΔϵ_2000, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc, jd_tt)
-    δΔϵ_2000 *= milliarcsec_to_rad
-    δΔΨ_2000 *= milliarcsec_to_rad
+    δΔϵ_2000 *= _MILLIARCSEC_TO_RAD
+    δΔΨ_2000 *= _MILLIARCSEC_TO_RAD
 
     # Compute and return the composed rotation.
     r_mod_ers     = r_ers_to_mod_iau2006(T, jd_tt, δΔϵ_2000, δΔΨ_2000)
@@ -728,15 +721,14 @@ end
 function r_eci_to_eci(
     T::T_ROT, ::Val{:ERS}, ::Val{:MJ2000}, jd_utc::Number, eop::EopIau2000A
 )
-    milliarcsec_to_rad = π / 648000000
 
     # Get the time in TT.
     jd_tt = jd_utc_to_tt(jd_utc)
 
     # Obtain the correction of the nutation in obliquity and longitude.
     δΔϵ_2000, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc, jd_tt)
-    δΔϵ_2000 *= milliarcsec_to_rad
-    δΔΨ_2000 *= milliarcsec_to_rad
+    δΔϵ_2000 *= _MILLIARCSEC_TO_RAD
+    δΔΨ_2000 *= _MILLIARCSEC_TO_RAD
 
     # Compute and return the composed rotation.
     r_mod_ers    = r_ers_to_mod_iau2006(T, jd_tt, δΔϵ_2000, δΔΨ_2000)

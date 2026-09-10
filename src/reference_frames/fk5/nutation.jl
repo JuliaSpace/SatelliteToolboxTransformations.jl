@@ -422,8 +422,10 @@ longitude of the ascending node of the Moon are the ones introduced in **[1]**.
     # The parameters here were updated as stated in the errata [2] of the nutation reference.
     r   = 360
     Ω_m = @evalpoly(t_tt, + 125.04452222, - (5r + 134.1362608), + 0.0020708, + 2.2e-6)
-    Ω_m = mod(Ω_m, 360) * π / 180
+    Ω_m = deg2rad(mod(Ω_m, 360))
 
-    # According to the errata, the constant unit before `sin(2Ω_m)` is also in [rad].
-    return Δψ_1980 * cos(mϵ_1980) + (0.002640sin(1Ω_m) + 0.000063sin(2Ω_m)) * π / 648000
+    # The complementary terms are given in [arcsec] [1], and the errata [2] confirms that the
+    # coefficient of `sin(2Ω_m)` is also in [arcsec]. Hence, they must be converted to [rad].
+    return Δψ_1980 * cos(mϵ_1980) +
+           (0.002640 * sin(Ω_m) + 0.000063 * sin(2Ω_m)) * _ARCSEC_TO_RAD
 end

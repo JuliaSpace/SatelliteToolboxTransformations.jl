@@ -53,11 +53,6 @@ the Julian Day so that the callers that already have it, like [`cio_iau2006`](@r
     Press, Hawthorn, CA, USA.
 """
 function _luni_solar_args_iau2006(t_tt::Number)
-    # == Auxiliary variables ===============================================================
-
-    a2d = 1 / 3600
-    d2r = π / 180
-
     # == Delaunay Arguments of the Sun and Moon ============================================
     #
     # Evaluate the Delaunay arguments associated with the Moon and the Sun in [arcsec]
@@ -78,11 +73,11 @@ function _luni_solar_args_iau2006(t_tt::Number)
     Ω_m = @evalpoly(t_tt, +450160.398036, -6962890.5431, +7.4722, +0.007702, -0.00005939)
 
     # Convert to the interval [0,2π].
-    M_s  = mod(M_s * a2d, 360) * d2r
-    M_m  = mod(M_m * a2d, 360) * d2r
-    u_Mm = mod(u_Mm * a2d, 360) * d2r
-    D_s  = mod(D_s * a2d, 360) * d2r
-    Ω_m  = mod(Ω_m * a2d, 360) * d2r
+    M_s  = deg2rad(mod(M_s * _ARCSEC_TO_DEG, 360))
+    M_m  = deg2rad(mod(M_m * _ARCSEC_TO_DEG, 360))
+    u_Mm = deg2rad(mod(u_Mm * _ARCSEC_TO_DEG, 360))
+    D_s  = deg2rad(mod(D_s * _ARCSEC_TO_DEG, 360))
+    Ω_m  = deg2rad(mod(Ω_m * _ARCSEC_TO_DEG, 360))
 
     return M_s, M_m, u_Mm, D_s, Ω_m
 end

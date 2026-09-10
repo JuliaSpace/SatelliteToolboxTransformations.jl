@@ -90,7 +90,7 @@ function r_itrf_to_tirs_iau2006(T::T_ROT, jd_tt::Number, x_p::Number, y_p::Numbe
     # Notice that this rotation has an additional one, called `sl`, from the IAU-76/FK5
     # theory that accounts for the instantaneous prime meridian called TIO locator
     # [1, p. 212].
-    sl = (-0.000047 * π / 648000) * t_tt # [rad]
+    sl = (-0.000047 * _ARCSEC_TO_RAD) * t_tt # [rad]
 
     return angle_to_rot(T, y_p, x_p, -sl, :XYZ)
 end
@@ -143,7 +143,7 @@ function r_tirs_to_itrf_iau2006(T::T_ROT, jd_tt::Number, x_p::Number, y_p::Numbe
     # Notice that this rotation has an additional one, called `sl`, from the IAU-76/FK5
     # theory that accounts for the instantaneous prime meridian called TIO locator [1, p.
     # 212].
-    sl = (-0.000047 * π / 648000) * t_tt # [rad]
+    sl = (-0.000047 * _ARCSEC_TO_RAD) * t_tt # [rad]
 
     return angle_to_rot(T, sl, -x_p, -y_p, :ZYX)
 end

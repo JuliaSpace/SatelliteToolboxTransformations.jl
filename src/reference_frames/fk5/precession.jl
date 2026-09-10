@@ -40,11 +40,10 @@ function precession_fk5(jd_tt::Number)
     z = @evalpoly(t_tt, 0, +2306.2181, +1.09468, +0.018203)
 
     # Convert the angles from arcsec to rad and normalize them to the interval [0, 2π] rad.
-    a2r = π / 648000
 
-    ζ = mod(ζ * a2r, 2π)
-    Θ = mod(Θ * a2r, 2π)
-    z = mod(z * a2r, 2π)
+    ζ = mod(ζ * _ARCSEC_TO_RAD, 2π)
+    Θ = mod(Θ * _ARCSEC_TO_RAD, 2π)
+    z = mod(z * _ARCSEC_TO_RAD, 2π)
 
     # Return the precession angles.
     return ζ, Θ, z
