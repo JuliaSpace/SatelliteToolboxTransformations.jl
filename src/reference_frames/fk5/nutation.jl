@@ -10,6 +10,10 @@
 # [2] Vallado, D. A (06-Feb-2018). Consolidated Errata of Fundamentals of Astrodynamics and
 #     Applications 4th Ed.
 #
+# [3] Gontier, A. M., Capitaine, N (1991). High-Accuracy Equation of Equinoxes and VLBI
+#     Astrometric Modelling. Radio Interferometry: Theory, Techniques and Applications, IAU
+#     Coll. 131, ASP Conference Series, Vol. 19.
+#
 ############################################################################################
 
 export nutation_fk5
@@ -27,14 +31,13 @@ export nutation_fk5
 #   Seidelmann, P. K. 1980 IAU theory of nutation - The final report of the IAU Working
 #   Group on Nutation. Celestial Mechanics, vol. 27, p. 79-106.
 #
-# However, the .dat file that was used to create this matrix was obtained from
-# this website:
+# However, the .dat file that was used to create this matrix was obtained from this website:
 #
 #   http://hpiers.obspm.fr/eop-pc/models/nutations/nut.html
 #
-# Notice that the order of them is not equal to that presented in the original paper, but
-# this have no impact when computing the nutation. Moreover, this is the same order that is
-# presented in [1](p. 1043).
+# Notice that the order of the terms is not equal to that presented in the original paper,
+# but this has no impact when computing the nutation. Moreover, this is the same order that
+# is presented in [1, p. 1043].
 #
 ############################################################################################
 
@@ -151,10 +154,10 @@ const _IAU_1980_NUTATION_COEFFICIENTS = [
      0    1    0    1    0        1.0          0.0        0.0           0.0;
 ]
 
-# The table above is transcribed with one term per row, which is the layout documented for the
-# `nut_coefs_1980` argument of `nutation_fk5`. Julia stores it column-major, so reading the
-# nine coefficients of a single term touches nine different cache lines. This transposed copy,
-# built once when the package is loaded, makes each term contiguous.
+# The table above is transcribed with one term per row, which is the layout documented for
+# the `nut_coefs_1980` argument of `nutation_fk5`. Julia stores it column-major, so reading
+# the nine coefficients of a single term touches nine different cache lines. This transposed
+# copy, built once when the package is loaded, makes each term contiguous.
 #
 # The same reasoning applies to the IAU-2006 series tables, see `_split_iau2006_table`.
 const _IAU_1980_NUTATION_COEFFICIENTS_T = permutedims(_IAU_1980_NUTATION_COEFFICIENTS)
@@ -174,17 +177,20 @@ const _IAU_1980_NUTATION_COEFFICIENTS_T = permutedims(_IAU_1980_NUTATION_COEFFIC
         u_Mm::Number,
         D_s::Number,
         Ω_m::Number
-    ) where NT -> NTuple{2, NT}
+    ) where {NT} -> NTuple{2, NT}
 
-Accumulate the first `n_max` terms of the 1980 IAU nutation series.
+Accumulate the first `n_max` terms of the 1980 IAU nutation series and return the nutation
+in longitude and in obliquity [0.0001"].
 
 # Arguments
 
 - `::Type{NT}`: Type of the accumulators. The caller must provide it so that it does not
     depend on which table is passed in `coefs`.
 - `coefs::AbstractMatrix`: Coefficient table holding **one term per column**, the rows being
-    `an1`, `an2`, `an3`, `an4`, `an5`, `Ai`, `Bi`, `Ci`, and `Di`.
-- `n_max::Integer`: Number of terms to accumulate.
+    `an1`, `an2`, `an3`, `an4`, `an5`, `Ai`, `Bi`, `Ci`, and `Di` (see
+    [`nutation_fk5`](@ref) for their units).
+- `n_max::Integer`: Number of terms to accumulate. It must not exceed the number of columns
+    of `coefs`.
 - `t_tt::Number`: Julian centuries since J2000.0 [TT].
 - `M_m::Number`: Mean anomaly of the Moon [rad].
 - `M_s::Number`: Mean anomaly of the Sun [rad].
@@ -250,13 +256,16 @@ each line has the following syntax **[1]**(p. 1043):
 
 where the units of `Ai` and `Ci` are [0.0001"] and the units of `Bi` and `Di` are
 [0.0001"/JC]. The user can also specify the number of coefficients `n_max` that will be used
-when computing the nutation. If `n_max` is omitted, it defaults to 106.
+when computing the nutation. If `n_max` is omitted or lies outside the interval [1, 106], it
+defaults to 106.
+
+The function throws if `nut_coefs_1980` does not have enough rows or columns.
 
 # Keywords
 
 - `verbose::Val`: If `Val(true)`, warn when `n_max` is outside the supported range and is
     replaced by the default value of 106.
-    (**Default** = `Val(false)`)
+    (**Default**: `Val(false)`)
 
 # Returns
 
@@ -266,8 +275,15 @@ when computing the nutation. If `n_max` is omitted, it defaults to 106.
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
+
+# Extended help
+
+## Throws
+
+- `ArgumentError`: `nut_coefs_1980` has fewer rows than the effective number of terms or
+    fewer than nine columns.
 """
 function nutation_fk5(
     jd_tt::Number,
@@ -280,12 +296,20 @@ function nutation_fk5(
 end
 
 """
-    _nutation_fk5(jd_tt::Number, n_max::Integer, nut_coefs_1980::AbstractMatrix; kwargs...) -> NTuple{4, Number}
+    _nutation_fk5(
+        jd_tt::Number,
+        n_max::Integer,
+        nut_coefs_1980::AbstractMatrix;
+        kwargs...
+    ) -> NTuple{4, Number}
 
 Compute the nutation parameters at the Julian Day `jd_tt` [TT] using the IAU-76/FK5 theory
 with the first `n_max` terms of the coefficient table `nut_coefs_1980`, as in
 [`nutation_fk5`](@ref), also returning the mean longitude of the ascending node of the Moon,
 which is required by the 1982 equation of the equinoxes.
+
+The function throws if `nut_coefs_1980` does not have enough rows or columns, as described
+in [`nutation_fk5`](@ref).
 
 # Keywords
 
@@ -306,8 +330,8 @@ function _nutation_fk5(
     nut_coefs_1980::AbstractMatrix;
     verbose::Val{verbosity} = Val(false),
 ) where {verbosity}
-    # Check inputs. The effective number of terms is bound to a new variable so that its type
-    # does not depend on the type of `n_max`.
+    # Check inputs. The effective number of terms is bound to a new variable so that its
+    # type does not depend on the type of `n_max`.
     n_terms = if n_max > 106
         verbosity && @warn(
             "The maximum number of coefficients to compute nutation using IAU-76/FK5 theory is 106."
@@ -346,8 +370,8 @@ function _nutation_fk5(
 
     # == Delaunay Parameters of the Sun and Moon ===========================================
 
-    # Evaluate the Delaunay parameters associated with the Moon and the Sun
-    # in the interval [0, 360]°.
+    # Evaluate the Delaunay parameters associated with the Moon and the Sun in the interval
+    # [0, 360]°.
     #
     # The parameters here were updated as stated in the errata [2].
     r = 360
@@ -377,13 +401,13 @@ function _nutation_fk5(
     # `Float64` (e.g. `Float32`, `ForwardDiff.Dual`, or `Measurement`), which makes the
     # accumulators inferred as a union and boxes them inside this 106-term loop.
     #
-    # The type is obtained here, from the table the user provided, so that it does not depend
-    # on which of the two branches below is taken.
+    # The type is obtained here, from the table the user provided, so that it does not
+    # depend on which of the two branches below is taken.
     NT = typeof(zero(eltype(nut_coefs_1980)) * zero(t_tt) * zero(M_m))
 
     # The default table has a pre-transposed copy, which makes the coefficients of each term
-    # contiguous. A user-provided table is wrapped in a lazy `transpose` so that the loop only
-    # needs the one-term-per-column layout.
+    # contiguous. A user-provided table is wrapped in a lazy `transpose` so that the loop
+    # only needs the one-term-per-column layout.
     ΔΨ_1980, Δϵ_1980 = if nut_coefs_1980 === _IAU_1980_NUTATION_COEFFICIENTS
         _nutation_fk5_series(
             NT,
@@ -419,7 +443,7 @@ Compute the complete form of the 1982 equation of the equinoxes [rad].
 
 The equation of the equinoxes is the difference between the Greenwich apparent sidereal time
 and the Greenwich mean sidereal time. The two complementary terms that depend on the mean
-longitude of the ascending node of the Moon are the ones introduced in **[1]**.
+longitude of the ascending node of the Moon are the ones introduced in **[3]**.
 
 # Arguments
 
@@ -435,24 +459,30 @@ longitude of the ascending node of the Moon are the ones introduced in **[1]**.
 
 # References
 
-- **[1]**: Gontier, A. M., Capitaine, N (1991). High-Accuracy Equation of Equinoxes and VLBI
+- **[3]** Gontier, A. M., Capitaine, N (1991). High-Accuracy Equation of Equinoxes and VLBI
     Astrometric Modelling. Radio Interferometry: Theory, Techniques and Applications, IAU
     Coll. 131, ASP Conference Series, Vol. 19.
 """
 @inline function _equation_of_equinoxes_1982(Ω_m::Number, Δψ_1980::Number, mϵ_1980::Number)
-    # The complementary terms are given in [arcsec] [1], and the errata [2] confirms that the
-    # coefficient of `sin(2Ω_m)` is also in [arcsec]. Hence, they must be converted to [rad].
+    # The complementary terms are given in [arcsec] [1], and the errata [2] confirms that
+    # the coefficient of `sin(2Ω_m)` is also in [arcsec]. Hence, they must be converted to
+    # [rad].
     return Δψ_1980 * cos(mϵ_1980) +
            (0.002640 * sin(Ω_m) + 0.000063 * sin(2Ω_m)) * _ARCSEC_TO_RAD
 end
 
 """
-    _nutation_and_equation_of_equinoxes_fk5(jd_tt::Number, δΔϵ_1980::Number, δΔψ_1980::Number) -> NTuple{4, Number}
+    _nutation_and_equation_of_equinoxes_fk5(
+        jd_tt::Number,
+        δΔϵ_1980::Number,
+        δΔψ_1980::Number
+    ) -> NTuple{4, Number}
 
 Compute the IAU-76/FK5 nutation at the Julian Day `jd_tt` [TT], applying the EOP corrections
-`δΔϵ_1980` [rad] and `δΔψ_1980` [rad] to the nutation in obliquity and in longitude, together
-with the 1982 equation of the equinoxes. The nutation series is evaluated only once, which is
-the expensive part of the rotations between the PEF, TEME, TOD, and MOD frames.
+`δΔϵ_1980` [rad] and `δΔψ_1980` [rad] to the nutation in obliquity and in longitude,
+together with the 1982 equation of the equinoxes. The nutation series is evaluated only
+once, which is the expensive part of the rotations between the PEF, TEME, TOD, and MOD
+frames.
 
 # Returns
 
