@@ -12,7 +12,7 @@ using DataInterpolations
     data[:, 1] = [leap - 2400000.5 - 1, leap - 2400000.5]
     data[:, 15] = [-0.4, 0.6]
 
-    eop = SatelliteToolboxTransformations._parse_iers_eop_iau_1980(data)
+    eop = SatelliteToolboxTransformations._parse_iers_eop(EopIau1980, data)
     @test hasproperty(eop.x, :u)
     @test hasproperty(eop.lod, :u)
     @test :u in propertynames(eop.x)
@@ -62,4 +62,15 @@ end
     # The corrections are returned in the same unit as the EOP pole offsets
     # (milliarcseconds), and the TT epoch may be supplied by the caller.
     @test compute_δΔϵ_δΔψ(eop, jd_utc, jd_tt) == (δΔϵ, δΔΨ)
+end
+
+@testset "EOP matrix width validation" begin
+    data = zeros(2, 35)
+    data[:, 1] = [59000.0, 59001.0]
+    @test_throws ArgumentError SatelliteToolboxTransformations._parse_iers_eop(
+        EopIau1980, data
+    )
+    @test_throws ArgumentError SatelliteToolboxTransformations._parse_iers_eop(
+        EopIau2000A, data
+    )
 end

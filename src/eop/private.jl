@@ -317,99 +317,69 @@ function _itp_timespan(itp::DataInterpolations.LinearInterpolation)::String
 end
 
 """
-    _parse_iers_eop_iau_1980(eop::Matrix)::EopIau1980
+    _parse_iers_eop(::Type{Eop}, eop::AbstractMatrix{<:Real}) -> Eop
 
-Parse IERS IAU 1980 EOP data from a `finals.all.csv` matrix.
+Parse the IERS EOP matrix `eop`, read from the file `finals.all.csv` when `Eop` is
+`EopIau1980` or from the file `finals2000A.all.csv` when `Eop` is `EopIau2000A`, into the
+interpolations indexed by the Julian Day [UTC]. Both the 33- and the 37-column layouts of
+the IERS files are supported, and any other width is rejected.
 
-# Arguments
+The interpolation is linear between two points of the grid and constant outside it.
 
-- `eop`: Matrix containing the IERS EOP columns.
+# Extended help
+
+## Throws
+
+- `ArgumentError`: The matrix does not have 33 or 37 columns.
 """
-function _parse_iers_eop_iau_1980(eop::Matrix)::EopIau1980
-    # Create the EOP Data structure by creating the interpolations.
-    #
-    # The interpolation will be linear between two points in the grid. The extrapolation
-    # will be flat, considering the nearest point.
-    knots::Vector{Float64} = Vector{Float64}(@view(eop[:, 1]) .+ 2400000.5)
+function _parse_iers_eop(
+    ::Type{Eop}, eop::AbstractMatrix{<:Real}
+) where {Eop <: Union{EopIau1980, EopIau2000A}}
+    num_cols = size(eop, 2)
 
-    if size(eop)[2] == 37
-        return EopIau1980(
-            _create_iers_eop_interpolation(knots, @view eop[:, 6]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 8]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 15]; leap_safe = true),
-            _create_iers_eop_interpolation(knots, @view eop[:, 17]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 20]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 22]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 7]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 9]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 16]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 18]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 21]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 23]),
-        )
-    else
-        return EopIau1980(
-            _create_iers_eop_interpolation(knots, @view eop[:, 6]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 8]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 11]; leap_safe = true),
-            _create_iers_eop_interpolation(knots, @view eop[:, 13]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 16]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 18]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 7]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 9]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 12]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 14]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 17]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 19]),
-        )
-    end
+    num_cols ∉ (33, 37) && throw(
+        ArgumentError(
+            "The IERS EOP matrix must have 33 or 37 columns, but it has $num_cols. Only " *
+            "the layouts of the files `finals.all.csv` and `finals2000A.all.csv` are " *
+            "supported.",
+        ),
+    )
+
+    # The 37-column layout inserts four columns after the polar motion, shifting the
+    # remaining ones.
+    Δ = num_cols == 37 ? 4 : 0
+
+    # Column of the first celestial pole offset, which is (δΔψ, δΔϵ) for the IAU 1980 model
+    # and (δx, δy), four columns later, for the IAU 2000A model.
+    δ_col = _iers_eop_pole_offset_column(Eop) + Δ
+
+    # Convert the knots from Modified Julian Day to Julian Day.
+    knots = @view(eop[:, 1]) .+ _MJD_EPOCH_JD
+
+    itp(col; kwargs...) =
+        _create_iers_eop_interpolation(knots, @view(eop[:, col]); kwargs...)
+
+    return Eop(
+        itp(6),
+        itp(8),
+        itp(11 + Δ; leap_safe = true),
+        itp(13 + Δ),
+        itp(δ_col),
+        itp(δ_col + 2),
+        itp(7),
+        itp(9),
+        itp(12 + Δ),
+        itp(14 + Δ),
+        itp(δ_col + 1),
+        itp(δ_col + 3),
+    )
 end
 
 """
-    _parse_iers_eop_iau_2000A(eop::Matrix)::EopIau2000A
+    _iers_eop_pole_offset_column(::Type{Eop}) -> Int
 
-Parse IERS IAU 2000A EOP data from a `finals2000A.all.csv` matrix.
-
-# Arguments
-
-- `eop`: Matrix containing the IERS EOP columns.
+Return the column of the first celestial pole offset in the 33-column layout of the IERS EOP
+file related to the model `Eop`.
 """
-function _parse_iers_eop_iau_2000A(eop::Matrix)::EopIau2000A
-    # Create the EOP Data structure by creating the interpolations.
-    #
-    # The interpolation will be linear between two points in the grid. The extrapolation
-    # will be flat, considering the nearest point.
-    knots::Vector{Float64} = Vector{Float64}(@view(eop[:, 1]) .+ 2400000.5)
-
-    if size(eop)[2] == 37
-        EopIau2000A(
-            _create_iers_eop_interpolation(knots, @view eop[:, 6]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 8]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 15]; leap_safe = true),
-            _create_iers_eop_interpolation(knots, @view eop[:, 17]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 24]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 26]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 7]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 9]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 16]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 18]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 25]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 27]),
-        )
-    else
-        EopIau2000A(
-            _create_iers_eop_interpolation(knots, @view eop[:, 6]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 8]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 11]; leap_safe = true),
-            _create_iers_eop_interpolation(knots, @view eop[:, 13]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 20]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 22]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 7]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 9]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 12]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 14]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 21]),
-            _create_iers_eop_interpolation(knots, @view eop[:, 23]),
-        )
-    end
-end
+_iers_eop_pole_offset_column(::Type{EopIau1980}) = 16
+_iers_eop_pole_offset_column(::Type{EopIau2000A}) = 20

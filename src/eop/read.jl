@@ -33,12 +33,12 @@ the model IAU 1980 (`data_type = Val(:IAU1980)`), which is the default, or to th
     the interpolations of the EOP. Notice that the interpolation indexing is set to the
     Julian Day.
 """
-read_iers_eop(filename::String) = read_iers_eop(filename, Val(:IAU1980))
+read_iers_eop(filename::AbstractString) = read_iers_eop(filename, Val(:IAU1980))
 
-function read_iers_eop(filename::String, ::Val{:IAU1980})
-    return _parse_iers_eop_iau_1980(_read_iers_eop_csv(filename))
+function read_iers_eop(filename::AbstractString, ::Val{:IAU1980})
+    return _parse_iers_eop(EopIau1980, _read_iers_eop_csv(filename))
 end
 
-function read_iers_eop(filename::String, ::Val{:IAU2000A})
-    return _parse_iers_eop_iau_2000A(_read_iers_eop_csv(filename))
+function read_iers_eop(filename::AbstractString, ::Val{:IAU2000A})
+    return _parse_iers_eop(EopIau2000A, _read_iers_eop_csv(filename))
 end
