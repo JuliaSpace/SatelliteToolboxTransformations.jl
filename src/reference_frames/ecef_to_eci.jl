@@ -190,7 +190,7 @@ end
 # Specializations for those cases that EOP Data is not needed.
 function r_ecef_to_eci(
     T_ECEF::Val{:PEF},
-    T_ECI::Union{Val{:J2000}, Val{:MOD}, Val{:TOD}, Val{:TEME}},
+    T_ECI::Union{Val{:J2000}, Val{:TOD}, Val{:MOD}, Val{:TEME}},
     jd_utc::Number,
 )
     return r_ecef_to_eci(DCM, T_ECEF, T_ECI, jd_utc)
@@ -473,13 +473,13 @@ function r_ecef_to_eci(
     # Get the EOP data related to the desired epoch.
     x_p = eop.x(jd_utc) * arcsec_to_rad
     y_p = eop.y(jd_utc) * arcsec_to_rad
-    dx  = eop.δx(jd_utc) * milliarcsec_to_rad
-    dy  = eop.δy(jd_utc) * milliarcsec_to_rad
+    δx  = eop.δx(jd_utc) * milliarcsec_to_rad
+    δy  = eop.δy(jd_utc) * milliarcsec_to_rad
 
     # Compute the rotation.
     r_tirs_itrf = r_itrf_to_tirs_iau2006(T, jd_tt, x_p, y_p)
     r_cirs_tirs = r_tirs_to_cirs_iau2006(T, jd_ut1)
-    r_gcrf_cirs = r_cirs_to_gcrf_iau2006(T, jd_tt, dx, dy)
+    r_gcrf_cirs = r_cirs_to_gcrf_iau2006(T, jd_tt, δx, δy)
 
     return compose_rotation(r_tirs_itrf, r_cirs_tirs, r_gcrf_cirs)
 end
@@ -561,14 +561,14 @@ function r_ecef_to_eci(
     y_p = eop.y(jd_utc) * arcsec_to_rad
 
     # Obtain the correction of the nutation in longitude.
-    ~, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc, jd_tt)
+    _, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc, jd_tt)
     δΔΨ_2000 *= milliarcsec_to_rad
 
     # Compute the rotation.
     r_tirs_itrf = r_itrf_to_tirs_iau2006(T, jd_tt, x_p, y_p)
-    r_ERS_TIRS = r_tirs_to_ers_iau2006(T, jd_ut1, jd_tt, δΔΨ_2000)
+    r_ers_tirs  = r_tirs_to_ers_iau2006(T, jd_ut1, jd_tt, δΔΨ_2000)
 
-    return compose_rotation(r_tirs_itrf, r_ERS_TIRS)
+    return compose_rotation(r_tirs_itrf, r_ers_tirs)
 end
 
 # == ITRF => MOD ===========================================================================
@@ -643,7 +643,7 @@ function r_ecef_to_eci(
     jd_tt  = jd_utc_to_tt(jd_utc)
 
     # Obtain the correction of the nutation in longitude.
-    ~, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc, jd_tt)
+    _, δΔΨ_2000 = compute_δΔϵ_δΔψ(eop, jd_utc, jd_tt)
     δΔΨ_2000 *= milliarcsec_to_rad
 
     # Compute the rotation.

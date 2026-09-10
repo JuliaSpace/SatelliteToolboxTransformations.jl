@@ -96,7 +96,7 @@ function r_tirs_to_ers_iau2006(
     θ_era = mod(θ_era, 2π)
 
     # Compute the Equation of the Origins (EO).
-    ~, ~, ~, EO = nutation_eo_iau2006(jd_tt, 0, δΔΨ_2000)
+    _, _, _, EO = nutation_eo_iau2006(jd_tt, 0, δΔΨ_2000)
 
     # Compute the Greenwich apparent sidereal angle (GAST).
     θ_gast2000 = θ_era - EO
@@ -175,7 +175,7 @@ function r_ers_to_mod_iau2006(
     T::T_ROT, jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_2000::Number = 0
 )
     # Compute the angles used to compute the nutation.
-    mϵ_2000, Δϵ_2000, ΔΨ_2000, ~ = nutation_eo_iau2006(jd_tt, δΔϵ_2000, δΔΨ_2000)
+    mϵ_2000, Δϵ_2000, ΔΨ_2000, _ = nutation_eo_iau2006(jd_tt, δΔϵ_2000, δΔΨ_2000)
     return angle_to_rot(T, mϵ_2000 + Δϵ_2000, ΔΨ_2000, -mϵ_2000, :XZX)
 end
 

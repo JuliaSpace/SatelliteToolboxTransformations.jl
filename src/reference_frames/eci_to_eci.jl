@@ -523,11 +523,11 @@ function r_eci_to_eci(
     # In this case, in which we do not have EOP data, we convert origin to J2000 and then
     # convert back to the destination. This is necessary because the user may want to change
     # the epoch.
-    r_gcrf_ecio = r_eci_to_eci(T, T_ECIo, Val(:J2000), jd_utco)
-    r_ecif_gcrf = r_eci_to_eci(T, Val(:J2000), T_ECIf, jd_utcf)
+    r_j2000_ecio = r_eci_to_eci(T, T_ECIo, Val(:J2000), jd_utco)
+    r_ecif_j2000 = r_eci_to_eci(T, Val(:J2000), T_ECIf, jd_utcf)
 
     # Return the full rotation.
-    return compose_rotation(r_gcrf_ecio, r_ecif_gcrf)
+    return compose_rotation(r_j2000_ecio, r_ecif_j2000)
 end
 
 ############################################################################################
