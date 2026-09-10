@@ -273,6 +273,37 @@ function nutation_fk5(
     jd_tt::Number,
     n_max::Integer = 106,
     nut_coefs_1980::AbstractMatrix = _IAU_1980_NUTATION_COEFFICIENTS;
+    verbose::Val = Val(false),
+)
+    mϵ_1980, Δϵ_1980, Δψ_1980, _ = _nutation_fk5(jd_tt, n_max, nut_coefs_1980; verbose)
+    return mϵ_1980, Δϵ_1980, Δψ_1980
+end
+
+"""
+    _nutation_fk5(jd_tt::Number, n_max::Integer, nut_coefs_1980::AbstractMatrix; kwargs...) -> NTuple{4, Number}
+
+Compute the nutation parameters at the Julian Day `jd_tt` [TT] using the IAU-76/FK5 theory
+with the first `n_max` terms of the coefficient table `nut_coefs_1980`, as in
+[`nutation_fk5`](@ref), also returning the mean longitude of the ascending node of the Moon,
+which is required by the 1982 equation of the equinoxes.
+
+# Keywords
+
+- `verbose::Val`: If `Val(true)`, warn when `n_max` is outside the supported range and is
+    replaced by the default value of 106.
+    (**Default**: `Val(false)`)
+
+# Returns
+
+- `Number`: The mean obliquity of the ecliptic [rad].
+- `Number`: The nutation in obliquity of the ecliptic [rad].
+- `Number`: The nutation in longitude [rad].
+- `Number`: The mean longitude of the ascending node of the Moon [rad].
+"""
+function _nutation_fk5(
+    jd_tt::Number,
+    n_max::Integer,
+    nut_coefs_1980::AbstractMatrix;
     verbose::Val{verbosity} = Val(false),
 ) where {verbosity}
     # Check inputs. The effective number of terms is bound to a new variable so that its type
@@ -378,15 +409,11 @@ function nutation_fk5(
     Δϵ_1980 *= oftype(Δϵ_1980, 1e-4 * _ARCSEC_TO_RAD)
 
     # Return the values.
-    return mϵ_1980, Δϵ_1980, ΔΨ_1980
+    return mϵ_1980, Δϵ_1980, ΔΨ_1980, Ω_m
 end
 
 """
-    _equation_of_equinoxes_1982(
-        jd_tt::Number,
-        Δψ_1980::Number,
-        mϵ_1980::Number
-    ) -> Number
+    _equation_of_equinoxes_1982(Ω_m::Number, Δψ_1980::Number, mϵ_1980::Number) -> Number
 
 Compute the complete form of the 1982 equation of the equinoxes [rad].
 
@@ -396,7 +423,8 @@ longitude of the ascending node of the Moon are the ones introduced in **[1]**.
 
 # Arguments
 
-- `jd_tt::Number`: Julian Day [TT].
+- `Ω_m::Number`: Mean longitude of the ascending node of the Moon [rad], as returned by
+    [`_nutation_fk5`](@ref).
 - `Δψ_1980::Number`: Nutation in longitude [rad], including the IERS EOP correction if the
     caller applies one.
 - `mϵ_1980::Number`: Mean obliquity of the ecliptic [rad].
@@ -411,21 +439,42 @@ longitude of the ascending node of the Moon are the ones introduced in **[1]**.
     Astrometric Modelling. Radio Interferometry: Theory, Techniques and Applications, IAU
     Coll. 131, ASP Conference Series, Vol. 19.
 """
-@inline function _equation_of_equinoxes_1982(
-    jd_tt::Number, Δψ_1980::Number, mϵ_1980::Number
-)
-    # Compute the Julian Centuries from `jd_tt`.
-    t_tt = (jd_tt - JD_J2000) / 36525
-
-    # Evaluate the Delaunay parameter associated with the Moon in the interval [0, 360]°.
-    #
-    # The parameters here were updated as stated in the errata [2] of the nutation reference.
-    r   = 360
-    Ω_m = @evalpoly(t_tt, + 125.04452222, - (5r + 134.1362608), + 0.0020708, + 2.2e-6)
-    Ω_m = deg2rad(mod(Ω_m, 360))
-
+@inline function _equation_of_equinoxes_1982(Ω_m::Number, Δψ_1980::Number, mϵ_1980::Number)
     # The complementary terms are given in [arcsec] [1], and the errata [2] confirms that the
     # coefficient of `sin(2Ω_m)` is also in [arcsec]. Hence, they must be converted to [rad].
     return Δψ_1980 * cos(mϵ_1980) +
            (0.002640 * sin(Ω_m) + 0.000063 * sin(2Ω_m)) * _ARCSEC_TO_RAD
+end
+
+"""
+    _nutation_and_equation_of_equinoxes_fk5(jd_tt::Number, δΔϵ_1980::Number, δΔψ_1980::Number) -> NTuple{4, Number}
+
+Compute the IAU-76/FK5 nutation at the Julian Day `jd_tt` [TT], applying the EOP corrections
+`δΔϵ_1980` [rad] and `δΔψ_1980` [rad] to the nutation in obliquity and in longitude, together
+with the 1982 equation of the equinoxes. The nutation series is evaluated only once, which is
+the expensive part of the rotations between the PEF, TEME, TOD, and MOD frames.
+
+# Returns
+
+- `Number`: The mean obliquity of the ecliptic [rad].
+- `Number`: The corrected nutation in obliquity of the ecliptic [rad].
+- `Number`: The corrected nutation in longitude [rad].
+- `Number`: The equation of the equinoxes [rad].
+"""
+function _nutation_and_equation_of_equinoxes_fk5(
+    jd_tt::Number, δΔϵ_1980::Number, δΔψ_1980::Number
+)
+    # Compute the nutation in the Julian Day (Terrestrial Time) `jd_tt`.
+    mϵ_1980, Δϵ_1980, Δψ_1980, Ω_m = _nutation_fk5(
+        jd_tt, 106, _IAU_1980_NUTATION_COEFFICIENTS
+    )
+
+    # Add the corrections to the nutation in obliquity and longitude.
+    Δϵ_1980 += δΔϵ_1980
+    Δψ_1980 += δΔψ_1980
+
+    # Compute the equation of the equinoxes.
+    Eq_equinox1982 = _equation_of_equinoxes_1982(Ω_m, Δψ_1980, mϵ_1980)
+
+    return mϵ_1980, Δϵ_1980, Δψ_1980, Eq_equinox1982
 end

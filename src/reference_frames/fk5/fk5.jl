@@ -172,22 +172,12 @@ function r_pef_to_tod_fk5(jd_ut1::Number, jd_tt::Number, δΔψ_1980::Number = 0
 end
 
 function r_pef_to_tod_fk5(T::T_ROT, jd_ut1::Number, jd_tt::Number, δΔψ_1980::Number = 0)
-    # Compute the nutation in the Julian Day (Terrestrial Time) `jd_tt`.
-    mϵ_1980, Δϵ_1980, Δψ_1980 = nutation_fk5(jd_tt)
-
-    # Add the corrections to the nutation in obliquity and longitude.
-    Δψ_1980 += δΔψ_1980
-
-    # Compute the equation of Equinoxes.
-    Eq_equinox1982 = _equation_of_equinoxes_1982(jd_tt, Δψ_1980, mϵ_1980)
-
-    # Compute the Mean Greenwich Sidereal Time.
-    θ_gmst = jd_to_gmst(jd_ut1)
+    # Compute the equation of the equinoxes at `jd_tt`, applying the correction to the
+    # nutation in longitude.
+    _, _, _, Eq_equinox1982 = _nutation_and_equation_of_equinoxes_fk5(jd_tt, 0, δΔψ_1980)
 
     # Compute the Greenwich Apparent Sidereal Time (GAST).
-    #
-    # TODO: Should GAST be moved to a new function as the GMST?
-    θ_gast = θ_gmst + Eq_equinox1982
+    θ_gast = jd_to_gmst(jd_ut1) + Eq_equinox1982
 
     # Compute the rotation matrix.
     return angle_to_rot(T, -θ_gast, :Z)
@@ -553,30 +543,21 @@ end
 function r_pef_to_mod_fk5(
     T::T_ROT, jd_ut1::Number, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0
 )
-    # Notice that, in this case, we will not use `r_pef_to_tod` and `r_tod_to_mod` because
-    # this would call the function `nutation` twice, leading to a huge performance drop.
-    # Hence, the code of those two functions is almost entirely rewritten here.
+    # Notice that, in this case, we will not use `r_pef_to_tod_fk5` and `r_tod_to_mod_fk5`
+    # because this would evaluate the nutation series twice, leading to a huge performance
+    # drop. Hence, the code of those two functions is almost entirely rewritten here.
 
-    # Compute the nutation in the Julian Day (Terrestrial Time) `jd_tt`.
-    mϵ_1980, Δϵ_1980, Δψ_1980 = nutation_fk5(jd_tt)
-
-    # Add the corrections to the nutation in obliquity and longitude.
-    Δϵ_1980 += δΔϵ_1980
-    Δψ_1980 += δΔψ_1980
+    # Compute the nutation and the equation of the equinoxes at `jd_tt`, applying the
+    # corrections to the nutation in obliquity and longitude.
+    mϵ_1980, Δϵ_1980, Δψ_1980, Eq_equinox1982 = _nutation_and_equation_of_equinoxes_fk5(
+        jd_tt, δΔϵ_1980, δΔψ_1980
+    )
 
     # Compute the obliquity.
     ϵ_1980 = mϵ_1980 + Δϵ_1980
 
-    # Compute the equation of Equinoxes.
-    Eq_equinox1982 = _equation_of_equinoxes_1982(jd_tt, Δψ_1980, mϵ_1980)
-
-    # Compute the Mean Greenwich Sidereal Time.
-    θ_gmst = jd_to_gmst(jd_ut1)
-
     # Compute the Greenwich Apparent Sidereal Time (GAST).
-    #
-    # TODO: Should GAST be moved to a new function as the GMST?
-    θ_gast = θ_gmst + Eq_equinox1982
+    θ_gast = jd_to_gmst(jd_ut1) + Eq_equinox1982
 
     # Compute the rotation PEF => TOD.
     r_tod_pef = angle_to_rot(T, -θ_gast, :Z)

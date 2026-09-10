@@ -50,15 +50,11 @@ function r_teme_to_tod(jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Numb
 end
 
 function r_teme_to_tod(T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
-    # Compute the nutation in the Julian Day (Terrestrial Time) `jd_tt`.
-    mϵ_1980, Δϵ_1980, Δψ_1980 = nutation_fk5(jd_tt)
-
-    # Add the corrections to the nutation in obliquity and longitude.
-    Δϵ_1980 += δΔϵ_1980
-    Δψ_1980 += δΔψ_1980
-
-    # Compute the equation of Equinoxes.
-    Eq_equinox1982 = _equation_of_equinoxes_1982(jd_tt, Δψ_1980, mϵ_1980)
+    # Compute the equation of the equinoxes at `jd_tt`, applying the corrections to the
+    # nutation in obliquity and longitude.
+    _, _, _, Eq_equinox1982 = _nutation_and_equation_of_equinoxes_fk5(
+        jd_tt, δΔϵ_1980, δΔψ_1980
+    )
 
     # Compute the rotation.
     return angle_to_rot(T, -Eq_equinox1982, :Z)
@@ -123,22 +119,18 @@ function r_teme_to_mod(jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Numb
 end
 
 function r_teme_to_mod(T::T_ROT, jd_tt::Number, δΔϵ_1980::Number = 0, δΔψ_1980::Number = 0)
-    # Notice that, in this case, we will not use `r_teme_to_tod`, and `r_tod_to_mod` because
-    # this would call the function `nutation` twice, leading to a huge performance drop.
-    # Hence, the code of those two functions is almost entirely rewritten here.
+    # Notice that, in this case, we will not use `r_teme_to_tod` and `r_tod_to_mod_fk5`
+    # because this would evaluate the nutation series twice, leading to a huge performance
+    # drop. Hence, the code of those two functions is almost entirely rewritten here.
 
-    # Compute the nutation in the Julian Day (Terrestrial Time) `jd_tt`.
-    mϵ_1980, Δϵ_1980, Δψ_1980 = nutation_fk5(jd_tt)
-
-    # Add the corrections to the nutation in obliquity and longitude.
-    Δϵ_1980 += δΔϵ_1980
-    Δψ_1980 += δΔψ_1980
+    # Compute the nutation and the equation of the equinoxes at `jd_tt`, applying the
+    # corrections to the nutation in obliquity and longitude.
+    mϵ_1980, Δϵ_1980, Δψ_1980, Eq_equinox1982 = _nutation_and_equation_of_equinoxes_fk5(
+        jd_tt, δΔϵ_1980, δΔψ_1980
+    )
 
     # Compute the obliquity.
     ϵ_1980 = mϵ_1980 + Δϵ_1980
-
-    # Compute the equation of Equinoxes.
-    Eq_equinox1982 = _equation_of_equinoxes_1982(jd_tt, Δψ_1980, mϵ_1980)
 
     # Compute the rotation TEME => TOD.
     r_tod_teme = angle_to_rot(T, -Eq_equinox1982, :Z)
