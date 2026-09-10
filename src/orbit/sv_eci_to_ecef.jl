@@ -32,7 +32,7 @@ an observer on the ECEF frame.
 
 # Returns
 
-- `OrbitStateVector`: Orbit state vector `sv` converted to the `ECI` reference frame.
+- `OrbitStateVector`: Orbit state vector `sv` converted to the `ECEF` reference frame.
 
 # Extended Help
 
@@ -103,7 +103,7 @@ selected frames.
 | IAU-2006/2010 CIO-based     | `GCRF`   | `ITRF` | EOP IAU2000A    |
 | IAU-2006/2010 CIO-based     | `CIRS`   | `TIRS` | Not required¹   |
 | IAU-2006/2010 CIO-based     | `GCRF`   | `TIRS` | Not required¹ ² |
-| IAU-2006/2010 Equinox-based | `ERS`    | `TIRS` | EOP IAU2000A    |
+| IAU-2006/2010 Equinox-based | `ERS`    | `ITRF` | EOP IAU2000A    |
 | IAU-2006/2010 Equinox-based | `MOD06`  | `ITRF` | EOP IAU2000A    |
 | IAU-2006/2010 Equinox-based | `MJ2000` | `ITRF` | EOP IAU2000A    |
 | IAU-2006/2010 Equinox-based | `ERS`    | `TIRS` | Not required¹ ³ |
@@ -288,7 +288,7 @@ function sv_eci_to_ecef(
     vω_x_r = vω × r_ecef
     v_ecef = D * sv.v - vω_x_r
 
-    # Compute the acceleration in the ECI frame.
+    # Compute the acceleration in the ECEF frame.
     a_ecef = D * sv.a - vω × vω_x_r - 2vω × v_ecef
 
     return OrbitStateVector(sv.t, r_ecef, v_ecef, a_ecef)
