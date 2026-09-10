@@ -5,7 +5,7 @@ SatelliteToolboxTransformations.jl provides reference-frame, orbit-representatio
 ## Package Structure
 
 - Requires Julia 1.10 or newer (`[compat] julia = "1.10, 1.11"`).
-- Entrypoint: `src/SatelliteToolboxTransformations.jl`. It loads `src/types.jl` first, then defines the `Crayon` constants, then `include`s the feature files. Types must exist before anything else, so new type definitions go in `src/types.jl`, not in the feature file that uses them.
+- Entrypoint: `src/SatelliteToolboxTransformations.jl`. It loads `src/types.jl` first, then `src/constants.jl` (private constants), then `include`s the feature files. Types must exist before anything else, so new type definitions go in `src/types.jl`, not in the feature file that uses them.
 - Source layout: `src/eop/` (Earth Orientation Parameters: fetch, read, conversion, show), `src/reference_frames/` (ECEF/ECI conversions, geodetic/geocentric, local frames, plus the `fk5/`, `iau2006/`, and `teme/` theory subdirectories), `src/orbit/` (state-vector and orbit-representation conversions), `src/time.jl`.
 - `src/reference_frames/iau2006/constants/` holds large generated coefficient tables. Treat them as data, not as code to restyle by hand.
 - The package re-exports `SatelliteToolboxBase` via `@reexport`, so its symbols are part of this package's public surface.
