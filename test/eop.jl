@@ -26,6 +26,14 @@ using DataInterpolations
     value_at_leap = @inferred eop.Δut1_utc(leap)
     @test value_before_leap ≈ -0.4 atol = 1e-12
     @test value_at_leap ≈ 0.6 atol = 1e-12
+
+    # The leap-safe interpolation must return the same type inside and outside the tabulated
+    # span for any epoch type.
+    @test (@inferred eop.Δut1_utc(BigFloat(leap - 2))) isa BigFloat
+    @test (@inferred eop.Δut1_utc(BigFloat(leap - 0.5))) isa BigFloat
+    @test (@inferred eop.Δut1_utc(BigFloat(leap + 2))) isa BigFloat
+    @test eop.Δut1_utc(leap - 2) ≈ -0.4 atol = 1e-12
+    @test eop.Δut1_utc(leap + 2) ≈ 0.6 atol = 1e-12
 end
 
 @testset "EOP celestial pole offsets use UTC lookup and TT polynomial epoch" begin

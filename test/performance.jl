@@ -31,7 +31,16 @@ else
         eop_iau1980  = read_iers_eop("./eop_IAU1980.txt", Val(:IAU1980))
         eop_iau2000a = read_iers_eop("./eop_IAU2000A.txt", Val(:IAU2000A))
 
-        test_functions = [eop_iau1980.x, eop_iau1980.y, eop_iau2000a.x, eop_iau2000a.y]
+        test_functions = [
+            eop_iau1980.x,
+            eop_iau1980.y,
+            eop_iau1980.Δut1_utc,
+            eop_iau1980.lod,
+            eop_iau2000a.x,
+            eop_iau2000a.y,
+            eop_iau2000a.Δut1_utc,
+            eop_iau2000a.lod,
+        ]
 
         for func in test_functions
             @test length(check_allocs(func, (Float64,))) == 0

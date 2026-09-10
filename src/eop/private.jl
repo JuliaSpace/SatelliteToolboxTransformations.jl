@@ -5,102 +5,99 @@
 ############################################################################################
 
 """
-    EopInterpolation{T, I, V, W} <: DataInterpolations.AbstractInterpolation{T}
+    struct EopInterpolation{T, I, V <: AbstractVector{T}} <: DataInterpolations.AbstractInterpolation{T}
 
-Interpolation wrapper for EOP data, optionally removing the leap-second
-discontinuity before interpolation.
+Linear interpolation of one EOP field indexed by the Julian Day [UTC], constant outside the
+tabulated span. When `leap_safe` is `true`, the wrapped interpolation holds UT1-TAI, which is
+continuous across the leap seconds, and the UTC offset is restored when the interpolation is
+evaluated.
+
+Only the evaluation is supported. `DataInterpolations.derivative` and
+`DataInterpolations.integral` are not implemented for this type. Unknown properties are
+forwarded to `interpolation`, so that `t` and `u` behave as in **DataInterpolations.jl**,
+`u` being the tabulated values of the field.
 
 # Fields
 
-- `interpolation::I`: Wrapped interpolation object.
-- `t::V`: Interpolation knots.
-- `first_value::T`: First value used for lower extrapolation.
-- `last_value::T`: Last value used for upper extrapolation.
-- `leap_safe::Bool`: Whether the wrapped data is adjusted for leap seconds.
-- `values::W`: Original data values, exposed as the `u` property.
+- `interpolation::I`: Wrapped **DataInterpolations.jl** interpolation.
+- `values::V`: Tabulated values of the field, exposed as the property `u` [same unit as the
+    field].
+- `leap_safe::Bool`: Whether `interpolation` holds UT1-TAI instead of UT1-UTC.
 """
-struct EopInterpolation{T, I, V <: AbstractVector{T}, W <: AbstractVector{T}} <:
+struct EopInterpolation{T, I, V <: AbstractVector{T}} <:
        DataInterpolations.AbstractInterpolation{T}
     interpolation::I
-    t::V
-    first_value::T
-    last_value::T
+    values::V
     leap_safe::Bool
-    values::W
+
+    # == Constructors ======================================================================
+
+    function EopInterpolation(
+        interpolation::I, values::V, leap_safe::Bool
+    ) where {I, V <: AbstractVector}
+        return new{eltype(V), I, V}(interpolation, values, leap_safe)
+    end
 end
 
 """
-    Base.getproperty(itp::EopInterpolation, name::Symbol)::Any
+    Base.getproperty(itp::EopInterpolation, name::Symbol) -> Any
 
-Get a field of an EOP interpolation or delegate an unknown property to the
-wrapped interpolation.
-
-# Arguments
-
-- `itp`: EOP interpolation wrapper.
-- `name`: Property name to retrieve.
+Return the property `name` of the EOP interpolation `itp`. The property `u` returns the
+tabulated values, the fields are returned directly, and any other property is forwarded to
+the wrapped interpolation.
 """
-function Base.getproperty(itp::EopInterpolation, name::Symbol)::Any
-    name == :u && return getfield(itp, :values)
-    name in (:interpolation, :t, :first_value, :last_value, :leap_safe, :values) &&
-        return getfield(itp, name)
+function Base.getproperty(itp::EopInterpolation, name::Symbol)
+    name === :u && return getfield(itp, :values)
+    hasfield(typeof(itp), name) && return getfield(itp, name)
     return getproperty(getfield(itp, :interpolation), name)
 end
 
 """
-    Base.propertynames(itp::EopInterpolation, private::Bool = false)::Any
+    Base.propertynames(itp::EopInterpolation, private::Bool = false) -> Tuple
 
-Return the property names supported by the wrapped interpolation.
-
-# Arguments
-
-- `itp`: EOP interpolation wrapper.
-- `private`: Whether private properties should be included.
+Return the property names of the EOP interpolation `itp`, which are its fields followed by
+the properties of the wrapped interpolation.
 """
-Base.propertynames(itp::EopInterpolation, private::Bool = false)::Any =
-    propertynames(getfield(itp, :interpolation), private)
+function Base.propertynames(itp::EopInterpolation, private::Bool = false)
+    return (
+        fieldnames(EopInterpolation)...,
+        propertynames(getfield(itp, :interpolation), private)...,
+    )
+end
 
 """
-    (itp::EopInterpolation)(JD::Number)::T
+    (itp::EopInterpolation{T})(JD::Number) -> promote_type(T, float(typeof(JD)))
 
-Evaluate an EOP interpolation, preserving constant extrapolation and applying
-the UTC leap-second offset when the interpolation is leap-safe.
-
-# Arguments
-
-- `itp`: EOP interpolation wrapper.
-- `JD`: Julian date at which to evaluate the interpolation.
+Evaluate the EOP interpolation `itp` at the Julian Day `JD` [UTC]. The value is constant
+outside the tabulated span and, for leap-safe interpolations, the UTC leap-second offset is
+restored at `JD`.
 """
-function (itp::EopInterpolation)(JD::Number)
-    leap_safe = getfield(itp, :leap_safe)
+function (itp::EopInterpolation{T})(JD::Number) where {T}
     interpolation = getfield(itp, :interpolation)
-    leap_safe || return interpolation(JD)
+    getfield(itp, :leap_safe) || return interpolation(JD)
 
-    t = getfield(itp, :t)
-    if JD < t[1]
-        return getfield(itp, :first_value)
-    elseif JD > t[end]
-        return getfield(itp, :last_value)
-    end
+    # Outside the tabulated span, we return the tabulated UTC end values, which is the
+    # constant extrapolation of UT1-UTC instead of UT1-TAI. `oftype` gives both branches the
+    # same type of the in-range result for any `JD` type.
+    values = getfield(itp, :values)
+    t      = interpolation.t
 
-    # Interpolate UT1-TAI, which is continuous at a UTC leap boundary, then
-    # restore the UTC-dependent offset at the requested epoch.
+    JD < first(t) && return oftype(zero(T) * JD, first(values))
+    JD > last(t) && return oftype(zero(T) * JD, last(values))
+
+    # Interpolate UT1-TAI, which is continuous at a UTC leap boundary, then restore the
+    # UTC-dependent offset at the requested epoch.
     return interpolation(JD) + get_Δat(JD)
 end
 
-# Keep the EOP display code (which uses `itp.t`) working for the private wrapper.
 """
-    _itp_timespan(itp::EopInterpolation)::String
+    _itp_timespan(itp::EopInterpolation) -> String
 
-Format the knot span of an EOP interpolation for display.
-
-# Arguments
-
-- `itp`: EOP interpolation wrapper.
+Format the knot span of the EOP interpolation `itp` for display.
 """
-_itp_timespan(itp::EopInterpolation)::String = begin
-    tstart, tend = extrema(itp.t)
-    string(julian2datetime(tstart)) * " -- " * string(julian2datetime(tend))
+function _itp_timespan(itp::EopInterpolation)
+    t = itp.t
+    return string(julian2datetime(first(t)), " -- ", julian2datetime(last(t)))
 end
 
 # Delimiter used by the IERS EOP files in CSV format.
@@ -235,9 +232,7 @@ function _create_iers_eop_interpolation(
         extrapolation = DataInterpolations.ExtrapolationType.Constant,
     )
 
-    return EopInterpolation(
-        interp, interp.t, field_float[1], field_float[end], leap_safe, field_float
-    )
+    return EopInterpolation(interp, field_float, leap_safe)
 end
 
 """
@@ -305,21 +300,6 @@ function _download_eop(
 
     # Return the EOP file path.
     return eop_file
-end
-
-"""
-    _itp_timespan(itp::DataInterpolations.LinearInterpolation)::String
-
-Format the knot span of a linear interpolation for display.
-
-# Arguments
-
-- `itp`: Linear interpolation object.
-"""
-function _itp_timespan(itp::DataInterpolations.LinearInterpolation)::String
-    tstart, tend = extrema(itp.t)
-    str = string(julian2datetime(tstart)) * " -- " * string(julian2datetime(tend))
-    return str
 end
 
 """
