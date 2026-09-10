@@ -13,11 +13,15 @@
 export sv_eci_to_ecef
 
 """
-    sv_eci_to_ecef(sv::OrbitStateVector, ECI, ECEF[, jd_utc][, eop]) -> OrbitStateVector
+    sv_eci_to_ecef(
+        sv::OrbitStateVector,
+        ECI,
+        ECEF[, jd_utc::Number][, eop]
+    ) -> OrbitStateVector
 
-Compute the orbit state vector `sv` from an Earth-Centered Inertial (`ECI`) reference frame
+Convert the orbit state vector `sv` from an Earth-Centered Inertial (`ECI`) reference frame
 to an Earth-Centered, Earth-Fixed (`ECEF`) reference frame at the Julian Day `jd_utc` [UTC].
-If the epoch `jd_utc` is not provided, the algorithm will use the epoch of the orbit state
+If the epoch `jd_utc` is not provided, the algorithm uses the epoch of the orbit state
 vector `sv` (`sv.t`). The algorithm might also require the Earth Orientation Parameters
 (EOP) `eop` depending on the source and destination frames.
 
@@ -28,27 +32,27 @@ an observer on the ECEF frame.
 !!! note
 
     For more information, including how to specify the origin and destination reference
-    frames, see the **Extended Help**.
+    frames, see the **Extended help**.
 
 # Returns
 
 - `OrbitStateVector`: Orbit state vector `sv` converted to the `ECEF` reference frame.
 
-# Extended Help
+# Extended help
 
-## Conversion model
+## Conversion Model
 
 The model that will be used to compute the rotation is automatically inferred given the
 selection of the origin and destination frames. **Notice that mixing IAU-76/FK5 and
 IAU-2006/2010 frames is not supported.**
 
-The epoch direction cosine matrix (DCM) includes the polar-motion and
-precession/nutation orientation. For state vectors, the velocity and acceleration conversion
-retains the axial Earth-rotation Coriolis and centrifugal terms, but omits the time derivatives
-of the polar motion and precession/nutation orientation, angular acceleration arising from
-changing length of day (LOD), and the corresponding kinematic terms. Consequently, the
-converted acceleration is consistent with this approximation, rather than being the exact
-derivative of the complete time-dependent frame rotation.
+The epoch direction cosine matrix (DCM) includes the polar-motion and precession/nutation
+orientation. For state vectors, the velocity and acceleration conversion retains the axial
+Earth-rotation Coriolis and centrifugal terms, but omits the time derivatives of the polar
+motion and precession/nutation orientation, angular acceleration arising from changing
+length of day (LOD), and the corresponding kinematic terms. Consequently, the converted
+acceleration is consistent with this approximation, rather than being the exact derivative
+of the complete time-dependent frame rotation.
 
 ## Supported ECI Reference Frames
 

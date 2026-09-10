@@ -1,23 +1,27 @@
 ## Description #############################################################################
 #
 # Convert an orbit state vector from an Earth-Centered, Earth-Fixed (ECEF) reference frame
-# to a Earth-Centered Inertial (ECI) reference frame.
+# to an Earth-Centered Inertial (ECI) reference frame.
 #
 ## References ##############################################################################
 #
-# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
-#     Press, Hawthorn, CA, USA.
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm Press,
+#     Hawthorn, CA, USA.
 #
 ############################################################################################
 
 export sv_ecef_to_eci
 
 """
-    sv_ecef_to_eci(sv::OrbitStateVector, ECEF, ECI[, jd_utc][, eop]) -> OrbitStateVector
+    sv_ecef_to_eci(
+        sv::OrbitStateVector,
+        ECEF,
+        ECI[, jd_utc::Number][, eop]
+    ) -> OrbitStateVector
 
 Convert the orbit state vector `sv` from the Earth-Centered, Earth-Fixed (`ECEF`) reference
-frame to the Earth-Centered Inertial (`ECI`) reference frame at the Julian day `jd_utc`
-[UTC]. If the epoch `jd_utc` is not provided, the algorithm will use the epoch of the orbit
+frame to the Earth-Centered Inertial (`ECI`) reference frame at the Julian Day `jd_utc`
+[UTC]. If the epoch `jd_utc` is not provided, the algorithm uses the epoch of the orbit
 state vector `sv` (`sv.t`). The algorithm might also require the Earth Orientation
 Parameters (EOP) `eop` depending on the source and destination frames.
 
@@ -28,13 +32,13 @@ by an observer on the ECI frame.
 !!! note
 
     For more information, including how to specify the origin and destination reference
-    frames, see the **Extended Help**.
+    frames, see the **Extended help**.
 
 # Returns
 
 - `OrbitStateVector`: Orbit state vector `sv` converted to the `ECI` reference frame.
 
-# Extended Help
+# Extended help
 
 ## Conversion Model
 
@@ -42,13 +46,13 @@ The model that will be used to compute the rotation is automatically inferred gi
 selection of the origin and destination frames. **Notice that mixing IAU-76/FK5 and
 IAU-2006/2010 frames is not supported.**
 
-The epoch direction cosine matrix (DCM) includes the polar-motion and
-precession/nutation orientation. For state vectors, the velocity and acceleration conversion
-retains the axial Earth-rotation Coriolis and centrifugal terms, but omits the time derivatives
-of the polar motion and precession/nutation orientation, angular acceleration arising from
-changing length of day (LOD), and the corresponding kinematic terms. Consequently, the
-converted acceleration is consistent with this approximation, rather than being the exact
-derivative of the complete time-dependent frame rotation.
+The epoch direction cosine matrix (DCM) includes the polar-motion and precession/nutation
+orientation. For state vectors, the velocity and acceleration conversion retains the axial
+Earth-rotation Coriolis and centrifugal terms, but omits the time derivatives of the polar
+motion and precession/nutation orientation, angular acceleration arising from changing
+length of day (LOD), and the corresponding kinematic terms. Consequently, the converted
+acceleration is consistent with this approximation, rather than being the exact derivative
+of the complete time-dependent frame rotation.
 
 ## Supported ECEF Reference Frames
 
@@ -79,7 +83,7 @@ The ECI frame is selected by the parameter `ECI`. The possible values are:
     names to make clear which theory is being used since mixing transformation between
     frames from IAU-76/FK5 and IAU-2006/2010 must be performed with caution.
 
-# Earth Orientation Parameters (EOP)
+## Earth Orientation Parameters (EOP)
 
 The conversion between the frames might depend on EOP (see [`fetch_iers_eop`](@ref) and
 [`read_iers_eop`](@ref)). If IAU-76/FK5 model is used, the type of `eop` must be
@@ -127,7 +131,7 @@ the free core nutation will not be available, reducing the precision.
     computed considering the original IAU-76/FK5 theory. Otherwise, the corrected frame will
     be used.
 
-# Examples
+## Examples
 
 ```julia-repl
 julia> eop_iau1980 = fetch_iers_eop(Val(:IAU1980));

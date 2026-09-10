@@ -13,22 +13,27 @@
 export orb_eci_to_eci
 
 """
-    orb_eci_to_eci(orb::T, ECIo, ECIf[, jd_utc::Number][, eop]) where T<: Orbit -> T
-    orb_eci_to_eci(orb::T, ECIo, [jd_utco::Number, ]ECIf[, jd_utcf::Number][, eop]) where T<:Orbit -> T
+    orb_eci_to_eci(orb::T, ECIo, ECIf[, jd_utc::Number][, eop]) where {T <: Orbit} -> T
+    orb_eci_to_eci(
+        orb::T,
+        ECIo[, jd_utco::Number],
+        ECIf[, jd_utcf::Number][, eop]
+    ) where {T <: Orbit} -> T
 
 Convert the orbit representation `orb` from an Earth-Centered Inertial (ECI) reference frame
-`ECIo` to another ECI reference frame `ECIf`. If the origin and destination frame contain
+`ECIo` to another ECI reference frame `ECIf`. If the origin and destination frames contain
 only one *of date* frame, the first signature is used and the Julian Day `jd_utc` [UTC] is
-the epoch of this frame. On the other hand, if the origin and destination frame contain two
-*of date* frame`¹`, e.g. TOD => MOD, the second signature must be used in which the Julian
+the epoch of this frame. On the other hand, if the origin and destination frames contain two
+*of date* frames`¹`, e.g. TOD => MOD, the second signature must be used, in which the Julian
 Day `jd_utco` [UTC] is the epoch of the origin frame and the Julian Day `jd_utcf` [UTC] is
-the epoch of the destination frame. The algorithm might also require the Earth Orientation
-Parameters (EOP) `eop` depending on the source and destination frames.
+the epoch of the destination frame. If the epochs are not provided, the algorithm uses the
+epoch of the orbit representation `orb`. The algorithm might also require the Earth
+Orientation Parameters (EOP) `eop` depending on the source and destination frames.
 
 !!! note
 
     For more information, including how to specify the origin and destination reference
-    frames, see the **Extended Help**.
+    frames, see the **Extended help**.
 
 `¹`: TEME is an *of date* frame.
 
@@ -36,7 +41,7 @@ Parameters (EOP) `eop` depending on the source and destination frames.
 
 - `T`: Orbit representation converted to the `ECIf` reference frame.
 
-# Extended Help
+# Extended help
 
 ## Conversion Model
 
@@ -44,12 +49,12 @@ The model that will be used to compute the rotation is automatically inferred gi
 selection of the origin and destination frames. **Notice that mixing IAU-76/FK5 and
 IAU-2006/2010 frames is not supported.**
 
-When the orbit is converted through an orbit state vector, the epoch direction cosine matrix
+The orbit is converted through an orbit state vector, whose epoch direction cosine matrix
 (DCM) includes the polar-motion and precession/nutation orientation. The same epoch DCM is
-applied to `r`, `v`, and `a`, without `Ḋ` or `D̈` terms. Thus, the time derivatives of the polar
-motion and precession/nutation orientation, angular acceleration arising from changing length
-of day (LOD), and the corresponding kinematic terms are omitted. Axial Earth rotation and the
-associated Coriolis and centrifugal terms are retained where applicable.
+applied to `r`, `v`, and `a`, without `Ḋ` or `D̈` terms. Thus, the time derivatives of the
+polar motion and precession/nutation orientation, angular acceleration arising from changing
+length of day (LOD), and the corresponding kinematic terms are omitted. Axial Earth rotation
+and the associated Coriolis and centrifugal terms are retained where applicable.
 
 ## Supported ECI Reference Frames
 
@@ -134,7 +139,7 @@ the free core nutation will not be available, reducing the precision.
     computed considering the original IAU-76/FK5 theory. Otherwise, the corrected frame will
     be used.
 
-# Examples
+## Examples
 
 ```julia-repl
 julia> orb = KeplerianElements(
@@ -167,7 +172,7 @@ KeplerianElements{Float64, Float64}:
 ```
 """
 function orb_eci_to_eci(orb::T, args::Vararg{Any, N}) where {N, T <: Orbit}
-    # First, we need to convert to state vector.
+    # First, we need to convert the orbit representation to a state vector.
     sv_o = convert(OrbitStateVector, orb)
 
     # Now, we can transform the state vector to the desired reference frame.

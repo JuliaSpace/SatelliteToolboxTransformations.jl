@@ -19,23 +19,31 @@ export sv_eci_to_eci
 # == GCRF <=> J2000 ========================================================================
 
 """
-    sv_eci_to_eci(sv::OrbitStateVector, ECIo, ECIf[, jd_utc::Number][, eop]) -> OrbitStateVector
-    sv_eci_to_eci(sv::OrbitStateVector, ECIo, [jd_utco::Number, ]ECIf[, jd_utcf::Number][, eop]) -> OrbitStateVector
+    sv_eci_to_eci(
+        sv::OrbitStateVector,
+        ECIo,
+        ECIf[, jd_utc::Number][, eop]
+    ) -> OrbitStateVector
+    sv_eci_to_eci(
+        sv::OrbitStateVector,
+        ECIo[, jd_utco::Number],
+        ECIf[, jd_utcf::Number][, eop]
+    ) -> OrbitStateVector
 
 Convert the orbit state vector `sv` from an Earth-Centered Inertial (ECI) reference frame
-`ECIo` to another ECI reference frame `ECIf`. If the origin and destination frame contain
+`ECIo` to another ECI reference frame `ECIf`. If the origin and destination frames contain
 only one *of date* frame, the first signature is used and the Julian Day `jd_utc` [UTC] is
-the epoch of this frame. On the other hand, if the origin and destination frame contain two
-*of date* frame`¹`, e.g. TOD => MOD, the second signature must be used in which the Julian
+the epoch of this frame. On the other hand, if the origin and destination frames contain two
+*of date* frames`¹`, e.g. TOD => MOD, the second signature must be used, in which the Julian
 Day `jd_utco` [UTC] is the epoch of the origin frame and the Julian Day `jd_utcf` [UTC] is
-the epoch of the destination frame. If the epochs are not provided, the algorithm will use
-the epoch of the orbit state vector `sv` (`sv.t`). The algorithm might also require the
-Earth Orientation Parameters (EOP) `eop` depending on the source and destination frames.
+the epoch of the destination frame. If the epochs are not provided, the algorithm uses the
+epoch of the orbit state vector `sv` (`sv.t`). The algorithm might also require the Earth
+Orientation Parameters (EOP) `eop` depending on the source and destination frames.
 
 !!! note
 
     For more information, including how to specify the origin and destination reference
-    frames, see the **Extended Help**.
+    frames, see the **Extended help**.
 
 `¹`: TEME is an *of date* frame.
 
@@ -43,7 +51,7 @@ Earth Orientation Parameters (EOP) `eop` depending on the source and destination
 
 - `OrbitStateVector`: Orbit state vector `sv` converted to the `ECIf` reference frame.
 
-# Extended Help
+# Extended help
 
 ## Conversion Model
 
@@ -51,13 +59,13 @@ The model that will be used to compute the rotation is automatically inferred gi
 selection of the origin and destination frames. **Notice that mixing IAU-76/FK5 and
 IAU-2006/2010 frames is not supported.**
 
-The epoch direction cosine matrix (DCM) includes the polar-motion and
-precession/nutation orientation. For state vectors, the same epoch DCM is applied to `r`, `v`,
-and `a`; no `Ḋ` or `D̈` terms are included. Consequently, the time derivatives of the polar
-motion and precession/nutation orientation, angular acceleration arising from changing length
-of day (LOD), and the corresponding kinematic terms are omitted from the velocity and
-acceleration conversion. Axial Earth rotation and its associated Coriolis and centrifugal terms
-are retained where applicable.
+The epoch direction cosine matrix (DCM) includes the polar-motion and precession/nutation
+orientation. For state vectors, the same epoch DCM is applied to `r`, `v`, and `a`; no `Ḋ`
+or `D̈` terms are included. Consequently, the time derivatives of the polar motion and
+precession/nutation orientation, angular acceleration arising from changing length of day
+(LOD), and the corresponding kinematic terms are omitted from the velocity and acceleration
+conversion. Axial Earth rotation and its associated Coriolis and centrifugal terms are
+retained where applicable.
 
 ## Supported ECI Reference Frames
 
@@ -141,6 +149,26 @@ the free core nutation will not be available, reducing the precision.
     In this function, if EOP corrections are not provided, MOD and TOD frames will be
     computed considering the original IAU-76/FK5 theory. Otherwise, the corrected frame will
     be used.
+
+## Examples
+
+```julia-repl
+julia> eop_iau1980 = fetch_iers_eop(Val(:IAU1980));
+
+julia> jd_utc = date_to_jd(2004, 4, 6, 7, 51, 28.386009);
+
+julia> r_gcrf = [5102.50895790; 6123.01140070; 6378.13692820] * 1000;
+
+julia> v_gcrf = [-4.7432201570; 0.7905364970; 5.5337557270] * 1000;
+
+julia> sv_gcrf = OrbitStateVector(jd_utc, r_gcrf, v_gcrf);
+
+julia> sv_j2000 = sv_eci_to_eci(sv_gcrf, GCRF(), J2000(), eop_iau1980);
+
+julia> sv_tod = sv_eci_to_eci(sv_j2000, J2000(), TOD());
+
+julia> sv_mod = sv_eci_to_eci(sv_tod, TOD(), jd_utc, MOD(), jd_utc);
+```
 """
 function sv_eci_to_eci(
     sv::OrbitStateVector,

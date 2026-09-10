@@ -13,24 +13,28 @@
 export sv_ecef_to_ecef
 
 """
-    sv_ecef_to_ecef(sv::OrbitStateVector, ECEFo, ECEFf[, jd_utc::Number], eop) -> OrbitStateVector
+    sv_ecef_to_ecef(
+        sv::OrbitStateVector,
+        ECEFo,
+        ECEFf[, jd_utc::Number],
+        eop
+    ) -> OrbitStateVector
 
 Convert the orbit state vector `sv` from an Earth-Centered, Earth-Fixed (ECEF) reference
 frame `ECEFo` to another ECEF reference frame `ECEFf` at the Julian Day `jd_utc` [UTC]. If
-the epoch `jd_utc` is not provided, the algorithm will use the epoch of the orbit state
-vector `sv` (`sv.t`). The algorithm also requires the Earth Orientation Parameters (EOP)
-`eop`.
+the epoch `jd_utc` is not provided, the algorithm uses the epoch of the orbit state vector
+`sv` (`sv.t`). The algorithm also requires the Earth Orientation Parameters (EOP) `eop`.
 
 !!! note
 
     For more information, including how to specify the origin and destination reference
-    frames, see the **Extended Help**.
+    frames, see the **Extended help**.
 
 # Returns
 
 - `OrbitStateVector`: Orbit state vector `sv` converted to the `ECEFf` reference frame.
 
-# Extended Help
+# Extended help
 
 ## Conversion Model
 
@@ -38,13 +42,13 @@ The model that will be used to compute the rotation is automatically inferred gi
 selection of the origin and destination frames. **Notice that mixing IAU-76/FK5 and
 IAU-2006/2010 frames is not supported.**
 
-The epoch direction cosine matrix (DCM) includes the polar-motion and
-precession/nutation orientation. For state vectors, the same epoch DCM is applied to `r`, `v`,
-and `a`, without `Ḋ` or `D̈` terms. Consequently, the time derivatives of the polar motion and
+The epoch direction cosine matrix (DCM) includes the polar-motion and precession/nutation
+orientation. For state vectors, the same epoch DCM is applied to `r`, `v`, and `a`, without
+`Ḋ` or `D̈` terms. Consequently, the time derivatives of the polar motion and
 precession/nutation orientation, angular acceleration arising from changing length of day
 (LOD), and the corresponding kinematic terms are omitted from the velocity and acceleration
-conversion. Axial Earth rotation and its associated Coriolis and centrifugal terms are retained
-where applicable.
+conversion. Axial Earth rotation and its associated Coriolis and centrifugal terms are
+retained where applicable.
 
 ## Supported ECEF Reference Frames
 
