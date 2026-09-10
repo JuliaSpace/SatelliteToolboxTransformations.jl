@@ -72,13 +72,13 @@ julia> eop_iau1980 = fetch_iers_eop();
 
 julia> r_ecef_to_ecef(PEF(), ITRF(), date_to_jd(1986, 6, 19, 21, 35, 0), eop_iau1980)
 DCM{Float64}:
-  1.0          0.0         -4.34677e-7
- -6.29476e-13  1.0         -1.44815e-6
-  4.34677e-7   1.44815e-6   1.0
+  1.0         -6.29476e-13  -4.34677e-7
+ -0.0          1.0          -1.44815e-6
+  4.34677e-7   1.44815e-6    1.0
 
 julia> r_ecef_to_ecef(Quaternion, PEF(), ITRF(), date_to_jd(1986, 6, 19, 21, 35, 0), eop_iau1980)
 Quaternion{Float64}:
-  + 1.0 - 7.24073e-7⋅i + 2.17339e-7⋅j - 0.0⋅k
+  + 1.0 - 7.24073e-7⋅i + 2.17339e-7⋅j + 0.0⋅k
 
 julia> eop_iau2000A = fetch_iers_eop(Val(:IAU2000A));
 
@@ -126,22 +126,25 @@ end
 function r_ecef_to_ecef(
     T::T_ROT, ::Val{:ITRF}, ::Val{:PEF}, jd_utc::Number, eop::EopIau1980
 )
-    arcsec_to_rad = π / 648000
-
-    # Get the EOP data related to the desired epoch.
-    #
-    # TODO: The difference is small, but should it be `JD_TT` or `jd_utc`?
-    x_p = eop.x(jd_utc) * arcsec_to_rad
-    y_p = eop.y(jd_utc) * arcsec_to_rad
+    # Get the EOP data related to the desired epoch. The EOP values are tabulated against
+    # UTC, hence they are evaluated at `jd_utc`.
+    x_p = eop.x(jd_utc) * _ARCSEC_TO_RAD
+    y_p = eop.y(jd_utc) * _ARCSEC_TO_RAD
 
     # Return the rotation.
     return r_itrf_to_pef_fk5(T, x_p, y_p)
 end
 
 function r_ecef_to_ecef(
-    T::T_ROT, T_ECEFo::Val{:PEF}, T_ECEFf::Val{:ITRF}, jd_utc::Number, eop::EopIau1980
+    T::T_ROT, ::Val{:PEF}, ::Val{:ITRF}, jd_utc::Number, eop::EopIau1980
 )
-    return inv_rotation(r_ecef_to_ecef(T, T_ECEFf, T_ECEFo, jd_utc, eop))
+    # Get the EOP data related to the desired epoch. The EOP values are tabulated against
+    # UTC, hence they are evaluated at `jd_utc`.
+    x_p = eop.x(jd_utc) * _ARCSEC_TO_RAD
+    y_p = eop.y(jd_utc) * _ARCSEC_TO_RAD
+
+    # Return the rotation.
+    return r_pef_to_itrf_fk5(T, x_p, y_p)
 end
 
 ############################################################################################
@@ -167,20 +170,27 @@ end
 function r_ecef_to_ecef(
     T::T_ROT, ::Val{:ITRF}, ::Val{:TIRS}, jd_utc::Number, eop::EopIau2000A
 )
-    arcsec_to_rad = π / 648000
     jd_tt = jd_utc_to_tt(jd_utc)
 
-    # Get the EOP data related to the desired epoch.
-    # EOP values are tabulated against UTC, whereas the IAU-2006 routines use TT.
-    x_p = eop.x(jd_utc) * arcsec_to_rad
-    y_p = eop.y(jd_utc) * arcsec_to_rad
+    # Get the EOP data related to the desired epoch. The EOP values are tabulated against
+    # UTC, whereas the IAU-2006 routines use TT.
+    x_p = eop.x(jd_utc) * _ARCSEC_TO_RAD
+    y_p = eop.y(jd_utc) * _ARCSEC_TO_RAD
 
     # Return the rotation.
     return r_itrf_to_tirs_iau2006(T, jd_tt, x_p, y_p)
 end
 
 function r_ecef_to_ecef(
-    T::T_ROT, T_ECEFo::Val{:TIRS}, T_ECEFf::Val{:ITRF}, jd_utc::Number, eop::EopIau2000A
+    T::T_ROT, ::Val{:TIRS}, ::Val{:ITRF}, jd_utc::Number, eop::EopIau2000A
 )
-    return inv_rotation(r_ecef_to_ecef(T, T_ECEFf, T_ECEFo, jd_utc, eop))
+    jd_tt = jd_utc_to_tt(jd_utc)
+
+    # Get the EOP data related to the desired epoch. The EOP values are tabulated against
+    # UTC, whereas the IAU-2006 routines use TT.
+    x_p = eop.x(jd_utc) * _ARCSEC_TO_RAD
+    y_p = eop.y(jd_utc) * _ARCSEC_TO_RAD
+
+    # Return the rotation.
+    return r_tirs_to_itrf_iau2006(T, jd_tt, x_p, y_p)
 end
