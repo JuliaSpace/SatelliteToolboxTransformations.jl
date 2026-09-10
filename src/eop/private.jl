@@ -236,21 +236,17 @@ function _create_iers_eop_interpolation(
 end
 
 """
-    _download_eop(url::String, key::String, filename::String;
-                  force_download::Bool = false)::String
+    _download_eop(url::String, key::String, filename::String; kwargs...) -> String
 
-Download an EOP file into the scratch space when it is missing, stale, or
-explicitly requested.
-
-# Arguments
-
-- `url`: URL of the EOP file.
-- `key`: Scratch-space key.
-- `filename`: Cached filename.
+Download the EOP file at `url` into the scratch space `key` with the name `filename`, and
+return the path of the cached file. The file is downloaded only when it is missing, when its
+timestamp is older than 7 days or cannot be read, or when the download is forced.
 
 # Keywords
 
-- `force_download`: Download even when a current cached file exists.
+- `force_download::Bool`: If `true`, download the file even when a current cached file
+    exists.
+    (**Default**: `false`)
 """
 function _download_eop(
     url::String, key::String, filename::String; force_download::Bool = false
@@ -261,21 +257,13 @@ function _download_eop(
     eop_file_timestamp = joinpath(eop_cache_dir, filename * "_timestamp")
 
     # We need to verify if we must re-download the data.
-    download_eop = false
+    download_eop = force_download || !isfile(eop_file) || !isfile(eop_file_timestamp)
 
-    if force_download ||
-        isempty(readdir(eop_cache_dir)) ||
-        !isfile(eop_file) ||
-        !isfile(eop_file_timestamp)
-        download_eop = true
-
-    else
-        # In this case, we should read the time stamp and verify if the file
-        # must be re-downloaded.
+    if !download_eop
+        # Reuse a cached file younger than 7 days. Any problem reading the timestamp leads to
+        # a new download.
         try
-            str       = read(eop_file_timestamp, String)
-            tokens    = split(str, '\n')
-            timestamp = tokens |> first |> DateTime
+            timestamp = DateTime(readline(eop_file_timestamp))
 
             if now() >= timestamp + Day(7)
                 download_eop = true
@@ -283,8 +271,8 @@ function _download_eop(
                 @debug "We found an EOP file that is less than 7 days old " *
                     "(timestamp = $timestamp). Hence, we will use it."
             end
-        catch
-            # If any error occurred, we will download the data again.
+        catch e
+            e isa InterruptException && rethrow(e)
             download_eop = true
         end
     end
@@ -293,9 +281,7 @@ function _download_eop(
     if download_eop
         @info "Downloading the file '$filename' from '$url'..."
         download(url, eop_file)
-        open(eop_file_timestamp, "w") do f
-            return write(f, string(now()))
-        end
+        write(eop_file_timestamp, string(now()))
     end
 
     # Return the EOP file path.
