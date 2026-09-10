@@ -172,29 +172,15 @@ function r_eci_to_hill(::Type{Quaternion}, r_eci::AbstractVector, v_eci::Abstrac
     return dcm_to_quat(r_eci_to_hill(DCM, r_eci, v_eci))
 end
 
-function r_eci_to_hill(
-    ::Type{DCM},
-    r_eci::AbstractVector{T1},
-    v_eci::AbstractVector{T2}
-) where {T1 <: Number, T2 <: Number}
-    # Convert the input vectors to the right type.
-    T = promote_type(T1, T2) |> float
+function r_eci_to_hill(::Type{DCM}, r_eci::AbstractVector, v_eci::AbstractVector)
+    r̄_eci, θ̄_eci, h̄_eci = _hill_triad(r_eci, v_eci)
 
-    sr_eci = @SVector T[r_eci[0 + begin], r_eci[1 + begin], r_eci[2 + begin]]
-    sv_eci = @SVector T[v_eci[0 + begin], v_eci[1 + begin], v_eci[2 + begin]]
+    # The rows of `D_hill_eci` are the Hill axes represented in the ECI frame. `hcat` places
+    # them as columns, hence the transpose. Both operations are allocation-free for
+    # `SVector`s.
+    D_hill_eci = DCM(transpose(hcat(r̄_eci, θ̄_eci, h̄_eci)))
 
-    sr̄_eci = normalize(sr_eci)
-    sh_eci = sr_eci × sv_eci
-    sh̄_eci = normalize(sh_eci)
-    sθ̄_eci = sh̄_eci × sr̄_eci
-
-    #! format: off
-    return DCM(
-        sr̄_eci[1], sθ̄_eci[1], sh̄_eci[1],
-        sr̄_eci[2], sθ̄_eci[2], sh̄_eci[2],
-        sr̄_eci[3], sθ̄_eci[3], sh̄_eci[3]
-    )
-    #! format: on
+    return D_hill_eci
 end
 
 """
@@ -260,28 +246,15 @@ function r_eci_to_lvlh(::Type{Quaternion}, r_eci::AbstractVector, v_eci::Abstrac
     return dcm_to_quat(r_eci_to_lvlh(DCM, r_eci, v_eci))
 end
 
-function r_eci_to_lvlh(
-    ::Type{DCM},
-    r_eci::AbstractVector{T1},
-    v_eci::AbstractVector{T2}
-) where {T1 <: Number, T2 <: Number}
-    # Convert the input vectors to the right type.
-    T = promote_type(T1, T2) |> float
+function r_eci_to_lvlh(::Type{DCM}, r_eci::AbstractVector, v_eci::AbstractVector)
+    r̄_eci, θ̄_eci, h̄_eci = _hill_triad(r_eci, v_eci)
 
-    sr_eci = @SVector T[r_eci[0 + begin], r_eci[1 + begin], r_eci[2 + begin]]
-    sv_eci = @SVector T[v_eci[0 + begin], v_eci[1 + begin], v_eci[2 + begin]]
+    # The LVLH frame is a permutation of the Hill frame: X is the along-track direction, Z is
+    # the nadir direction, and Y completes the right-handed frame, pointing opposite to the
+    # orbit angular momentum. The rows of `D_lvlh_eci` are those axes in the ECI frame.
+    D_lvlh_eci = DCM(transpose(hcat(θ̄_eci, -h̄_eci, -r̄_eci)))
 
-    v̄₃ = -normalize(sr_eci)
-    v̄₂ = v̄₃ × normalize(sv_eci)
-    v̄₁ = v̄₂ × v̄₃
-
-    #! format: off
-    return DCM(
-        v̄₁[1], v̄₂[1], v̄₃[1],
-        v̄₁[2], v̄₂[2], v̄₃[2],
-        v̄₁[3], v̄₂[3], v̄₃[3],
-    )
-    #! format: on
+    return D_lvlh_eci
 end
 
 """
@@ -306,4 +279,69 @@ end
 
 function r_lvlh_to_eci(T::T_ROT, r_eci::AbstractVector, v_eci::AbstractVector)
     return inv_rotation(r_eci_to_lvlh(T, r_eci, v_eci))
+end
+
+############################################################################################
+#                                    Private Functions                                     #
+############################################################################################
+
+"""
+    _hill_triad(r_eci::AbstractVector{T1}, v_eci::AbstractVector{T2}) where {T1 <: Number, T2 <: Number} -> NTuple{3, SVector{3, T}}
+
+Compute the orthonormal triad of the Hill frame given the satellite position `r_eci` [m] and
+velocity `v_eci` [m/s] represented in an Earth-Centered Inertial (ECI) reference frame.
+
+The element type `T` of the returned vectors is obtained by promoting `T1` and `T2` to a
+float. The function throws if `r_eci` and `v_eci` do not define an orbital plane.
+
+# Returns
+
+- `SVector{3, T}`: Unit vector [-] along the radial direction (from the Earth's center to the
+    satellite) represented in the ECI frame.
+- `SVector{3, T}`: Unit vector [-] along the along-track direction represented in the ECI
+    frame.
+- `SVector{3, T}`: Unit vector [-] along the orbit angular momentum represented in the ECI
+    frame.
+
+# References
+
+- **[2]** Vallado, D. A (2013). *Fundamentals of Astrodynamics and Applications*. 4th ed.
+    Microcosm Press, pp. 163-164.
+
+# Extended help
+
+## Throws
+
+- `ArgumentError`: `r_eci` and `v_eci` are parallel or at least one of them is zero, so that
+    the orbit angular momentum vanishes and the frame is undefined.
+"""
+function _hill_triad(
+    r_eci::AbstractVector{T1}, v_eci::AbstractVector{T2}
+) where {T1 <: Number, T2 <: Number}
+    # Obtain the element type of the returned vectors.
+    T = promote_type(T1, T2) |> float
+
+    # Convert the input vectors to the right type.
+    sr_eci = @SVector T[r_eci[0 + begin], r_eci[1 + begin], r_eci[2 + begin]]
+    sv_eci = @SVector T[v_eci[0 + begin], v_eci[1 + begin], v_eci[2 + begin]]
+
+    # The orbit angular momentum defines the cross-track direction. It vanishes if the
+    # position and velocity are parallel or if any of them is zero, and in this case the
+    # frame is undefined.
+    h_eci  = sr_eci × sv_eci
+    norm_h = norm(h_eci)
+
+    norm_h == 0 && throw(
+        ArgumentError(
+            "The position and velocity vectors must be non-zero and non-parallel to " *
+            "define the Hill frame.",
+        ),
+    )
+
+    # Radial, cross-track, and along-track unit vectors [2, pp. 163-164].
+    r̄_eci = normalize(sr_eci)
+    h̄_eci = h_eci / norm_h
+    θ̄_eci = h̄_eci × r̄_eci
+
+    return r̄_eci, θ̄_eci, h̄_eci
 end
