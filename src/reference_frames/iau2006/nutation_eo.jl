@@ -1,7 +1,7 @@
 ## Description #############################################################################
 #
 # Compute the nutation and the Equation of the Origins (EO) as in equinox-based IAU-2006
-#   theory.
+# theory.
 #
 ## References ##############################################################################
 #
@@ -23,14 +23,14 @@ export mean_obliquity_iau2006, nutation_eo_iau2006
 """
     mean_obliquity_iau2006(jd_tt::Number) -> Number
 
-Compute the mean obliquity of the ecliptic [rad] using the equinox-based IAU-2006 theory in
-the Julian day `jd_tt` [Terrestrial Time].
+Compute the mean obliquity of the ecliptic [rad] using the equinox-based IAU-2006 theory at
+the Julian Day `jd_tt` [Terrestrial Time].
 
-The algorithm was obtained in **[1]**.
+The algorithm was obtained in **[3]**.
 
 # References
 
-- **[1]**: Wallace, P. T., Capitaine, N (2006). Precession-nutation procedures consistent
+- **[3]** Wallace, P. T., Capitaine, N (2006). Precession-nutation procedures consistent
     with IAU 2006 resolutions. Astronomy & Astrophysics.
 """
 function mean_obliquity_iau2006(jd_tt::Number)
@@ -48,18 +48,20 @@ This is the implementation of [`mean_obliquity_iau2006`](@ref). It takes `t_tt` 
 the Julian Day so that [`nutation_eo_iau2006`](@ref), which already has it, does not need to
 compute it again.
 
+The algorithm was obtained in **[3]**.
+
 # References
 
-- **[1]**: Wallace, P. T., Capitaine, N (2006). Precession-nutation procedures consistent
+- **[3]** Wallace, P. T., Capitaine, N (2006). Precession-nutation procedures consistent
     with IAU 2006 resolutions. Astronomy & Astrophysics.
 """
 function _mean_obliquity_iau2006(t_tt::Number)
     # == Mean Obliquity of the Ecliptic ====================================================
 
     # Compute the mean obliquity of the ecliptic [arcsec].
-
-    # NOTE: This equation is wrong in [1](p. 216, eq. 3-68)!
-    # The one used here was obtained in [3].
+    #
+    # NOTE: This equation is wrong in [1, p. 216, eq. 3-68]! The one used here was obtained
+    # in [3].
     mϵ_2000 = @evalpoly(
         t_tt, +84381.406, -46.836769, -0.0001831, +0.00200340, -0.000000576, -0.0000000434
     )
@@ -127,7 +129,7 @@ function nutation_eo_iau2006(jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_2000
         p_λ,
     )
 
-    # Apply the correction given EOP data.
+    # Apply the correction given by the EOP data, converting it to [arcsec].
     Δϵ_2000 += δΔϵ_2000 * _RAD_TO_ARCSEC
 
     # == Nutation in Longitude =============================================================
@@ -151,7 +153,7 @@ function nutation_eo_iau2006(jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_2000
         p_λ,
     )
 
-    # Apply the correction given EOP data.
+    # Apply the correction given by the EOP data, converting it to [arcsec].
     ΔΨ_2000 += δΔΨ_2000 * _RAD_TO_ARCSEC
 
     # == Equation of Origins (EO) ==========================================================
@@ -175,8 +177,8 @@ function nutation_eo_iau2006(jd_tt::Number, δΔϵ_2000::Number = 0, δΔΨ_2000
         p_λ,
     )
 
-    # NOTE: This equation is wrong in [1](p. 216, eq. 3-66)! The coefficients
-    # were obtained from [2] and [4](eq. 69).
+    # NOTE: This equation is wrong in [1, p. 216, eq. 3-66]! The coefficients were obtained
+    # from [2] and [4, eq. 69].
     EO =
         @evalpoly(
             t_tt,

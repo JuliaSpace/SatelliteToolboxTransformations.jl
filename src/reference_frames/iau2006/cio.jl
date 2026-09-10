@@ -18,8 +18,8 @@ export cio_iau2006
     cio_iau2006(jd_tt::Number) -> NTuple{3, Number}
 
 Compute the coordinates `X` and `Y` of the Celestial Intermediate Pole (CIP) with respect to
-the Geocentric Celestial Reference Frame (GCRF), and the CIO locator `s`. The algorithm is
-based on the IAU-2006 theory.
+the Geocentric Celestial Reference Frame (GCRF), and the CIO locator `s` at the Julian Day
+`jd_tt` [Terrestrial Time]. The algorithm is based on the IAU-2006 theory.
 
 The CIO locator `s` provides the position of the CIO on the Equator of the CIP corresponding
 to the kinematical definition of the non-rotation origin in the GCRS when the CIP is moving
@@ -28,20 +28,20 @@ nutation **[1]**(p. 214).
 
 # Returns
 
-- `Number`: The coordinate `X` of the CIP w.r.t. the GCRF.
-- `Number`: The coordinate `Y` of the CIP w.r.t. the GCRF.
-- `Number`: The CIO locator `s`.
+- `Number`: The coordinate `X` of the CIP w.r.t. the GCRF [rad].
+- `Number`: The coordinate `Y` of the CIP w.r.t. the GCRF [rad].
+- `Number`: The CIO locator `s` [rad].
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
 """
 function cio_iau2006(jd_tt::Number)
     # Compute the Julian Centuries from `jd_tt`.
     t_tt = (jd_tt - JD_J2000) / 36525
 
-    # == Fundamental arguments =============================================================
+    # == Fundamental Arguments =============================================================
 
     # Luni-solar part.
     M_s, M_m, u_Mm, D_s, Ω_m = _luni_solar_args_iau2006(t_tt)
@@ -131,13 +131,12 @@ function cio_iau2006(jd_tt::Number)
     # Convert to [rad].
     Y *= _ARCSEC_TO_RAD
 
-    # == Parameter `s` (CIO locator) =======================================================
-    #
+    # == Parameter `s` (CIO Locator) =======================================================
+
     # The value `s` provides the position of the CIO on the Equator of the CIP corresponding
     # to the kinematical definition of the non-rotation origin in the GCRS when the CIP is
     # moving with respect to the GCRS between the reference epoch and the epoch due to
     # precession and nutation [1, p. 214].
-
     Δs = _iau2006_sum(
         (
             _IAU_2006_CIO_S0,
@@ -166,9 +165,8 @@ function cio_iau2006(jd_tt::Number)
     s =
         @evalpoly(
             t_tt,
-            # We must convert this term to [arcsec] to match the units.
-            #    ||
-            # |------|
+            # We must convert the term `-X * Y / 2` to [arcsec] to match the units of the
+            # other coefficients.
             (-X * Y / 2) / _ARCSEC_TO_RAD + 0.000_094,
             +0.003_808_65,
             -0.000_122_68,

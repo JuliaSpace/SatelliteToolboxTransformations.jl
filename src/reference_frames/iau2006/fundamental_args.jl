@@ -15,13 +15,19 @@ export luni_solar_args_iau2006, planetary_args_iau2006
     luni_solar_args_iau2006(jd_tt::Number) -> NTuple{5, Number}
 
 Compute the fundamental arguments related to the luni-solar effect for the IAU-2006 theory
-**[1]**(p. 211).
+**[1]**(p. 211) at the Julian Day `jd_tt` [Terrestrial Time].
 
-The returned values are in [rad].
+# Returns
+
+- `Number`: Mean anomaly of the Sun [rad].
+- `Number`: Mean anomaly of the Moon [rad].
+- `Number`: Mean argument of latitude of the Moon [rad].
+- `Number`: Mean elongation of the Moon from the Sun [rad].
+- `Number`: Mean longitude of the ascending node of the Moon [rad].
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
 """
 function luni_solar_args_iau2006(jd_tt::Number)
@@ -49,7 +55,7 @@ the Julian Day so that the callers that already have it, like [`cio_iau2006`](@r
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
 """
 function _luni_solar_args_iau2006(t_tt::Number)
@@ -72,7 +78,7 @@ function _luni_solar_args_iau2006(t_tt::Number)
 
     Ω_m = @evalpoly(t_tt, +450160.398036, -6962890.5431, +7.4722, +0.007702, -0.00005939)
 
-    # Convert to the interval [0,2π].
+    # Convert to the interval [0, 2π].
     M_s  = deg2rad(mod(M_s * _ARCSEC_TO_DEG, 360))
     M_m  = deg2rad(mod(M_m * _ARCSEC_TO_DEG, 360))
     u_Mm = deg2rad(mod(u_Mm * _ARCSEC_TO_DEG, 360))
@@ -86,13 +92,23 @@ end
     planetary_args_iau2006(jd_tt::Number) -> NTuple{9, Number}
 
 Compute the fundamental arguments related to the planetary effects for the IAU-2006 theory
-**[1]**(p. 211).
+**[1]**(p. 211) at the Julian Day `jd_tt` [Terrestrial Time].
 
-The returned values are in [rad].
+# Returns
+
+- `Number`: Mean heliocentric longitude of Mercury [rad].
+- `Number`: Mean heliocentric longitude of Venus [rad].
+- `Number`: Mean heliocentric longitude of the Earth [rad].
+- `Number`: Mean heliocentric longitude of Mars [rad].
+- `Number`: Mean heliocentric longitude of Jupiter [rad].
+- `Number`: Mean heliocentric longitude of Saturn [rad].
+- `Number`: Mean heliocentric longitude of Uranus [rad].
+- `Number`: Mean heliocentric longitude of Neptune [rad].
+- `Number`: General accumulated precession in longitude [rad].
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
 """
 function planetary_args_iau2006(jd_tt::Number)
@@ -124,14 +140,14 @@ the Julian Day so that the callers that already have it, like [`cio_iau2006`](@r
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
 """
 function _planetary_args_iau2006(t_tt::Number)
-    # Mean Heliocentric longitudes of the planets.
+    # Mean heliocentric longitudes of the planets [rad].
     #
-    # TODO: In the example in [1, p. 221], the value related to Uranus is slight
-    # different. The value used here is shown in [1](p. 211).
+    # TODO: In the example in [1, p. 221], the value related to Uranus is slightly
+    # different. The value used here is shown in [1, p. 211].
 
     λ_M☿ = @evalpoly(t_tt, 4.402_608_842, 2608.790_314_157_4)
     λ_M♀ = @evalpoly(t_tt, 3.176_146_697, 1021.328_554_621_1)
@@ -142,10 +158,10 @@ function _planetary_args_iau2006(t_tt::Number)
     λ_M⛢ = @evalpoly(t_tt, 5.481_293_872, 7.478_159_856_7)
     λ_M♆ = @evalpoly(t_tt, 5.311_886_287, 3.813_303_563_8)
 
-    # General precession in longitude.
+    # General precession in longitude [rad].
     p_λ = @evalpoly(t_tt, 0, 0.024_381_75, 0.000_005_386_91)
 
-    # Convert to the interval [0,2π].
+    # Convert to the interval [0, 2π].
     λ_M☿ = mod(λ_M☿, 2π)
     λ_M♀ = mod(λ_M♀, 2π)
     λ_Me = mod(λ_Me, 2π)

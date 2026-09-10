@@ -5,10 +5,10 @@
 ############################################################################################
 
 """
-    Iau2006Series{T}
+    struct Iau2006Series{T}
 
-Pre-processed form of one of the IAU-2006 series tables, holding the terms in the layout
-consumed by [`_iau2006_sum`](@ref).
+Store the pre-processed form of one of the IAU-2006 series tables, holding the terms in the
+layout consumed by [`_iau2006_sum`](@ref).
 
 The IERS tables are transcribed in `constants/*.jl` with one term per row and seventeen
 columns: a running term index, the sine and cosine amplitudes, and the fourteen multipliers
@@ -20,8 +20,8 @@ the planetary arguments.
 
 - `luni_solar::Matrix{T}`: Terms whose nine planetary multipliers are all zero, one term per
     column, with rows `As`, `Ac`, and the five luni-solar multipliers.
-- `mixed::Matrix{T}`: The remaining terms, one term per column, with rows `As`, `Ac`, and all
-    fourteen multipliers.
+- `mixed::Matrix{T}`: The remaining terms, one term per column, with rows `As`, `Ac`, and
+    all fourteen multipliers.
 """
 struct Iau2006Series{T}
     luni_solar::Matrix{T}
@@ -34,18 +34,26 @@ end
 Pre-process the raw IAU-2006 series table `coefs` into an [`Iau2006Series`](@ref).
 
 `coefs` must have 17 rows, i.e. it must be the transposed transcription of an IERS table so
-that each column holds one term (see [`Iau2006Series`](@ref) for the row meaning).
+that each column holds one term (see [`Iau2006Series`](@ref) for the row meaning). The
+function throws otherwise.
 
-This is called once per table when the package is loaded, and it addresses two problems with
-the raw tables:
+# Extended help
+
+This is called once per table when the package is loaded, and it addresses two problems
+with the raw tables:
 
 1. The transcriptions are written as `Float64[...]'`, which yields a **lazy** `Adjoint` over
-   a column-major parent. No data is ever reordered, so reading the 17 coefficients of one
-   term touches 16 different cache lines. Indexing here materializes the result, making each
-   term contiguous.
-2. In most tables the majority of the terms have all nine planetary multipliers equal to zero
-   (e.g. 650 of the 1306 terms of `_IAU_2006_CIP_X0`, and every term of `_IAU_2006_CIP_X2`).
-   Splitting them out lets [`_iau2006_sum`](@ref) skip nine multiply-adds per such term.
+    a column-major parent. No data is ever reordered, so reading the 17 coefficients of one
+    term touches 16 different cache lines. Indexing here materializes the result, making
+    each term contiguous.
+2. In most tables the majority of the terms have all nine planetary multipliers equal to
+    zero (e.g. 650 of the 1306 terms of `_IAU_2006_CIP_X0`, and every term of
+    `_IAU_2006_CIP_X2`). Splitting them out lets [`_iau2006_sum`](@ref) skip nine
+    multiply-adds per such term.
+
+## Throws
+
+- `ArgumentError`: `coefs` does not have 17 rows.
 """
 function _split_iau2006_table(coefs::AbstractMatrix)
     size(coefs, 1) != 17 && throw(
@@ -68,9 +76,22 @@ end
 
 """
     _iau2006_sum(
-        coefs::Tuple, t_tt::Number, M_s::Number, M_m::Number, u_Mm::Number, D_s::Number,
-        Ω_m::Number, λ_M☿::Number, λ_M♀::Number, λ_Me::Number, λ_M♂::Number, λ_M♃::Number,
-        λ_M♄::Number, λ_M⛢::Number, λ_M♆::Number, p_λ::Number
+        coefs::Tuple,
+        t_tt::Number,
+        M_s::Number,
+        M_m::Number,
+        u_Mm::Number,
+        D_s::Number,
+        Ω_m::Number,
+        λ_M☿::Number,
+        λ_M♀::Number,
+        λ_Me::Number,
+        λ_M♂::Number,
+        λ_M♃::Number,
+        λ_M♄::Number,
+        λ_M⛢::Number,
+        λ_M♆::Number,
+        p_λ::Number
     ) -> Number
 
 Compute a polynomial sum of sinusoidal terms used by the IAU-2006 theory.
@@ -78,26 +99,26 @@ Compute a polynomial sum of sinusoidal terms used by the IAU-2006 theory.
 # Arguments
 
 - `coefs::Tuple`: Tuple of [`Iau2006Series`](@ref), one per power of `t_tt`, in increasing
-    order of the power.
-- `t_tt::Number`: Julian centuries since J2000.0 in Terrestrial Time (TT).
-- `M_s::Number`: Mean anomaly of the Sun, in radians.
-- `M_m::Number`: Mean anomaly of the Moon, in radians.
-- `u_Mm::Number`: Mean argument of latitude of the Moon, in radians.
-- `D_s::Number`: Mean elongation of the Moon from the Sun, in radians.
-- `Ω_m::Number`: Mean longitude of the ascending node of the Moon, in radians.
-- `λ_M☿::Number`: Mean heliocentric longitude of Mercury, in radians.
-- `λ_M♀::Number`: Mean heliocentric longitude of Venus, in radians.
-- `λ_Me::Number`: Mean heliocentric longitude of the Earth, in radians.
-- `λ_M♂::Number`: Mean heliocentric longitude of Mars, in radians.
-- `λ_M♃::Number`: Mean heliocentric longitude of Jupiter, in radians.
-- `λ_M♄::Number`: Mean heliocentric longitude of Saturn, in radians.
-- `λ_M⛢::Number`: Mean heliocentric longitude of Uranus, in radians.
-- `λ_M♆::Number`: Mean heliocentric longitude of Neptune, in radians.
-- `p_λ::Number`: General accumulated precession in longitude, in radians.
+    order of the power, with the amplitudes in [10⁻⁶ arcsec] as in the IERS tables.
+- `t_tt::Number`: Julian centuries since J2000.0 [TT].
+- `M_s::Number`: Mean anomaly of the Sun [rad].
+- `M_m::Number`: Mean anomaly of the Moon [rad].
+- `u_Mm::Number`: Mean argument of latitude of the Moon [rad].
+- `D_s::Number`: Mean elongation of the Moon from the Sun [rad].
+- `Ω_m::Number`: Mean longitude of the ascending node of the Moon [rad].
+- `λ_M☿::Number`: Mean heliocentric longitude of Mercury [rad].
+- `λ_M♀::Number`: Mean heliocentric longitude of Venus [rad].
+- `λ_Me::Number`: Mean heliocentric longitude of the Earth [rad].
+- `λ_M♂::Number`: Mean heliocentric longitude of Mars [rad].
+- `λ_M♃::Number`: Mean heliocentric longitude of Jupiter [rad].
+- `λ_M♄::Number`: Mean heliocentric longitude of Saturn [rad].
+- `λ_M⛢::Number`: Mean heliocentric longitude of Uranus [rad].
+- `λ_M♆::Number`: Mean heliocentric longitude of Neptune [rad].
+- `p_λ::Number`: General accumulated precession in longitude [rad].
 
 # Returns
 
-- `Number`: The value of the polynomial sum.
+- `Number`: The value of the polynomial sum [arcsec].
 """
 function _iau2006_sum(
     coefs::Tuple,
@@ -143,7 +164,7 @@ function _iau2006_sum(
     # Result of the sum.
     r = zero(NT)
 
-    # Auxiliary variable to compute the powers of t_tt.
+    # Auxiliary variable to compute the powers of `t_tt`.
     t_tt_power = one(t_tt)
 
     @inbounds for i in eachindex(coefs)
@@ -153,8 +174,8 @@ function _iau2006_sum(
         # Result of this sum.
         rp = zero(NT)
 
-        # Terms that depend only on the luni-solar arguments. These dominate most tables, and
-        # handling them separately avoids nine multiply-adds by zero for each one.
+        # Terms that depend only on the luni-solar arguments. These dominate most tables,
+        # and handling them separately avoids nine multiply-adds by zero for each one.
         for j in axes(ls, 2)
             ap =
                 ls[3, j] * M_m +

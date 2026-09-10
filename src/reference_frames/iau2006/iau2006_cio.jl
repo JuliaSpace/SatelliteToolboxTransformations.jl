@@ -46,13 +46,13 @@ export r_cirs_to_gcrf_iau2006, r_gcrf_to_cirs_iau2006
     r_itrf_to_tirs_iau2006([T, ]jd_tt::Number, x_p::Number, y_p::Number) -> T
 
 Compute the rotation that aligns the International Terrestrial Reference Frame (ITRF) with
-the Terrestrial Intermediate Reference System (TIRS) considering the polar motion
-represented by the angles `x_p` [rad] and `y_p` [rad] that are obtained from IERS EOP Data
-(see [`fetch_iers_eop`](@ref)).
+the Terrestrial Intermediate Reference System (TIRS) at the Julian Day `jd_tt` [Terrestrial
+Time] considering the polar motion represented by the angles `x_p` [rad] and `y_p` [rad]
+that are obtained from IERS EOP Data (see [`fetch_iers_eop`](@ref)).
 
 `x_p` is the polar motion displacement about X-axis, which is the IERS Reference Meridian
-direction (positive south along the 0˚ longitude meridian). `y_p` is the polar motion
-displacement about Y-axis (90˚W or 270˚E meridian).
+direction (positive south along the 0° longitude meridian). `y_p` is the polar motion
+displacement about Y-axis (90°W or 270°E meridian).
 
 The rotation type is described by the optional variable `T`. If it is `DCM`, then a DCM will
 be returned. Otherwise, if it is `Quaternion`, then a Quaternion will be returned. In case
@@ -76,7 +76,7 @@ The TIRS and PEF (IAU-76/FK5) are virtually the same reference frame, but accord
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
 """
 function r_itrf_to_tirs_iau2006(jd_tt::Number, x_p::Number, y_p::Number)
@@ -90,7 +90,7 @@ function r_itrf_to_tirs_iau2006(T::T_ROT, jd_tt::Number, x_p::Number, y_p::Numbe
     # Notice that this rotation has an additional one, called `sl`, from the IAU-76/FK5
     # theory that accounts for the instantaneous prime meridian called TIO locator
     # [1, p. 212].
-    sl = (-0.000047 * _ARCSEC_TO_RAD) * t_tt # [rad]
+    sl = (-0.000047 * _ARCSEC_TO_RAD) * t_tt # ....................................... [rad]
 
     return angle_to_rot(T, y_p, x_p, -sl, :XYZ)
 end
@@ -99,13 +99,13 @@ end
     r_tirs_to_itrf_iau2006([T, ]jd_tt::Number, x_p::Number, y_p::Number) -> T
 
 Compute the rotation that aligns the Terrestrial Intermediate Reference System (TIRS) with
-the International Terrestrial Reference Frame (ITRF) considering the polar motion
-represented by the angles `x_p` [rad] and `y_p` [rad] that are obtained from IERS EOP Data
-(see [`fetch_iers_eop`](@ref)).
+the International Terrestrial Reference Frame (ITRF) at the Julian Day `jd_tt` [Terrestrial
+Time] considering the polar motion represented by the angles `x_p` [rad] and `y_p` [rad]
+that are obtained from IERS EOP Data (see [`fetch_iers_eop`](@ref)).
 
 `x_p` is the polar motion displacement about X-axis, which is the IERS Reference Meridian
-direction (positive south along the 0˚ longitude meridian). `y_p` is the polar motion
-displacement about Y-axis (90˚W or 270˚E meridian).
+direction (positive south along the 0° longitude meridian). `y_p` is the polar motion
+displacement about Y-axis (90°W or 270°E meridian).
 
 The rotation type is described by the optional variable `T`. If it is `DCM`, then a DCM will
 be returned. Otherwise, if it is `Quaternion`, then a Quaternion will be returned. In case
@@ -129,7 +129,7 @@ The TIRS and PEF (IAU-76/FK5) are virtually the same reference frame, but accord
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
 """
 function r_tirs_to_itrf_iau2006(jd_tt::Number, x_p::Number, y_p::Number)
@@ -141,9 +141,9 @@ function r_tirs_to_itrf_iau2006(T::T_ROT, jd_tt::Number, x_p::Number, y_p::Numbe
     t_tt = (jd_tt - JD_J2000) / 36525
 
     # Notice that this rotation has an additional one, called `sl`, from the IAU-76/FK5
-    # theory that accounts for the instantaneous prime meridian called TIO locator [1, p.
-    # 212].
-    sl = (-0.000047 * _ARCSEC_TO_RAD) * t_tt # [rad]
+    # theory that accounts for the instantaneous prime meridian called TIO locator
+    # [1, p. 212].
+    sl = (-0.000047 * _ARCSEC_TO_RAD) * t_tt # ....................................... [rad]
 
     return angle_to_rot(T, sl, -x_p, -y_p, :ZYX)
 end
@@ -175,7 +175,7 @@ Celestial Intermediate Pole (CIP) **[1]**.
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
 """
 r_tirs_to_cirs_iau2006(jd_ut1::Number) = r_tirs_to_cirs_iau2006(DCM, jd_ut1)
@@ -200,8 +200,7 @@ this parameter is omitted, then it falls back to `DCM`.
 
 # Returns
 
-The rotation that aligns the CIRS frame with the TIRS frame. The rotation representation is
-selected by the optional parameter `T`.
+- `T`: The rotation that aligns the CIRS frame with the TIRS frame.
 
 # Remarks
 
@@ -213,7 +212,7 @@ Celestial Intermediate Pole (CIP) **[1]**.
 
 # References
 
-- **[1]**: Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
+- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
     Press, Hawthorn, CA, USA.
 """
 r_cirs_to_tirs_iau2006(jd_ut1::Number) = r_cirs_to_tirs_iau2006(DCM, jd_ut1)
@@ -267,8 +266,9 @@ function r_cirs_to_gcrf_iau2006(::Type{DCM}, jd_tt::Number, δx::Number = 0, δy
     #   a = 1/(1 + cos(d)), d = atan( sqrt( ( x^2 + y^2 )/( 1 - x^2 - y^2 ) ) )
     a = 1 / 2 + 1 / 8 * (x² + y²)
 
-    # NOTE: The `DCM` constructor fills the matrix in column-major order. Hence, the trailing
-    # transposition makes the literal read row-wise, as the matrix is printed in [1].
+    # NOTE: The `DCM` constructor fills the matrix in column-major order. Hence, the
+    # trailing transposition makes the literal read row-wise, as the matrix is printed in
+    # [1].
     #! format: off
     D = DCM(1 - a * x²,    -a * xy, x,
                -a * xy, 1 - a * y², y,

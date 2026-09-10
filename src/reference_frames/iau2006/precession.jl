@@ -20,14 +20,20 @@ export precession_iau2006
 """
     precession_iau2006(jd_tt::Number) -> NTuple{3, Number}
 
-Compute the precession angles [rad] according to equinox-based IAU-2006 theory in the Julia
-day `jd_tt` [Terrestrial Time].
+Compute the precession angles [rad] according to equinox-based IAU-2006 theory at the Julian
+Day `jd_tt` [Terrestrial Time].
 
-This algorithm was obtained from **[1]**(p. 49).
+This algorithm was obtained from **[3]**(p. 49).
+
+# Returns
+
+- `Number`: The IAU-2006 precession angle `Ψ_a` [rad].
+- `Number`: The IAU-2006 precession angle `ω_a` [rad].
+- `Number`: The IAU-2006 precession angle `χ_a` [rad].
 
 # References
 
-- **[1]**: IERS (2010). Transformation between the International Terrestrial Reference
+- **[3]** IERS (2010). Transformation between the International Terrestrial Reference
     System and the Geocentric Celestial Reference System. IERS Technical Note No. 36,
     Chapter 5.
 """
@@ -37,6 +43,8 @@ function precession_iau2006(jd_tt::Number)
 
     # == Precession Angles =================================================================
 
+    # Compute the angles [arcsec], convert them to [rad], and reduce them to the interval
+    # [0, 2π].
     Ψ_a = @evalpoly(
         t_tt, 0, +5038.481_507, -1.079_006_9, -0.001_140_45, +1.328_51e-4, -9.51e-8
     )
