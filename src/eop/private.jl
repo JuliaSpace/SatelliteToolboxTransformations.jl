@@ -8,9 +8,10 @@
     struct EopInterpolation{T, I, V <: AbstractVector{T}} <: DataInterpolations.AbstractInterpolation{T}
 
 Linear interpolation of one EOP field indexed by the Julian Day [UTC], constant outside the
-tabulated span. When `leap_safe` is `true`, the wrapped interpolation holds UT1-TAI, which is
-continuous across the leap seconds, and the UTC offset is restored when the interpolation is
-evaluated.
+tabulated span. When `leap_safe` is `true`, the wrapped interpolation holds UT1-TAI [s],
+which is continuous across the leap seconds, and the UTC offset is restored when the
+interpolation is evaluated. The inner constructor infers the type parameter `T` from the
+element type of `values`.
 
 Only the evaluation is supported. `DataInterpolations.derivative` and
 `DataInterpolations.integral` are not implemented for this type. Unknown properties are
@@ -66,11 +67,11 @@ function Base.propertynames(itp::EopInterpolation, private::Bool = false)
 end
 
 """
-    (itp::EopInterpolation{T})(JD::Number) -> promote_type(T, float(typeof(JD)))
+    (itp::EopInterpolation{T})(JD::Number) -> Number
 
-Evaluate the EOP interpolation `itp` at the Julian Day `JD` [UTC]. The value is constant
-outside the tabulated span and, for leap-safe interpolations, the UTC leap-second offset is
-restored at `JD`.
+Evaluate the EOP interpolation `itp` at the Julian Day `JD` [UTC] and return the value of
+the field [same unit as the field]. The value is constant outside the tabulated span and,
+for leap-safe interpolations, the UTC leap-second offset is restored at `JD`.
 """
 function (itp::EopInterpolation{T})(JD::Number) where {T}
     interpolation = getfield(itp, :interpolation)
@@ -107,17 +108,15 @@ const _IERS_EOP_DELIMITER = ';'
     _read_iers_eop_csv(filename::AbstractString) -> Matrix{Float64}
 
 Read the IERS EOP file `filename` in CSV format and return its data rows as a
-`Matrix{Float64}`, discarding the header.
+`Matrix{Float64}`, discarding the header. Fields that are empty or textual, such as the
+`Type` columns, are returned as `NaN`, marking them as unavailable. The function throws if
+the file does not contain a header and at least one data row.
 
-Fields that are empty, and the textual `Type` columns, are returned as `NaN`, marking them
-as unavailable.
+# Extended help
 
-!!! note
+## Throws
 
-    This replaces `DelimitedFiles.readdlm`, which cannot infer a concrete element type for
-    these files because of their empty trailing fields and therefore returns a `Matrix{Any}`.
-    For the ~20,000-row `finals.all.csv` that meant boxing roughly 740,000 elements, at a cost
-    of about 100 MiB of transient allocation per call.
+- `ArgumentError`: The file has fewer than two lines.
 """
 function _read_iers_eop_csv(filename::AbstractString)
     lines = readlines(filename)
@@ -144,8 +143,8 @@ function _read_iers_eop_csv(filename::AbstractString)
             last_id =
                 delimiter_id === nothing ? lastindex(line) : prevind(line, delimiter_id)
 
-            # An empty field is left as `NaN`, and so is a field that does not hold a number,
-            # which is the case of the `Type` columns.
+            # An empty field is left as `NaN`, and so is a field that does not hold a
+            # number, which is the case of the `Type` columns.
             if last_id ≥ first_id
                 v = tryparse(Float64, SubString(line, first_id, last_id))
                 v !== nothing && (eop[i, col] = v)
@@ -162,12 +161,16 @@ function _read_iers_eop_csv(filename::AbstractString)
 end
 
 """
-    _create_iers_eop_interpolation(knots::AbstractVector{<:Real}, field::AbstractVector{<:Real}; kwargs...) -> EopInterpolation
+    _create_iers_eop_interpolation(
+        knots::AbstractVector{<:Real},
+        field::AbstractVector{<:Real};
+        kwargs...
+    ) -> EopInterpolation
 
-Create the interpolation of the EOP `field` indexed by the Julian Day `knots` [UTC], which
-must be sorted. Missing values, represented by `NaN`, are allowed only at the end of
-`field`, in which case the interpolation is created only up to the last available value. The
-function throws if the data cannot be interpolated.
+Create the interpolation of the EOP `field` [same unit as the field] indexed by the Julian
+Day `knots` [UTC], which must be sorted. Missing values, represented by `NaN`, are allowed
+only at the end of `field`, in which case the interpolation is created only up to the last
+available value. The function throws if the data cannot be interpolated.
 
 # Keywords
 
@@ -179,8 +182,8 @@ function throws if the data cannot be interpolated.
 
 ## Throws
 
-- `ArgumentError`: `field` has no valid value, has a missing value that is not at its end, or
-    the knots up to the last available value contain `NaN`.
+- `ArgumentError`: `field` has no valid value, has a missing value that is not at its end,
+    or the knots up to the last available value contain `NaN`.
 """
 function _create_iers_eop_interpolation(
     knots::AbstractVector{<:Real}, field::AbstractVector{<:Real}; leap_safe::Bool = false
@@ -199,12 +202,14 @@ function _create_iers_eop_interpolation(
     # from a view so that the intermediate slice is not copied.
     field_float = Vector{Float64}(@view field[1:last_id])
 
-    # Only *trailing* gaps are trimmed above. A gap in the middle of the field would silently
-    # poison the interpolation with `NaN`, so reject it with a descriptive message instead.
+    # Only *trailing* gaps are trimmed above. A gap in the middle of the field would
+    # silently poison the interpolation with `NaN`, so reject it with a descriptive message
+    # instead.
     gap_id = findfirst(isnan, field_float)
     gap_id === nothing || throw(
         ArgumentError(
-            "The EOP field has a missing value at index $gap_id, which is not at its end. " *
+            "The EOP field has a missing value at index $gap_id, which is not at its " *
+            "end. " *
             "The IERS file is likely corrupted or truncated.",
         ),
     )
@@ -217,14 +222,14 @@ function _create_iers_eop_interpolation(
     # interpolation. We check it after trimming so that a trailing blank line is tolerated.
     any(isnan, knots_view) && throw(
         ArgumentError(
-            "The MJD column of the EOP data has a missing value inside the tabulated span. " *
+            "The MJD column of the EOP data has a missing value inside the tabulated " *
+            "span. " *
             "The IERS file is likely corrupted.",
         ),
     )
 
-    # Create the interpolation object. UT1-UTC is discontinuous in UTC at a
-    # leap second, so interpolate UT1-TAI instead of interpolating the raw
-    # field across that boundary.
+    # Create the interpolation object. UT1-UTC is discontinuous in UTC at a leap second, so
+    # interpolate UT1-TAI instead of interpolating the raw field across that boundary.
     interp_field = leap_safe ? field_float .- get_Δat.(knots_view) : field_float
     interp = DataInterpolations.LinearInterpolation(
         interp_field,
@@ -260,8 +265,8 @@ function _download_eop(
     download_eop = force_download || !isfile(eop_file) || !isfile(eop_file_timestamp)
 
     if !download_eop
-        # Reuse a cached file younger than 7 days. Any problem reading the timestamp leads to
-        # a new download.
+        # Reuse a cached file younger than 7 days. Any problem reading the timestamp leads
+        # to a new download.
         try
             timestamp = DateTime(readline(eop_file_timestamp))
 
@@ -328,6 +333,7 @@ function _parse_iers_eop(
     # Convert the knots from Modified Julian Day to Julian Day.
     knots = @view(eop[:, 1]) .+ _MJD_EPOCH_JD
 
+    # Create the interpolation of the column `col` of the EOP matrix.
     itp(col; kwargs...) =
         _create_iers_eop_interpolation(knots, @view(eop[:, col]); kwargs...)
 
