@@ -16,7 +16,10 @@ function _rotate_state_vector(sv::OrbitStateVector, D::DCM)
 end
 
 """
-    _earth_rotation_rate(jd_utc::Number, eop::Union{Nothing, EopIau1980, EopIau2000A}) -> Number
+    _earth_rotation_rate(
+        jd_utc::Number,
+        eop::Union{Nothing, EopIau1980, EopIau2000A}
+    ) -> Number
 
 Return the Earth angular speed [rad/s] at the Julian Day `jd_utc` [UTC], corrected by the
 length of day of the EOP data `eop` when it is available.

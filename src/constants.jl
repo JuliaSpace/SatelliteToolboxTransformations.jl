@@ -13,8 +13,8 @@ const _CRAYON_RESET     = Crayon(; reset = true)
 # == Unit Conversion Factors ===============================================================
 
 # NOTE: These factors are `Float64`. They are meant for quantities that are already
-# `Float64`, such as the EOP data and the coefficient tables. Generic code paths must convert
-# them to the working type first to avoid widening `Float32` or dual numbers.
+# `Float64`, such as the EOP data and the coefficient tables. Generic code paths must
+# convert them to the working type first to avoid widening `Float32` or dual numbers.
 
 const _ARCSEC_TO_DEG      = 1 / 3600                    # ............... [deg / arcsec]
 const _ARCSEC_TO_RAD      = π / 648_000                 # ............... [rad / arcsec]

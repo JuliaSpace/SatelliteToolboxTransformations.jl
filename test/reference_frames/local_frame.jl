@@ -68,7 +68,7 @@ end
     @test @allocated(ned_to_ecef(r, 0.5, 0.44, 0.0)) == 0
 end
 
-# -- Functions: r_eci_to_hill, r_hill_to_eci, r_eci_to_lvlh, and r_lvlh_to_eci --------------
+# -- Functions: r_eci_to_hill, r_hill_to_eci, r_eci_to_lvlh, r_lvlh_to_eci -----------------
 
 # The tests use two states:
 #

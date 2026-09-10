@@ -472,7 +472,10 @@ end
 ############################################################################################
 
 """
-    _hill_triad(r_eci::AbstractVector{T1}, v_eci::AbstractVector{T2}) where {T1 <: Number, T2 <: Number} -> NTuple{3, SVector{3, T}}
+    _hill_triad(
+        r_eci::AbstractVector{T1},
+        v_eci::AbstractVector{T2}
+    ) where {T1 <: Number, T2 <: Number} -> NTuple{3, SVector{3, T}}
 
 Compute the orthonormal triad of the Hill frame given the satellite position `r_eci` [m] and
 velocity `v_eci` [m/s] represented in an Earth-Centered Inertial (ECI) reference frame.

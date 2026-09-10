@@ -59,7 +59,12 @@ end
 ############################################################################################
 
 """
-    _show_eop(io::IO, name::String, labels::NTuple{6, String}, itps::NTuple{6, EopInterpolation}) -> Nothing
+    _show_eop(
+        io::IO,
+        name::String,
+        labels::NTuple{6, String},
+        itps::NTuple{6, EopInterpolation}
+    ) -> Nothing
 
 Print to `io` a table titled `name` with one row per EOP interpolation in `itps`, labeled
 by `labels`, showing the timespan of each field. The table uses colors if `io` supports
