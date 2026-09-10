@@ -46,11 +46,6 @@ function compute_δΔϵ_δΔψ(eop_iau2000a::EopIau2000A, JD_UTC::Number)
 end
 
 function compute_δΔϵ_δΔψ(eop_iau2000a::EopIau2000A, JD_UTC::Number, JD_TT::Number)
-    # Constants.
-    d2r = π / 180
-    a2d = 1 / 3600
-    a2r = a2d * d2r
-
     # Obtain the parameters `dX` and `dY` [milliarcseconds].
     # Pole offsets are EOP data and are tabulated against UTC.
     δx = eop_iau2000a.δx(JD_UTC)
@@ -60,12 +55,12 @@ function compute_δΔϵ_δΔψ(eop_iau2000a::EopIau2000A, JD_UTC::Number, JD_TT:
     T_TT = (JD_TT - JD_J2000) / 36525
 
     # Luni-solar precession [rad].
-    Ψ_a = @evalpoly(T_TT, 0, +5038.47875, -1.07259, -0.001147) * a2r
+    Ψ_a = @evalpoly(T_TT, 0, +5038.47875, -1.07259, -0.001147) * _ARCSEC_TO_RAD
 
     # Planetary precession [rad].
-    χ_a = @evalpoly(T_TT, 0, +10.5526, -2.38064, -0.001125) * a2r
+    χ_a = @evalpoly(T_TT, 0, +10.5526, -2.38064, -0.001125) * _ARCSEC_TO_RAD
 
-    sϵ₀, cϵ₀ = sincos(84381.406 * a2r)
+    sϵ₀, cϵ₀ = sincos(_OBLIQUITY_J2000_IAU2006)
 
     # Reference [1](eq. 5.25) relates the offsets with respect to the GCRS to the ones
     # referred to the IAU-1980 model by:
