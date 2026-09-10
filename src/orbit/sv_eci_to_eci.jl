@@ -149,11 +149,7 @@ function sv_eci_to_eci(
     jd_utc::Number,
     eop::EopIau1980,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop))
 end
 
 function sv_eci_to_eci(
@@ -169,11 +165,7 @@ function sv_eci_to_eci(
     jd_utc::Number,
     eop::EopIau1980,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop))
 end
 
 function sv_eci_to_eci(
@@ -191,11 +183,7 @@ function sv_eci_to_eci(
     jd_utc::Number,
     eop::EopIau1980,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop))
 end
 
 function sv_eci_to_eci(
@@ -214,11 +202,7 @@ function sv_eci_to_eci(
     jd_utc::Number,
     eop::EopIau1980,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop))
 end
 
 function sv_eci_to_eci(
@@ -239,11 +223,7 @@ function sv_eci_to_eci(
     jd_utc::Number,
     eop::EopIau1980,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop))
 end
 
 function sv_eci_to_eci(
@@ -261,11 +241,7 @@ function sv_eci_to_eci(
     T_ECIf::Union{Val{:MOD}, Val{:TOD}, Val{:TEME}},
     jd_utc::Number,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc))
 end
 
 function sv_eci_to_eci(
@@ -283,11 +259,7 @@ function sv_eci_to_eci(
     jd_utc::Number,
     eop::EopIau1980,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop))
 end
 
 function sv_eci_to_eci(
@@ -305,11 +277,7 @@ function sv_eci_to_eci(
     T_ECIf::Val{:J2000},
     jd_utc::Number,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc))
 end
 
 function sv_eci_to_eci(
@@ -330,11 +298,9 @@ function sv_eci_to_eci(
     jd_utcf::Number,
     eop::EopIau1980,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, jd_utco, T_ECIf, jd_utcf, eop)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(
+        sv, r_eci_to_eci(DCM, T_ECIo, jd_utco, T_ECIf, jd_utcf, eop)
+    )
 end
 
 function sv_eci_to_eci(
@@ -350,11 +316,7 @@ function sv_eci_to_eci(
     T_ECIf::T_ECIs_of_date,
     jd_utcf::Number,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, jd_utco, T_ECIf, jd_utcf)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, jd_utco, T_ECIf, jd_utcf))
 end
 
 function sv_eci_to_eci(sv::OrbitStateVector, T_ECIo::T_ECIs_of_date, T_ECIf::T_ECIs_of_date)
@@ -374,11 +336,7 @@ function sv_eci_to_eci(
     jd_utc::Number,
     eop::EopIau2000A,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop))
 end
 
 function sv_eci_to_eci(
@@ -390,11 +348,7 @@ end
 function sv_eci_to_eci(
     sv::OrbitStateVector, T_ECIo::Val{:GCRF}, T_ECIf::Val{:CIRS}, jd_utc::Number
 )
-    D = r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc))
 end
 
 function sv_eci_to_eci(sv::OrbitStateVector, T_ECIo::Val{:GCRF}, T_ECIf::Val{:CIRS})
@@ -408,11 +362,7 @@ function sv_eci_to_eci(
     jd_utc::Number,
     eop::EopIau2000A,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop))
 end
 
 function sv_eci_to_eci(
@@ -424,11 +374,7 @@ end
 function sv_eci_to_eci(
     sv::OrbitStateVector, T_ECIo::Val{:CIRS}, T_ECIf::Val{:GCRF}, jd_utc::Number
 )
-    D = r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc))
 end
 
 function sv_eci_to_eci(sv::OrbitStateVector, T_ECIo::Val{:CIRS}, T_ECIf::Val{:GCRF})
@@ -445,11 +391,9 @@ function sv_eci_to_eci(
     jd_utcf::Number,
     eop::EopIau2000A,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, jd_utco, T_ECIf, jd_utcf, eop)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(
+        sv, r_eci_to_eci(DCM, T_ECIo, jd_utco, T_ECIf, jd_utcf, eop)
+    )
 end
 
 function sv_eci_to_eci(
@@ -465,11 +409,7 @@ function sv_eci_to_eci(
     T_ECIf::Val{:CIRS},
     jd_utcf::Number,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, jd_utco, T_ECIf, jd_utcf)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, jd_utco, T_ECIf, jd_utcf))
 end
 
 function sv_eci_to_eci(sv::OrbitStateVector, T_ECIo::Val{:CIRS}, T_ECIf::Val{:CIRS})
@@ -489,11 +429,7 @@ function sv_eci_to_eci(
     jd_utc::Number,
     eop::EopIau2000A,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop))
 end
 
 function sv_eci_to_eci(
@@ -505,11 +441,7 @@ end
 function sv_eci_to_eci(
     sv::OrbitStateVector, T_ECIo::Val{:GCRF}, T_ECIf::Val{:MJ2000}, jd_utc::Number
 )
-    D = r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc))
 end
 
 function sv_eci_to_eci(sv::OrbitStateVector, T_ECIo::Val{:GCRF}, T_ECIf::Val{:MJ2000})
@@ -523,11 +455,7 @@ function sv_eci_to_eci(
     jd_utc::Number,
     eop::EopIau2000A,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop))
 end
 
 function sv_eci_to_eci(
@@ -539,11 +467,7 @@ end
 function sv_eci_to_eci(
     sv::OrbitStateVector, T_ECIo::Val{:MJ2000}, T_ECIf::Val{:GCRF}, jd_utc::Number
 )
-    D = r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc))
 end
 
 function sv_eci_to_eci(sv::OrbitStateVector, T_ECIo::Val{:MJ2000}, T_ECIf::Val{:GCRF})
@@ -559,11 +483,7 @@ function sv_eci_to_eci(
     jd_utc::Number,
     eop::EopIau2000A,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop))
 end
 
 function sv_eci_to_eci(
@@ -581,11 +501,7 @@ function sv_eci_to_eci(
     T_ECIf::Union{Val{:GCRF}, Val{:MJ2000}},
     jd_utc::Number,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc))
 end
 
 function sv_eci_to_eci(
@@ -603,11 +519,7 @@ function sv_eci_to_eci(
     jd_utc::Number,
     eop::EopIau2000A,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc, eop))
 end
 
 function sv_eci_to_eci(
@@ -625,11 +537,7 @@ function sv_eci_to_eci(
     T_ECIf::Union{Val{:MOD06}, Val{:ERS}},
     jd_utc::Number,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, T_ECIf, jd_utc))
 end
 
 function sv_eci_to_eci(
@@ -650,11 +558,9 @@ function sv_eci_to_eci(
     jd_utcf::Number,
     eop::EopIau2000A,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, jd_utco, T_ECIf, jd_utcf, eop)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(
+        sv, r_eci_to_eci(DCM, T_ECIo, jd_utco, T_ECIf, jd_utcf, eop)
+    )
 end
 
 function sv_eci_to_eci(
@@ -673,11 +579,7 @@ function sv_eci_to_eci(
     T_ECIf::T_ECIs_IAU_2006_Equinox_of_date,
     jd_utcf::Number,
 )
-    D = r_eci_to_eci(DCM, T_ECIo, jd_utco, T_ECIf, jd_utcf)
-
-    # Since both frames do not have a significant angular velocity between them, we just
-    # need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_eci_to_eci(DCM, T_ECIo, jd_utco, T_ECIf, jd_utcf))
 end
 
 function sv_eci_to_eci(

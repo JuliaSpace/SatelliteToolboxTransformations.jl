@@ -207,15 +207,10 @@ function sv_ecef_to_eci(
 )
     D = r_ecef_to_eci(DCM, T_ECEF, T_ECI, jd_utc, eop)
 
-    ω  = EARTH_ANGULAR_SPEED * (1 - eop.lod(jd_utc) / 86400000)
-    vω = SVector{3}(0, 0, ω)
-
-    r_eci  = D * sv.r
-    vω_x_r = vω × sv.r
-    v_eci  = D * (sv.v + vω_x_r)
-    a_eci  = D * (sv.a + vω × vω_x_r + 2vω × sv.v)
-
-    return OrbitStateVector(sv.t, r_eci, v_eci, a_eci)
+    # Since the ECI and ECEF frames have a relative angular velocity, the velocity and the
+    # acceleration must be corrected. The Earth angular speed is corrected by the length of
+    # day (LOD) parameter of the EOP data, if available.
+    return _sv_rotating_to_inertial(sv, D, _earth_rotation_rate(jd_utc, eop))
 end
 
 function sv_ecef_to_eci(
@@ -238,15 +233,10 @@ function sv_ecef_to_eci(
         D = r_ecef_to_eci(DCM, T_ECEF, T_ECI, jd_utc, eop)
     end
 
-    ω  = EARTH_ANGULAR_SPEED * (1 - (eop !== nothing ? eop.lod(jd_utc) / 86400000 : 0))
-    vω = SVector{3}(0, 0, ω)
-
-    r_eci  = D * sv.r
-    vω_x_r = vω × sv.r
-    v_eci  = D * (sv.v + vω_x_r)
-    a_eci  = D * (sv.a + vω × vω_x_r + 2vω × sv.v)
-
-    return OrbitStateVector(sv.t, r_eci, v_eci, a_eci)
+    # Since the ECI and ECEF frames have a relative angular velocity, the velocity and the
+    # acceleration must be corrected. The Earth angular speed is corrected by the length of
+    # day (LOD) parameter of the EOP data, if available.
+    return _sv_rotating_to_inertial(sv, D, _earth_rotation_rate(jd_utc, eop))
 end
 
 function sv_ecef_to_eci(
@@ -274,24 +264,10 @@ function sv_ecef_to_eci(
         D = r_ecef_to_eci(DCM, T_ECEF, T_ECI, jd_utc, eop)
     end
 
-    # Since the ECI and ECEF frames have a relative velocity between them, then we must
-    # account from it when converting the velocity and acceleration. The angular velocity
-    # between those frames is computed using `we` and corrected by the length of day (LOD)
-    # parameter of the EOP data, if available.
-    ω  = EARTH_ANGULAR_SPEED * (1 - (eop !== nothing ? eop.lod(jd_utc) / 86400000 : 0))
-    vω = SVector{3}(0, 0, ω)
-
-    # Compute the position in the ECI frame.
-    r_eci = D * sv.r
-
-    # Compute the velocity in the ECI frame.
-    vω_x_r = vω × sv.r
-    v_eci = D * (sv.v + vω_x_r)
-
-    # Compute the acceleration in the ECI frame.
-    a_eci = D * (sv.a + vω × vω_x_r + 2vω × sv.v)
-
-    return OrbitStateVector(sv.t, r_eci, v_eci, a_eci)
+    # Since the ECI and ECEF frames have a relative angular velocity, the velocity and the
+    # acceleration must be corrected. The Earth angular speed is corrected by the length of
+    # day (LOD) parameter of the EOP data, if available.
+    return _sv_rotating_to_inertial(sv, D, _earth_rotation_rate(jd_utc, eop))
 end
 
 function sv_ecef_to_eci(

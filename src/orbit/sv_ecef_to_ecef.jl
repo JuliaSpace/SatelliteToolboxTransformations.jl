@@ -91,11 +91,7 @@ function sv_ecef_to_ecef(
     jd_utc::Number,
     eop::EopIau1980,
 )
-    D = r_ecef_to_ecef(DCM, T_ECEFo, T_ECEFf, jd_utc, eop)
-
-    # Since both frames do not have a significant angular velocity between
-    # them, then we just need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_ecef_to_ecef(DCM, T_ECEFo, T_ECEFf, jd_utc, eop))
 end
 
 function sv_ecef_to_ecef(
@@ -111,11 +107,7 @@ function sv_ecef_to_ecef(
     jd_utc::Number,
     eop::EopIau2000A,
 )
-    D = r_ecef_to_ecef(DCM, T_ECEFo, T_ECEFf, jd_utc, eop)
-
-    # Since both frames do not have a significant angular velocity between
-    # them, then we just need to convert the representations.
-    return OrbitStateVector(sv.t, D * sv.r, D * sv.v, D * sv.a)
+    return _rotate_state_vector(sv, r_ecef_to_ecef(DCM, T_ECEFo, T_ECEFf, jd_utc, eop))
 end
 
 function sv_ecef_to_ecef(
