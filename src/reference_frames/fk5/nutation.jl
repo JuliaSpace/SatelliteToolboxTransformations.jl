@@ -275,24 +275,27 @@ function nutation_fk5(
     nut_coefs_1980::AbstractMatrix = _IAU_1980_NUTATION_COEFFICIENTS;
     verbose::Val{verbosity} = Val(false),
 ) where {verbosity}
-    # Check inputs.
-    if n_max > 106
+    # Check inputs. The effective number of terms is bound to a new variable so that its type
+    # does not depend on the type of `n_max`.
+    n_terms = if n_max > 106
         verbosity && @warn(
             "The maximum number of coefficients to compute nutation using IAU-76/FK5 theory is 106."
         )
-        n_max = 106
+        106
     elseif n_max <= 0
         verbosity &&
             @warn("n_max must greater than 0. The default value will be used (106).")
-        n_max = 106
+        106
+    else
+        Int(n_max)
     end
 
     # Validate the user-provided table before the bounded loop below. In particular, a
     # custom table may contain fewer than the 106 standard terms or fewer than nine columns.
     n_rows, n_cols = size(nut_coefs_1980)
-    n_max > n_rows && throw(
+    n_terms > n_rows && throw(
         ArgumentError(
-            "nut_coefs_1980 must have at least n_max rows (got $n_rows, n_max = $n_max).",
+            "nut_coefs_1980 must have at least n_max rows (got $n_rows, n_max = $n_terms).",
         ),
     )
     n_cols < 9 &&
@@ -302,17 +305,13 @@ function nutation_fk5(
     # Compute the Julian Centuries from `jd_tt`.
     t_tt = (jd_tt - JD_J2000) / 36525
 
-    # == Auxiliary variables ===============================================================
-
-    d2r = π / 180
-
     # == Mean Obliquity of the Ecliptic ====================================================
 
     # Compute the mean obliquity of the ecliptic [°].
     mϵ_1980 = @evalpoly(t_tt, 23.439291, -0.0130042, -1.64e-7, +5.04e-7)
 
-    # Reduce to the interval [0, 360]°.
-    mϵ_1980 = mod(mϵ_1980, 360) * d2r
+    # Reduce to the interval [0, 360]° and convert to [rad].
+    mϵ_1980 = deg2rad(mod(mϵ_1980, 360))
 
     # == Delaunay Parameters of the Sun and Moon ===========================================
 
@@ -323,19 +322,19 @@ function nutation_fk5(
     r = 360
 
     M_m = @evalpoly(t_tt, +134.96298139, +(1325r + 198.8673981), +0.0086972, +1.78e-5)
-    M_m = mod(M_m, 360) * d2r
+    M_m = deg2rad(mod(M_m, 360))
 
     M_s = @evalpoly(t_tt, +357.52772333, +(99r + 359.0503400), -0.0001603, -3.3e-6)
-    M_s = mod(M_s, 360) * d2r
+    M_s = deg2rad(mod(M_s, 360))
 
     u_Mm = @evalpoly(t_tt, +93.27191028, +(1342r + 82.0175381), -0.0036825, +3.1e-6)
-    u_Mm = mod(u_Mm, 360) * d2r
+    u_Mm = deg2rad(mod(u_Mm, 360))
 
     D_s = @evalpoly(t_tt, +297.85036306, +(1236r + 307.1114800), -0.0019142, +5.3e-6)
-    D_s = mod(D_s, 360) * d2r
+    D_s = deg2rad(mod(D_s, 360))
 
     Ω_m = @evalpoly(t_tt, +125.04452222, -(5r + 134.1362608), +0.0020708, +2.2e-6)
-    Ω_m = mod(Ω_m, 360) * d2r
+    Ω_m = deg2rad(mod(Ω_m, 360))
 
     # == Nutation in Longitude and Obliquity ===============================================
 
@@ -356,18 +355,27 @@ function nutation_fk5(
     # needs the one-term-per-column layout.
     ΔΨ_1980, Δϵ_1980 = if nut_coefs_1980 === _IAU_1980_NUTATION_COEFFICIENTS
         _nutation_fk5_series(
-            NT, _IAU_1980_NUTATION_COEFFICIENTS_T, n_max, t_tt, M_m, M_s, u_Mm, D_s, Ω_m
+            NT,
+            _IAU_1980_NUTATION_COEFFICIENTS_T,
+            n_terms,
+            t_tt,
+            M_m,
+            M_s,
+            u_Mm,
+            D_s,
+            Ω_m,
         )
     else
         _nutation_fk5_series(
-            NT, transpose(nut_coefs_1980), n_max, t_tt, M_m, M_s, u_Mm, D_s, Ω_m
+            NT, transpose(nut_coefs_1980), n_terms, t_tt, M_m, M_s, u_Mm, D_s, Ω_m
         )
     end
 
-    # The nutation coefficients in `nut_coefs_1980` lead to angles with unit
-    # 0.0001". Hence, we must convert to [rad].
-    ΔΨ_1980 *= 0.0001 / 3600 * d2r
-    Δϵ_1980 *= 0.0001 / 3600 * d2r
+    # The nutation coefficients in `nut_coefs_1980` lead to angles with unit 0.0001". Hence,
+    # we must convert to [rad]. The factor is converted to the accumulator type so that it
+    # does not widen the result.
+    ΔΨ_1980 *= oftype(ΔΨ_1980, 1e-4 * _ARCSEC_TO_RAD)
+    Δϵ_1980 *= oftype(Δϵ_1980, 1e-4 * _ARCSEC_TO_RAD)
 
     # Return the values.
     return mϵ_1980, Δϵ_1980, ΔΨ_1980

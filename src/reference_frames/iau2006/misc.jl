@@ -189,8 +189,9 @@ function _iau2006_sum(
 
         # Accumulate in the output variable. The amplitudes in the IERS tables are given in
         # units of 1e-6 arcsec, so the scaling is applied once per sub-sum here instead of
-        # once per term inside the loops above.
-        r += rp * t_tt_power / 1e6
+        # once per term inside the loops above. The factor is converted to the accumulator
+        # type so that it does not widen the result.
+        r += rp * t_tt_power / oftype(rp, 1e6)
 
         # Update the t_tt power for the next pass.
         t_tt_power *= t_tt
