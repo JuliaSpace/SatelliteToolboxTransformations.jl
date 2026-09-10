@@ -1,6 +1,6 @@
 ## Description #############################################################################
 #
-# Functions related time transformations.
+# Functions related to time transformations.
 #
 ## References ##############################################################################
 #
@@ -92,16 +92,13 @@ const _ΔAT_VALUE = [
 """
     get_Δat(JD::Number) -> Number
 
-Get the accumulated leap seconds (ΔAT) [s] between UTC and International Atomic Time (TAI)
-in the given `JD`. This function searches for ΔAT in the table `_ΔAT_JD` / `_ΔAT_VALUE`.
+Get the accumulated leap seconds ΔAT [s] between UTC and the International Atomic Time (TAI)
+at the Julian Day `JD` [UTC].
 
-# Remarks
-
-If `JD` is before `_ΔAT_JD[begin]` (1972-07-01), then 10 will be returned. **Notice that this
-can lead to errors.**
-
-If `JD` is after `_ΔAT_JD[end]`, then `_ΔAT_VALUE[end]` will be returned, because it is not
-possible yet to predict when leap seconds will be added.
+The table of leap seconds is valid from 1972-01-01 [UTC], when UTC started counting integer
+leap seconds. Earlier epochs return 10 s, which is only an approximation. Epochs after the
+last tabulated leap second (2017-01-01) return the last value, since future leap seconds
+cannot be predicted.
 """
 function get_Δat(JD::Number)
     T = float(typeof(JD))
@@ -123,25 +120,25 @@ end
 """
     jd_utc_to_ut1(JD_UTC::Number, ΔUT1::Number) -> Number
 
-Convert the Julian Day in UTC `JD_UTC` to the Julian Day in UT1 using the accumulated
-difference `ΔUT1`, which is provided by IERS EOP Data.
+Convert the Julian Day `JD_UTC` [UTC] to the Julian Day [UT1] using the difference `ΔUT1`
+[s] between UT1 and UTC, which is provided by the IERS EOP data.
 """
 jd_utc_to_ut1(JD_UTC::Number, ΔUT1::Number) = JD_UTC + ΔUT1 / 86400
 
 """
     jd_ut1_to_utc(JD_UT1::Number, ΔUT1::Number) -> Number
 
-Convert the Julian Day in UT1 `JD_UT1` to the Julian Day in UTC using the accumulated
-difference `ΔUT1`, which is provided by IERS EOP Data.
+Convert the Julian Day `JD_UT1` [UT1] to the Julian Day [UTC] using the difference `ΔUT1`
+[s] between UT1 and UTC, which is provided by the IERS EOP data.
 """
 jd_ut1_to_utc(JD_UT1::Number, ΔUT1::Number) = JD_UT1 - ΔUT1 / 86400
 
 """
     jd_utc_to_ut1(JD_UTC::Number, eop::Union{EopIau1980, EopIau2000A}) -> Number
 
-Convert the Julian Day in UTC `JD_UTC` to the Julian Day in UT1 using the accumulated
-difference given by the EOP Data `eop` (see [`fetch_iers_eop`](@ref)). Notice that the
-accumulated difference will be interpolated.
+Convert the Julian Day `JD_UTC` [UTC] to the Julian Day [UT1] using the difference between
+UT1 and UTC [s] interpolated at `JD_UTC` from the EOP data `eop` (see
+[`fetch_iers_eop`](@ref)).
 """
 function jd_utc_to_ut1(JD_UTC::Number, eop::Union{EopIau1980, EopIau2000A})
     return jd_utc_to_ut1(JD_UTC, eop.Δut1_utc(JD_UTC))
@@ -150,13 +147,13 @@ end
 """
     jd_ut1_to_utc(JD_UT1::Number, eop::Union{EopIau1980, EopIau2000A}) -> Number
 
-Convert the Julian Day in UT1 `JD_UT1` to the Julian Day in UTC using the accumulated
-difference given by the EOP Data `eop` (see [`fetch_iers_eop`](@ref)). Notice that the
-accumulated difference will be interpolated and the inverse is solved iteratively; the
-result is therefore valid even though the EOP interpolation is tabulated against UTC.
+Convert the Julian Day `JD_UT1` [UT1] to the Julian Day [UTC] using the difference between
+UT1 and UTC [s] interpolated from the EOP data `eop` (see [`fetch_iers_eop`](@ref)). Since
+the difference is tabulated against UTC, the inverse is solved iteratively, so the result is
+consistent with [`jd_utc_to_ut1`](@ref).
 """
 function jd_ut1_to_utc(JD_UT1::Number, eop::Union{EopIau1980, EopIau2000A})
-    # ΔUT1 is tabulated as a function of UTC, so evaluating it at JD_UT1 is not a valid
+    # `ΔUT1` is tabulated as a function of UTC, so evaluating it at `JD_UT1` is not a valid
     # inverse. Fixed-point iteration is sufficient because the correction changes by only
     # milliseconds over an EOP sample interval, making the map a strong contraction: the
     # first pass already lands within ~1e-8 s of the fixed point, and the second one reaches
@@ -171,11 +168,10 @@ end
 """
     jd_utc_to_tt(JD_UTC::Number[, ΔAT::Number]) -> Number
 
-Convert the Julian Day in UTC `JD_UTC` to the Julian Day in TT (Terrestrial Time) using the
-accumulated difference `ΔAT` between UTC and the International Atomic Time (TAI). If no
-value is provided, then the leap seconds will be obtained from the table `_ΔAT_JD` /
-`_ΔAT_VALUE`. **Notice that, in this case, if a date previous to 1972-07-01 is provided,
-then a fixed value of 10 will be used, leading to wrong computations.**
+Convert the Julian Day `JD_UTC` [UTC] to the Julian Day [TT] (Terrestrial Time) using the
+accumulated leap seconds `ΔAT` [s] between UTC and the International Atomic Time (TAI). If
+`ΔAT` is not provided, it is obtained from [`get_Δat`](@ref), which is only an approximation
+for epochs before 1972-01-01 [UTC].
 """
 jd_utc_to_tt(JD_UTC::Number, ΔAT::Number) = JD_UTC + (ΔAT + 32.184) / 86400
 
@@ -185,22 +181,20 @@ function jd_utc_to_tt(JD_UTC::Number)
 end
 
 """
-    jd_tt_to_utc(JD_TT::Number, ΔAT::Number) -> Number
+    jd_tt_to_utc(JD_TT::Number[, ΔAT::Number]) -> Number
 
-Convert the Julian Day in TT `JD_TT` (Terrestrial Time) to the Julian Day in UTC
-(Coordinated Universal Time) using the accumulated difference `ΔAT` between UTC and the
-International Atomic Time (TAI). If no value is provided, then the leap seconds will be
-obtained from the table `_ΔAT_JD` / `_ΔAT_VALUE`. **Notice that, in this case, if a date
-previous to 1972-07-01 is provided, then a fixed value of 10 will be used, leading to wrong
-computations.**
+Convert the Julian Day `JD_TT` [TT] (Terrestrial Time) to the Julian Day [UTC] using the
+accumulated leap seconds `ΔAT` [s] between UTC and the International Atomic Time (TAI). If
+`ΔAT` is not provided, it is obtained from [`get_Δat`](@ref) at the UTC epoch, which is only
+an approximation for epochs before 1972-01-01 [UTC].
 """
 jd_tt_to_utc(JD_TT::Number, ΔAT::Number) = JD_TT - (ΔAT + 32.184) / 86400
 
 function jd_tt_to_utc(JD_TT::Number)
-    # ΔAT is a function of UTC, not TT. `get_Δat` is a step function, so the first estimate
-    # can only be wrong when it falls on the opposite side of a leap boundary from the true
-    # UTC instant. A single re-evaluation using that estimate is therefore enough to select
-    # the offset on the correct side of the boundary.
+    # `ΔAT` is a function of UTC, not TT. `get_Δat` is a step function, so the first
+    # estimate can only be wrong when it falls on the opposite side of a leap boundary from
+    # the true UTC instant. A single re-evaluation using that estimate is therefore enough
+    # to select the offset on the correct side of the boundary.
     JD_UTC = jd_tt_to_utc(JD_TT, get_Δat(JD_TT))
     return jd_tt_to_utc(JD_TT, get_Δat(JD_UTC))
 end
