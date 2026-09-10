@@ -77,6 +77,8 @@ Version 1.3.0
   private implementations instead of being duplicated across the package.
 - ![Info][badge-info] The package now supports DataInterpolations.jl v10.
   (PR [#27][gh-pr-27])
+- ![Info][badge-info] The `show` methods of the EOP data are colored with StyledStrings.jl
+  instead of Crayons.jl, which is no longer a dependency.
 
 Version 1.2.0
 -------------
