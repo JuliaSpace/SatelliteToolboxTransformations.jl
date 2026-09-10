@@ -12,8 +12,6 @@ using StaticArrays
 
 @reexport using SatelliteToolboxBase
 
-import Base: show
-
 # Re-export symbols used in this package.
 export DCM, Quaternion
 
