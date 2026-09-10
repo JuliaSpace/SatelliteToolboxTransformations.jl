@@ -1,37 +1,59 @@
 ## Description #############################################################################
 #
-#  Coordinate transformations related with local reference frames.
+# Coordinate transformations related with local reference frames: the NED frame attached to
+# a geodetic position, and the satellite-centered Hill (RSW) and LVLH frames.
 #
 ## References ##############################################################################
 #
 #   [1] https://gssc.esa.int/navipedia/index.php/Transformations_between_ECEF_and_ENU_coordinates
 #
+#   [2] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. 4th ed.
+#       Microcosm Press, Hawthorn, CA, USA.
+#
 ############################################################################################
 
-export ecef_to_ned, ned_to_ecef, r_eci_to_hill, r_hill_to_eci, r_eci_to_lvlh, r_lvlh_to_eci
+export ecef_to_ned, ned_to_ecef
+export r_eci_to_hill, r_hill_to_eci, r_eci_to_lvlh, r_lvlh_to_eci
 
 """
-    ecef_to_ned(r_ecef::AbstractVector{T1}, lat::T2, lon::T3, h::T4; translate::Bool = false) -> SVector{3, T}
+    ecef_to_ned(r_ecef::AbstractVector{T1}, lat::T2, lon::T3, h::T4; kwargs...) -> SVector{3, T}
 
-Convert a vector `r_ecef` represented in the Earth-Centered, Earth-Fixed (ECEF) frame to the
-local reference frame NED (North, East, Down) at the geodetic position `lat` [rad], `lon`
-[rad], and `h` [m].
+Convert the vector `r_ecef` [m] represented in the Earth-Centered, Earth-Fixed (ECEF)
+reference frame to the local North-East-Down (NED) reference frame defined at the geodetic
+latitude `lat` [rad], longitude `lon` [rad], and altitude `h` [m].
 
-If `translate` is `false`, this function computes only the rotation between ECEF and NED.
-Otherwise, it will also translate the vector considering the distance between the Earth's
-center and NED origin.
+The NED frame is centered at the geodetic position and its axes are defined as follows:
+
+- X-axis: Toward the geodetic North;
+- Y-axis: Toward the East; and
+- Z-axis: Downward, along the inward ellipsoid normal.
 
 The element type `T` of the returned vector is obtained by promoting `T1`, `T2`, `T3`, and
 `T4` to a float.
 
-# Remarks
+See also: [`ned_to_ecef`](@ref)
 
-This algorithm was based on the information in **[1]**.
+# Keywords
+
+- `translate::Bool`: If `true`, the vector is also translated by the ECEF position of the
+    NED origin, so that the input is treated as a position. If `false`, only the rotation is
+    applied, so that the input is treated as a free vector.
+    (**Default**: `false`)
+
+# Returns
+
+- `SVector{3, T}`: Vector `r_ecef` represented in the NED reference frame.
 
 # References
 
-- **[1]**: [Transformations between ECEF and ENU
+- **[1]** [Transformations between ECEF and ENU
     coordinates](https://gssc.esa.int/navipedia/index.php/Transformations_between_ECEF_and_ENU_coordinates)
+
+# Extended help
+
+The rotation is the direct form of `angle_to_dcm(lon, -(lat + π / 2), 0, :ZYX)`, avoiding
+the general Euler-angle construction. The translation uses the WGS-84 ellipsoid through
+[`geodetic_to_ecef`](@ref).
 """
 function ecef_to_ned(
     r_ecef::AbstractVector{T1}, lat::T2, lon::T3, h::T4; translate::Bool = false
@@ -43,9 +65,9 @@ function ecef_to_ned(
     # Convert the input vector to the right type.
     r_ecef_T = @SVector T[r_ecef[0 + begin], r_ecef[1 + begin], r_ecef[2 + begin]]
 
-    # Create the matrix that rotates the ECEF into NED. This is the direct form
-    # of angle_to_dcm(lon, -(lat + π / 2), 0, :ZYX), avoiding the general
-    # Euler-angle construction.
+    # Create the matrix that rotates the ECEF into NED. This is the direct form of
+    # `angle_to_dcm(lon, -(lat + π / 2), 0, :ZYX)`, avoiding the general Euler-angle
+    # construction.
     sin_lat, cos_lat = sincos(T(lat))
     sin_lon, cos_lon = sincos(T(lon))
     D_ned_ecef = @SMatrix [
@@ -58,8 +80,8 @@ function ecef_to_ned(
     if !translate
         Δr_ecef = r_ecef_T
     else
-        # We need now to translate the vector. Thus, we need to obtain the ECEF
-        # position of the NED origin.
+        # We need now to translate the vector. Thus, we need to obtain the ECEF position of
+        # the NED origin.
         #
         # TODO: Add support to different ellipsoids here.
         r_ned_ecef = T.(geodetic_to_ecef(lat, lon, h))
@@ -73,27 +95,43 @@ function ecef_to_ned(
 end
 
 """
-    ned_to_ecef(r_ned::AbstractVector{T1}, lat::T2, lon::T3, h::T4; translate::Bool = false) -> SVector{3, T}
+    ned_to_ecef(r_ned::AbstractVector{T1}, lat::T2, lon::T3, h::T4; kwargs...) -> SVector{3, T}
 
-Convert a vector `r_ned` represented in the local reference frame NED (North, East, Down) at
-the geodetic position `lat` [rad], `lon` [rad], and `h` [m] to the Earth-Centered,
-Earth-Fixed (ECEF) frame.
+Convert the vector `r_ned` [m] represented in the local North-East-Down (NED) reference
+frame defined at the geodetic latitude `lat` [rad], longitude `lon` [rad], and altitude `h`
+[m] to the Earth-Centered, Earth-Fixed (ECEF) reference frame.
 
-If `translate` is `false`, then this function computes only the rotation between NED and
-ECEF. Otherwise, it will also translate the vector considering the distance between the
-Earth's center and NED origin.
+The NED frame is centered at the geodetic position and its axes are defined as follows:
+
+- X-axis: Toward the geodetic North;
+- Y-axis: Toward the East; and
+- Z-axis: Downward, along the inward ellipsoid normal.
 
 The element type `T` of the returned vector is obtained by promoting `T1`, `T2`, `T3`, and
 `T4` to a float.
 
-# Remarks
+See also: [`ecef_to_ned`](@ref)
 
-This algorithm was based on the information in **[1]**.
+# Keywords
+
+- `translate::Bool`: If `true`, the vector is also translated by the ECEF position of the
+    NED origin, so that the input is treated as a position. If `false`, only the rotation is
+    applied, so that the input is treated as a free vector.
+    (**Default**: `false`)
+
+# Returns
+
+- `SVector{3, T}`: Vector `r_ned` represented in the ECEF reference frame.
 
 # References
 
 - **[1]** [Transformations between ECEF and ENU
     coordinates](https://gssc.esa.int/navipedia/index.php/Transformations_between_ECEF_and_ENU_coordinates)
+
+# Extended help
+
+The rotation is the transpose of the one used in [`ecef_to_ned`](@ref). The translation uses
+the WGS-84 ellipsoid through [`geodetic_to_ecef`](@ref).
 """
 function ned_to_ecef(
     r_ned::AbstractVector{T1}, lat::T2, lon::T3, h::T4; translate::Bool = false
@@ -105,9 +143,8 @@ function ned_to_ecef(
     # Convert the input vector to the right type.
     r_ned_T = @SVector T[r_ned[0 + begin], r_ned[1 + begin], r_ned[2 + begin]]
 
-    # Create the matrix that rotates the NED into ECEF. This is the transpose
-    # of the direct ECEF-to-NED matrix (and the direct form of the equivalent
-    # angle_to_dcm construction).
+    # Create the matrix that rotates the NED into ECEF. This is the transpose of the direct
+    # ECEF-to-NED matrix and the direct form of the equivalent `angle_to_dcm` construction.
     sin_lat, cos_lat = sincos(T(lat))
     sin_lon, cos_lon = sincos(T(lon))
     D_ecef_ned = @SMatrix [
@@ -123,8 +160,8 @@ function ned_to_ecef(
     if !translate
         return r_ecef
     else
-        # We need now to translate the vector. Thus, we need to obtain the ECEF
-        # position of the NED origin.
+        # We need now to translate the vector. Thus, we need to obtain the ECEF position of
+        # the NED origin.
         #
         # TODO: Add support to different ellipsoids here.
         r_ned_ecef = T.(geodetic_to_ecef(lat, lon, h))
@@ -133,26 +170,40 @@ function ned_to_ecef(
 end
 
 """
-    r_eci_to_hill(r_eci::AbstractVector, v_eci::AbstractVector) -> DCM
-    r_eci_to_hill(T, r_eci::AbstractVector, v_eci::AbstractVector) -> T
+    r_eci_to_hill([T, ]r_eci::AbstractVector, v_eci::AbstractVector) -> T
+    r_eci_to_hill([T, ]sv::OrbitStateVector) -> T
 
-Compute the rotation from an Earth Centered Inertial (ECI) frame to the Hill frame (also
-known as the RTN or RSW frame), given the satellite position [m] `r_eci` and satellite
-velocity [m/s] `v_eci` in the ECI reference frame. The rotation description that will be
-used is given by `T`, which can be `DCM` or `Quaternion`. If `T` is not specified, it falls
-back to `DCM`.
+Compute the rotation from an Earth-Centered Inertial (ECI) reference frame to the Hill
+frame, also known as RSW or RTN frame, given the satellite position `r_eci` [m] and velocity
+`v_eci` [m/s] represented in the ECI frame. The state can also be provided as the orbit
+state vector `sv`, whose position `sv.r` [m] and velocity `sv.v` [m/s] must be represented
+in the ECI frame. The rotation description is selected by `T`, which can be `DCM` or
+`Quaternion`. If `T` is omitted, it defaults to `DCM`.
 
-The Hill frame is defined as follows:
+The Hill frame is centered at the satellite and its axes are defined as follows:
 
-- X-axis: along the radial direction (from Earth to satellite).
-- Y-axis: along the along-track direction (in the direction of motion).
-- Z-axis: along the cross-track direction (perpendicular to the orbital plane).
+- X-axis (R): Radial direction, from the Earth's center to the satellite;
+- Y-axis (S): Along-track direction, perpendicular to the radial direction in the orbital
+    plane and positive toward the direction of motion; and
+- Z-axis (W): Cross-track direction, along the orbit angular momentum vector, completing the
+    right-handed frame.
+
+The Y-axis is aligned with the velocity vector only in circular orbits. The function throws
+if `r_eci` and `v_eci` do not define an orbital plane.
+
+See also: [`r_hill_to_eci`](@ref), [`r_eci_to_lvlh`](@ref)
 
 # Returns
 
-- `T`: Rotation entity that rotates the ECI frame into the Hill frame.
+- `T`: Rotation that maps a vector represented in the ECI frame to the Hill frame
+    (`D_hill_eci` or `q_hill_eci`).
 
-# Extended Help
+# References
+
+- **[2]** Vallado, D. A (2013). *Fundamentals of Astrodynamics and Applications*. 4th ed.
+    Microcosm Press, pp. 163-164.
+
+# Extended help
 
 ## Rotation Description
 
@@ -163,6 +214,12 @@ selected by the parameter `T`. The possible values are:
 - `Quaternion`: The rotation will be described by a Quaternion.
 
 If no value is specified, it falls back to `DCM`.
+
+## Throws
+
+- `ArgumentError`: `r_eci` and `v_eci` are parallel or at least one of them is zero, so that
+    the orbit angular momentum vanishes and the cross-track direction is undefined. The
+    frame is ill-conditioned, but not rejected, when the two vectors are nearly parallel.
 """
 function r_eci_to_hill(r_eci::AbstractVector, v_eci::AbstractVector)
     return r_eci_to_hill(DCM, r_eci, v_eci)
@@ -192,26 +249,40 @@ function r_eci_to_hill(T::T_ROT, sv::OrbitStateVector)
 end
 
 """
-    r_hill_to_eci(r_eci::AbstractVector, v_eci::AbstractVector) -> DCM
-    r_hill_to_eci(T, r_eci::AbstractVector, v_eci::AbstractVector) -> T
+    r_hill_to_eci([T, ]r_eci::AbstractVector, v_eci::AbstractVector) -> T
+    r_hill_to_eci([T, ]sv::OrbitStateVector) -> T
 
-Compute the rotation from the Hill frame (also known as the RTN or RSW frame) to an Earth
-Centered Inertial (ECI) frame, given the satellite position [m] `r_eci` and satellite
-velocity [m/s] `v_eci` in the ECI reference frame. The rotation description that will be
-used is given by `T`, which can be `DCM` or `Quaternion`. If `T` is not specified, it falls
-back to `DCM`.
+Compute the rotation from the Hill frame, also known as RSW or RTN frame to an
+Earth-Centered Inertial (ECI) reference frame, given the satellite position `r_eci` [m] and
+velocity `v_eci` [m/s] represented in the ECI frame. The state can also be provided as the
+orbit state vector `sv`, whose position `sv.r` [m] and velocity `sv.v` [m/s] must be
+represented in the ECI frame. The rotation description is selected by `T`, which can be
+`DCM` or `Quaternion`. If `T` is omitted, it defaults to `DCM`.
 
-The Hill frame is defined as follows:
+The Hill frame is centered at the satellite and its axes are defined as follows:
 
-- X-axis: along the radial direction (from Earth to satellite).
-- Y-axis: along the along-track direction (in the direction of motion).
-- Z-axis: along the cross-track direction (perpendicular to the orbital plane).
+- X-axis (R): Radial direction, from the Earth's center to the satellite;
+- Y-axis (S): Along-track direction, perpendicular to the radial direction in the orbital
+    plane and positive toward the direction of motion; and
+- Z-axis (W): Cross-track direction, along the orbit angular momentum vector, completing the
+    right-handed frame.
+
+The Y-axis is aligned with the velocity vector only in circular orbits. The function throws
+if `r_eci` and `v_eci` do not define an orbital plane.
+
+See also: [`r_eci_to_hill`](@ref), [`r_lvlh_to_eci`](@ref)
 
 # Returns
 
-- `T`: Rotation entity that rotates the Hill frame into the ECI frame.
+- `T`: Rotation that maps a vector represented in the Hill frame to the ECI frame
+    (`D_eci_hill` or `q_eci_hill`).
 
-# Extended Help
+# References
+
+- **[2]** Vallado, D. A (2013). *Fundamentals of Astrodynamics and Applications*. 4th ed.
+    Microcosm Press, pp. 163-164.
+
+# Extended help
 
 ## Rotation Description
 
@@ -222,6 +293,12 @@ selected by the parameter `T`. The possible values are:
 - `Quaternion`: The rotation will be described by a Quaternion.
 
 If no value is specified, it falls back to `DCM`.
+
+## Throws
+
+- `ArgumentError`: `r_eci` and `v_eci` are parallel or at least one of them is zero, so that
+    the orbit angular momentum vanishes and the cross-track direction is undefined. The
+    frame is ill-conditioned, but not rejected, when the two vectors are nearly parallel.
 """
 function r_hill_to_eci(r_eci::AbstractVector, v_eci::AbstractVector)
     return r_hill_to_eci(DCM, r_eci, v_eci)
@@ -240,19 +317,58 @@ function r_hill_to_eci(T::T_ROT, sv::OrbitStateVector)
 end
 
 """
-    r_eci_to_lvlh(r_eci::AbstractVector, v_eci::AbstractVector) -> DCM
-    r_eci_to_lvlh(T, r_eci::AbstractVector, v_eci::AbstractVector) -> T
+    r_eci_to_lvlh([T, ]r_eci::AbstractVector, v_eci::AbstractVector) -> T
+    r_eci_to_lvlh([T, ]sv::OrbitStateVector) -> T
 
-Compute the rotation from an Earth Centered Inertial (ECI) frame to the Local Vertical Local
-Horizontal (LVLH), given the satellite position [m] `r_eci` and satellite velocity [m/s]
-`v_eci` in the ECI reference frame. The rotation description that will be used is given by
-`T`, which can be `DCM` or `Quaternion`. If `T` is not specified, it falls back to `DCM`.
+Compute the rotation from an Earth-Centered Inertial (ECI) reference frame to the Local
+Vertical, Local Horizontal (LVLH) frame, given the satellite position `r_eci` [m] and
+velocity `v_eci` [m/s] represented in the ECI frame. The state can also be provided as the
+orbit state vector `sv`, whose position `sv.r` [m] and velocity `sv.v` [m/s] must be
+represented in the ECI frame. The rotation description is selected by `T`, which can be
+`DCM` or `Quaternion`. If `T` is omitted, it defaults to `DCM`.
 
-The LVLH frame is defined as follows:
+The LVLH frame is centered at the satellite and its axes are defined as follows:
 
-- X-axis: along the along-track direction (in the direction of motion).
-- Y-axis: along the cross-track direction (perpendicular to the orbital plane).
-- Z-axis: along the radial direction (from Earth to satellite).
+- X-axis: Along-track direction, perpendicular to the radial direction in the orbital plane
+    and positive toward the direction of motion;
+- Y-axis: Opposite to the orbit angular momentum vector, completing the right-handed frame;
+    and
+- Z-axis: Nadir direction, from the satellite to the Earth's center.
+
+The X-axis is aligned with the velocity vector only in circular orbits. This frame is a
+permutation of the Hill frame axes: `x_lvlh = y_hill`, `y_lvlh = -z_hill`, and
+`z_lvlh = -x_hill`. The function throws if `r_eci` and `v_eci` do not define an orbital
+plane.
+
+See also: [`r_lvlh_to_eci`](@ref), [`r_eci_to_hill`](@ref)
+
+# Returns
+
+- `T`: Rotation that maps a vector represented in the ECI frame to the LVLH frame
+    (`D_lvlh_eci` or `q_lvlh_eci`).
+
+# References
+
+- **[2]** Vallado, D. A (2013). *Fundamentals of Astrodynamics and Applications*. 4th ed.
+    Microcosm Press, pp. 163-164.
+
+# Extended help
+
+## Rotation Description
+
+The rotation can be described by Direction Cosine Matrices (DCMs) or Quaternions. This is
+selected by the parameter `T`. The possible values are:
+
+- `DCM`: The rotation will be described by a Direction Cosine Matrix.
+- `Quaternion`: The rotation will be described by a Quaternion.
+
+If no value is specified, it falls back to `DCM`.
+
+## Throws
+
+- `ArgumentError`: `r_eci` and `v_eci` are parallel or at least one of them is zero, so that
+    the orbit angular momentum vanishes and the cross-track direction is undefined. The
+    frame is ill-conditioned, but not rejected, when the two vectors are nearly parallel.
 """
 function r_eci_to_lvlh(r_eci::AbstractVector, v_eci::AbstractVector)
     return r_eci_to_lvlh(DCM, r_eci, v_eci)
@@ -265,9 +381,9 @@ end
 function r_eci_to_lvlh(::Type{DCM}, r_eci::AbstractVector, v_eci::AbstractVector)
     r̄_eci, θ̄_eci, h̄_eci = _hill_triad(r_eci, v_eci)
 
-    # The LVLH frame is a permutation of the Hill frame: X is the along-track direction, Z is
-    # the nadir direction, and Y completes the right-handed frame, pointing opposite to the
-    # orbit angular momentum. The rows of `D_lvlh_eci` are those axes in the ECI frame.
+    # The LVLH frame is a permutation of the Hill frame: X is the along-track direction, Z
+    # is the nadir direction, and Y completes the right-handed frame, pointing opposite to
+    # the orbit angular momentum. The rows of `D_lvlh_eci` are those axes in the ECI frame.
     D_lvlh_eci = DCM(transpose(hcat(θ̄_eci, -h̄_eci, -r̄_eci)))
 
     return D_lvlh_eci
@@ -282,20 +398,58 @@ function r_eci_to_lvlh(T::T_ROT, sv::OrbitStateVector)
 end
 
 """
-    r_lvlh_to_eci(r_eci::AbstractVector, v_eci::AbstractVector) -> DCM
-    r_lvlh_to_eci(T, r_eci::AbstractVector, v_eci::AbstractVector) -> T
+    r_lvlh_to_eci([T, ]r_eci::AbstractVector, v_eci::AbstractVector) -> T
+    r_lvlh_to_eci([T, ]sv::OrbitStateVector) -> T
 
-Compute the rotation from the Local Vertical Local Horizontal (LVLH) frame to an Earth
-Centered Inertial (ECI) frame, given the satellite position [m] `r_eci` and satellite
-velocity [m/s] `v_eci` in the ECI reference frame. The rotation description that will be
-used is given by `T`, which can be `DCM` or `Quaternion`. If `T` is not specified, it falls
-back to `DCM`.
+Compute the rotation from the Local Vertical, Local Horizontal (LVLH) frame to an
+Earth-Centered Inertial (ECI) reference frame, given the satellite position `r_eci` [m] and
+velocity `v_eci` [m/s] represented in the ECI frame. The state can also be provided as the
+orbit state vector `sv`, whose position `sv.r` [m] and velocity `sv.v` [m/s] must be
+represented in the ECI frame. The rotation description is selected by `T`, which can be
+`DCM` or `Quaternion`. If `T` is omitted, it defaults to `DCM`.
 
-The LVLH frame is defined as follows:
+The LVLH frame is centered at the satellite and its axes are defined as follows:
 
-- X-axis: along the along-track direction (in the direction of motion).
-- Y-axis: along the cross-track direction (perpendicular to the orbital plane).
-- Z-axis: along the radial direction (from Earth to satellite).
+- X-axis: Along-track direction, perpendicular to the radial direction in the orbital plane
+    and positive toward the direction of motion;
+- Y-axis: Opposite to the orbit angular momentum vector, completing the right-handed frame;
+    and
+- Z-axis: Nadir direction, from the satellite to the Earth's center.
+
+The X-axis is aligned with the velocity vector only in circular orbits. This frame is a
+permutation of the Hill frame axes: `x_lvlh = y_hill`, `y_lvlh = -z_hill`, and
+`z_lvlh = -x_hill`. The function throws if `r_eci` and `v_eci` do not define an orbital
+plane.
+
+See also: [`r_eci_to_lvlh`](@ref), [`r_hill_to_eci`](@ref)
+
+# Returns
+
+- `T`: Rotation that maps a vector represented in the LVLH frame to the ECI frame
+    (`D_eci_lvlh` or `q_eci_lvlh`).
+
+# References
+
+- **[2]** Vallado, D. A (2013). *Fundamentals of Astrodynamics and Applications*. 4th ed.
+    Microcosm Press, pp. 163-164.
+
+# Extended help
+
+## Rotation Description
+
+The rotation can be described by Direction Cosine Matrices (DCMs) or Quaternions. This is
+selected by the parameter `T`. The possible values are:
+
+- `DCM`: The rotation will be described by a Direction Cosine Matrix.
+- `Quaternion`: The rotation will be described by a Quaternion.
+
+If no value is specified, it falls back to `DCM`.
+
+## Throws
+
+- `ArgumentError`: `r_eci` and `v_eci` are parallel or at least one of them is zero, so that
+    the orbit angular momentum vanishes and the cross-track direction is undefined. The
+    frame is ill-conditioned, but not rejected, when the two vectors are nearly parallel.
 """
 function r_lvlh_to_eci(r_eci::AbstractVector, v_eci::AbstractVector)
     return r_lvlh_to_eci(DCM, r_eci, v_eci)
@@ -328,8 +482,8 @@ float. The function throws if `r_eci` and `v_eci` do not define an orbital plane
 
 # Returns
 
-- `SVector{3, T}`: Unit vector [-] along the radial direction (from the Earth's center to the
-    satellite) represented in the ECI frame.
+- `SVector{3, T}`: Unit vector [-] along the radial direction (from the Earth's center to
+    the satellite) represented in the ECI frame.
 - `SVector{3, T}`: Unit vector [-] along the along-track direction represented in the ECI
     frame.
 - `SVector{3, T}`: Unit vector [-] along the orbit angular momentum represented in the ECI
