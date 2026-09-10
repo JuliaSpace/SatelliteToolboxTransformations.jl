@@ -109,14 +109,16 @@ end
 
 # == Identity Transformations ==============================================================
 
-function r_ecef_to_ecef(::Type{DCM}, ::Val{S}, ::Val{S}, ::Number, ::EopIau1980) where {S}
-    return DCM(1.0I)
+function r_ecef_to_ecef(
+    ::Type{DCM}, ::Tframe, ::Tframe, jd_utc::Number, ::EopIau1980
+) where {Tframe <: T_ECEFs}
+    return DCM(one(float(typeof(jd_utc))) * I)
 end
 
 function r_ecef_to_ecef(
-    ::Type{Quaternion}, ::Val{S}, ::Val{S}, ::Number, ::EopIau1980
-) where {S}
-    return Quaternion(1.0, 0.0, 0.0, 0.0)
+    ::Type{Quaternion}, ::Tframe, ::Tframe, jd_utc::Number, ::EopIau1980
+) where {Tframe <: T_ECEFs}
+    return Quaternion(one(float(typeof(jd_utc))) * I)
 end
 
 # == ITRF <=> PEF ==========================================================================
@@ -148,14 +150,16 @@ end
 
 # == Identity Transformations ==============================================================
 
-function r_ecef_to_ecef(::Type{DCM}, ::Val{S}, ::Val{S}, ::Number, ::EopIau2000A) where {S}
-    return DCM(1.0I)
+function r_ecef_to_ecef(
+    ::Type{DCM}, ::Tframe, ::Tframe, jd_utc::Number, ::EopIau2000A
+) where {Tframe <: T_ECEFs_IAU_2006}
+    return DCM(one(float(typeof(jd_utc))) * I)
 end
 
 function r_ecef_to_ecef(
-    ::Type{Quaternion}, ::Val{S}, ::Val{S}, ::Number, ::EopIau2000A
-) where {S}
-    return Quaternion(1.0, 0.0, 0.0, 0.0)
+    ::Type{Quaternion}, ::Tframe, ::Tframe, jd_utc::Number, ::EopIau2000A
+) where {Tframe <: T_ECEFs_IAU_2006}
+    return Quaternion(one(float(typeof(jd_utc))) * I)
 end
 
 # == ITRF <=> TIRS =========================================================================
