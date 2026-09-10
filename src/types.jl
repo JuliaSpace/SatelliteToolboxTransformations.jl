@@ -81,18 +81,100 @@ Union of all supported rotation descriptions.
 """
 const T_ROT = Union{Type{DCM}, Type{Quaternion}}
 
-# Auxiliary functions to define the reference frames.
-@inline ITRF()   = Val(:ITRF)
-@inline PEF()    = Val(:PEF)
-@inline TOD()    = Val(:TOD)
-@inline MOD()    = Val(:MOD)
-@inline GCRF()   = Val(:GCRF)
-@inline J2000()  = Val(:J2000)
-@inline TEME()   = Val(:TEME)
-@inline CIRS()   = Val(:CIRS)
-@inline TIRS()   = Val(:TIRS)
-@inline ERS()    = Val(:ERS)
-@inline MOD06()  = Val(:MOD06)
+"""
+    ITRF() -> Val{:ITRF}
+
+Return the tag that selects the International Terrestrial Reference Frame (ITRF) in the
+reference frame transformation functions.
+"""
+@inline ITRF() = Val(:ITRF)
+
+"""
+    PEF() -> Val{:PEF}
+
+Return the tag that selects the Pseudo-Earth Fixed (PEF) reference frame of the IAU-76/FK5
+theory in the reference frame transformation functions.
+"""
+@inline PEF() = Val(:PEF)
+
+"""
+    TOD() -> Val{:TOD}
+
+Return the tag that selects the True of Date (TOD) reference frame of the IAU-76/FK5 theory
+in the reference frame transformation functions.
+"""
+@inline TOD() = Val(:TOD)
+
+"""
+    MOD() -> Val{:MOD}
+
+Return the tag that selects the Mean of Date (MOD) reference frame of the IAU-76/FK5 theory
+in the reference frame transformation functions.
+"""
+@inline MOD() = Val(:MOD)
+
+"""
+    GCRF() -> Val{:GCRF}
+
+Return the tag that selects the Geocentric Celestial Reference Frame (GCRF) in the
+reference frame transformation functions.
+"""
+@inline GCRF() = Val(:GCRF)
+
+"""
+    J2000() -> Val{:J2000}
+
+Return the tag that selects the J2000 mean equator and equinox reference frame in the
+reference frame transformation functions.
+"""
+@inline J2000() = Val(:J2000)
+
+"""
+    TEME() -> Val{:TEME}
+
+Return the tag that selects the True Equator Mean Equinox (TEME) reference frame in the
+reference frame transformation functions.
+"""
+@inline TEME() = Val(:TEME)
+
+"""
+    CIRS() -> Val{:CIRS}
+
+Return the tag that selects the Celestial Intermediate Reference System (CIRS) of the
+IAU-2006/2010 theory in the reference frame transformation functions.
+"""
+@inline CIRS() = Val(:CIRS)
+
+"""
+    TIRS() -> Val{:TIRS}
+
+Return the tag that selects the Terrestrial Intermediate Reference System (TIRS) of the
+IAU-2006/2010 theory in the reference frame transformation functions.
+"""
+@inline TIRS() = Val(:TIRS)
+
+"""
+    ERS() -> Val{:ERS}
+
+Return the tag that selects the Earth Reference System (ERS) of the equinox-based
+IAU-2006/2010 theory in the reference frame transformation functions.
+"""
+@inline ERS() = Val(:ERS)
+
+"""
+    MOD06() -> Val{:MOD06}
+
+Return the tag that selects the Mean of Date (MOD) reference frame of the IAU-2006/2010
+theory in the reference frame transformation functions.
+"""
+@inline MOD06() = Val(:MOD06)
+
+"""
+    MJ2000() -> Val{:MJ2000}
+
+Return the tag that selects the J2000 mean equator and equinox reference frame of the
+IAU-2006/2010 theory in the reference frame transformation functions.
+"""
 @inline MJ2000() = Val(:MJ2000)
 
 ############################################################################################
@@ -100,25 +182,31 @@ const T_ROT = Union{Type{DCM}, Type{Quaternion}}
 ############################################################################################
 
 """
-    EopIau1980{T}
+    struct EopIau1980{T}
 
-Earth orientation parameters for the model IAU 1980.
+Store the Earth Orientation Parameters (EOP) for the model IAU 1980.
 
-!!! note
+Each field is a callable interpolation evaluated at the Julian Day [UTC], e.g.
+`eop.x(jd_utc)`. The interpolation is linear inside the tabulated span and constant outside
+it. The field `Δut1_utc` is continuous across the leap seconds. Hence, the X component of
+the polar motion with respect to the crust at 19 June 2018 [UTC] can be obtained with:
 
-    Each field will be an `AbstractInterpolation` evaluated at the Julian Day. Hence, if one
-    wants to obtain, for example, the X component of the polar motion with respect to the
-    crust at 19 June 2018, the following can be used:
-
-        eop.x(datetime2julian(DateTime(2018, 6, 19, 0, 0, 0)))
+    eop.x(datetime2julian(DateTime(2018, 6, 19, 0, 0, 0)))
 
 # Fields
 
-- `x, y`: Polar motion with respect to the crust [arcsec].
-- `Δut1_utc`: Irregularities of the rotation angle [s].
-- `lod`: Length of day offset [ms].
-- `δΔψ, δΔϵ`: Celestial pole offsets referred to the model IAU1980 [milliarcsec].
-- `*_error`: Errors in the components [same unit as the component].
+- `x::T`: X component of the polar motion with respect to the crust [arcsec].
+- `y::T`: Y component of the polar motion with respect to the crust [arcsec].
+- `Δut1_utc::T`: Irregularities of the rotation angle, i.e. the difference UT1-UTC [s].
+- `lod::T`: Length of day offset [ms].
+- `δΔψ::T`: Celestial pole offset in longitude referred to the model IAU 1980 [mas].
+- `δΔϵ::T`: Celestial pole offset in obliquity referred to the model IAU 1980 [mas].
+- `x_error::T`: Error in `x` [arcsec].
+- `y_error::T`: Error in `y` [arcsec].
+- `Δut1_utc_error::T`: Error in `Δut1_utc` [s].
+- `lod_error::T`: Error in `lod` [ms].
+- `δΔψ_error::T`: Error in `δΔψ` [mas].
+- `δΔϵ_error::T`: Error in `δΔϵ` [mas].
 """
 struct EopIau1980{T}
     x::T
@@ -128,7 +216,7 @@ struct EopIau1980{T}
     δΔψ::T
     δΔϵ::T
 
-    # Errors
+    # Errors in the components above.
     x_error::T
     y_error::T
     Δut1_utc_error::T
@@ -138,25 +226,31 @@ struct EopIau1980{T}
 end
 
 """
-    EopIau2000A{T}
+    struct EopIau2000A{T}
 
-Earth orientation parameters for the model IAU 2000A.
+Store the Earth Orientation Parameters (EOP) for the model IAU 2000A.
 
-!!! note
+Each field is a callable interpolation evaluated at the Julian Day [UTC], e.g.
+`eop.x(jd_utc)`. The interpolation is linear inside the tabulated span and constant outside
+it. The field `Δut1_utc` is continuous across the leap seconds. Hence, the X component of
+the polar motion with respect to the crust at 19 June 2018 [UTC] can be obtained with:
 
-    Each field will be an `AbstractInterpolation` evaluated at the Julian Day. Hence, if one
-    wants to obtain, for example, the X component of the polar motion with respect to the
-    crust at 19 June 2018, the following can be used:
-
-        eop.x(datetime2julian(DateTime(2018, 6, 19, 0, 0, 0)))
+    eop.x(datetime2julian(DateTime(2018, 6, 19, 0, 0, 0)))
 
 # Fields
 
-- `x, y`: Polar motion with respect to the crust [arcsec].
-- `Δut1_utc`: Irregularities of the rotation angle [s].
-- `lod`: Length of day offset [ms].
-- `δx, δy`: Celestial pole offsets referred to the model IAU2000A [milliarcsec].
-- `*_error`: Errors in the components [same unit as the component].
+- `x::T`: X component of the polar motion with respect to the crust [arcsec].
+- `y::T`: Y component of the polar motion with respect to the crust [arcsec].
+- `Δut1_utc::T`: Irregularities of the rotation angle, i.e. the difference UT1-UTC [s].
+- `lod::T`: Length of day offset [ms].
+- `δx::T`: X component of the celestial pole offset referred to the model IAU 2000A [mas].
+- `δy::T`: Y component of the celestial pole offset referred to the model IAU 2000A [mas].
+- `x_error::T`: Error in `x` [arcsec].
+- `y_error::T`: Error in `y` [arcsec].
+- `Δut1_utc_error::T`: Error in `Δut1_utc` [s].
+- `lod_error::T`: Error in `lod` [ms].
+- `δx_error::T`: Error in `δx` [mas].
+- `δy_error::T`: Error in `δy` [mas].
 """
 struct EopIau2000A{T}
     x::T
@@ -166,7 +260,7 @@ struct EopIau2000A{T}
     δx::T
     δy::T
 
-    # Errors
+    # Errors in the components above.
     x_error::T
     y_error::T
     Δut1_utc_error::T
