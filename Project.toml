@@ -2,7 +2,7 @@ name = "SatelliteToolboxTransformations"
 uuid = "6b019ec1-7a1e-4f04-96c7-a9db1ca5514d"
 license = "MIT"
 desc = "Transformations for the SatelliteToolbox.jl ecosystem."
-version = "1.2.0"
+version = "1.3.0"
 authors = ["Ronan Arraes Jardim Chagas <ronisbr@gmail.com>"]
 
 [deps]
